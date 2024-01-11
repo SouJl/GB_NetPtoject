@@ -2,8 +2,6 @@ using Photon.Pun;
 using Photon.Realtime;
 using PlayFab;
 using PlayFab.ClientModels;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Authorization : MonoBehaviourPunCallbacks

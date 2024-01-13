@@ -580,7 +580,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1050162212}
   m_HandleRect: {fileID: 1050162211}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -682,7 +682,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CONNECT
+  m_text: Log In
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -960,7 +960,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _titleId: C7257
-  _userId: PlayerTest
+  _playFabLogInUI: {fileID: 1330085043}
+  _debugConsoleUI: {fileID: 1223307920}
 --- !u!1 &521522725
 GameObject:
   m_ObjectHideFlags: 0
@@ -1019,7 +1020,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Connect to PlayFab
+  m_text: B.T.A PlayFab
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1607,6 +1608,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1223307917}
   - component: {fileID: 1223307919}
+  - component: {fileID: 1223307920}
   m_Layer: 5
   m_Name: DebugUI
   m_TagString: Untagged
@@ -1643,6 +1645,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1223307916}
   m_CullTransparentMesh: 1
+--- !u!114 &1223307920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1223307916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9479fd992e59fd4a8da1b2570591749, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _messagePrefab: {fileID: 6530042632402962871, guid: 7e0c7adf0a461a548bb48cf7ffde0588, type: 3}
+  _messageContainer: {fileID: 1367415919}
 --- !u!1 &1330085039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1654,6 +1670,7 @@ GameObject:
   - component: {fileID: 1330085040}
   - component: {fileID: 1330085042}
   - component: {fileID: 1330085041}
+  - component: {fileID: 1330085043}
   m_Layer: 5
   m_Name: LogInPanel
   m_TagString: Untagged
@@ -1722,6 +1739,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1330085039}
   m_CullTransparentMesh: 1
+--- !u!114 &1330085043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1330085039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2130f80e13929a4eb4ad7530371f587, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _userIdInputField: {fileID: 106191740}
+  _logInButton: {fileID: 1949407319}
 --- !u!1 &1367415919
 GameObject:
   m_ObjectHideFlags: 0
@@ -1792,7 +1823,7 @@ MonoBehaviour:
     m_Top: 10
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 10
+  m_Spacing: 3
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1

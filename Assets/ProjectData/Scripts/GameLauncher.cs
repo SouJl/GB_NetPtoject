@@ -1,7 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
 using UI;
-using System;
 using Photon.Realtime;
 
 public class GameLauncher : MonoBehaviourPunCallbacks
@@ -10,6 +9,8 @@ public class GameLauncher : MonoBehaviourPunCallbacks
     private string _roomName;
     [SerializeField]
     private PhotonPanelUI _photonPanelUI;
+    [SerializeField]
+    private DebugConsoleUI _debugConsoleUI;
 
     private void Awake()
     {
@@ -25,7 +26,11 @@ public class GameLauncher : MonoBehaviourPunCallbacks
     private void ConnectToPhotonServer()
     {
         if (PhotonNetwork.IsConnected)
+        {
+            _debugConsoleUI.LogWarning("Can't execute connect while still connected to Photon");
             return;
+        }
+           
 
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.GameVersion = Application.version;
@@ -34,7 +39,11 @@ public class GameLauncher : MonoBehaviourPunCallbacks
     private void DisconnectRomPhotonServer()
     {
         if (!PhotonNetwork.IsConnected)
+        {
+            _debugConsoleUI.LogWarning("Can't execute disconnect while not connected to Photon");
             return;
+        }
+           
 
         PhotonNetwork.Disconnect();
     }
@@ -43,6 +52,9 @@ public class GameLauncher : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("OnConnectedToMaster");
+
+        _debugConsoleUI.Log("OnConnectedToMaster");
+
         JoinRoom();
     }
 
@@ -55,11 +67,17 @@ public class GameLauncher : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log($"OnJoinedRoom {PhotonNetwork.CurrentRoom.Name}");
+        var joinedRoomMessage = $"OnJoinedRoom {PhotonNetwork.CurrentRoom.Name}";
+
+        Debug.Log(joinedRoomMessage);
+
+        _debugConsoleUI.Log(joinedRoomMessage);
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         Debug.Log("OnDisconenctedFromMaster");
+
+        _debugConsoleUI.Log("OnDisconenctedFromMaster");
     }
 }

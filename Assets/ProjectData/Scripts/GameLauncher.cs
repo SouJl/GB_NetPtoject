@@ -1,10 +1,15 @@
 using UnityEngine;
 using Photon.Pun;
+using UI;
+using System;
+using Photon.Realtime;
 
 public class GameLauncher : MonoBehaviourPunCallbacks
 {
     [SerializeField]
     private string _roomName;
+    [SerializeField]
+    private PhotonPanelUI _photonPanelUI;
 
     private void Awake()
     {
@@ -13,10 +18,11 @@ public class GameLauncher : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        Connect();
+        _photonPanelUI.OnConncect += ConnectToPhotonServer;
+        _photonPanelUI.OnDisconncect += DisconnectRomPhotonServer;
     }
 
-    private void Connect()
+    private void ConnectToPhotonServer()
     {
         if (PhotonNetwork.IsConnected)
             return;
@@ -24,6 +30,15 @@ public class GameLauncher : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.GameVersion = Application.version;
     }
+
+    private void DisconnectRomPhotonServer()
+    {
+        if (!PhotonNetwork.IsConnected)
+            return;
+
+        PhotonNetwork.Disconnect();
+    }
+
 
     public override void OnConnectedToMaster()
     {
@@ -41,5 +56,10 @@ public class GameLauncher : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log($"OnJoinedRoom {PhotonNetwork.CurrentRoom.Name}");
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("OnDisconenctedFromMaster");
     }
 }

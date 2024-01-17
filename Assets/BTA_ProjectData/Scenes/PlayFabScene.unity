@@ -2971,7 +2971,7 @@ MonoBehaviour:
   _passwordField: {fileID: 3754696595677110833}
   _proceedButton: {fileID: 4075753272357024014}
   _returnButton: {fileID: 4075753272296082793}
-  _userEmailField: {fileID: 3754696596715712301}
+  _userEmailField: {fileID: 3754696595502995058}
 --- !u!114 &1212366348010133210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3987,6 +3987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 359f2d89b639c6e458c72773c31b635e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _titleId: C7257
   _signInButton: {fileID: 4351429175188434710}
   _createAccountButton: {fileID: 4075753272683949256}
   _startCanvas: {fileID: 1212366348213421536}

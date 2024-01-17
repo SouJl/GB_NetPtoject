@@ -34,7 +34,19 @@ namespace UI
             _passwordField.onValueChanged.AddListener(ChangePassword);   
         }
 
-        protected abstract void AccountProceedAction();
+        protected virtual void AccountProceedAction()
+        {
+            if (_username == null || _username == "")
+            {
+                Debug.Log("Username is null or empty");
+                return;
+            }
+            if (_password == null || _password == "")
+            {
+                Debug.Log("Password is null or empty");
+                return;
+            }
+        }
         
         private void Return()
         {

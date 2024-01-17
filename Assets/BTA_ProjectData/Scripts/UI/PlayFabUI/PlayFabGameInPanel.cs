@@ -6,6 +6,10 @@ namespace UI
 {
     public class PlayFabGameInPanel : MonoBehaviour
     {
+
+        [SerializeField]
+        private string _titleId;
+
         [SerializeField]
         private Button _signInButton;
         [SerializeField]

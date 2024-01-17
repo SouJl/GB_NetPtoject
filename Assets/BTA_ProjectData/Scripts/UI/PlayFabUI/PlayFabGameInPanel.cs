@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,10 +17,11 @@ namespace UI
         [SerializeField]
         private Canvas _startCanvas;
         [SerializeField]
-        private BaseAccountDataUI _sighInUI;
+        private SignInAccountDataUI _sighInUI;
         [SerializeField]
-        private BaseAccountDataUI _createAccountUI;
-
+        private CreateAccountDataUI _createAccountUI;
+        [SerializeField]
+        private LogInProgressSlider _logInProgress;
 
         private void Start()
         {
@@ -33,7 +33,10 @@ namespace UI
 
             _sighInUI.Hide();
             _createAccountUI.Hide();
+
+            _sighInUI.InitUI(_logInProgress);
         }
+
 
         private void OpenSignInWindow()
         {
@@ -55,6 +58,10 @@ namespace UI
             _startCanvas.gameObject.SetActive(true);
         }
 
+        private void Update()
+        {
+            _sighInUI.UpdateUI(Time.deltaTime);
+        }
     }
 }
 

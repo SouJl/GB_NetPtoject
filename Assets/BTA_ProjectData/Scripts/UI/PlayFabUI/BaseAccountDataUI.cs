@@ -63,6 +63,8 @@ namespace UI
             _password = password;
         }
 
+        public abstract void UpdateUI(float deltaTime);
+
         public void Show()
             => gameObject.SetActive(true);
         public void Hide() 

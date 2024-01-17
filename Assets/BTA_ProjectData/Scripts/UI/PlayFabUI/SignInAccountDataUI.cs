@@ -6,6 +6,14 @@ namespace UI
 {
     public class SignInAccountDataUI : BaseAccountDataUI
     {
+        private LogInProgressSlider _logInProgress;
+
+        public void InitUI(LogInProgressSlider logInProgress)
+        {
+            _logInProgress = logInProgress;
+            _logInProgress.Init();
+        }
+
         protected override void SubscribeUI()
         {
             base.SubscribeUI();
@@ -19,9 +27,11 @@ namespace UI
             {
                 Username = _username,
                 Password = _password
-};
+            };
 
             PlayFabClientAPI.LoginWithPlayFab(request, OnSuccess, OnError);
+
+            _logInProgress.StartProgress();
         }
 
         private void OnSuccess(LoginResult result)
@@ -29,12 +39,20 @@ namespace UI
             var resultMessage = $"[{result.PlayFabId}] - Login Complete";
             Debug.Log(resultMessage);
 
+            _logInProgress.Stop();
         }
         private void OnError(PlayFabError error)
         {
             var resultMessage = error.GenerateErrorReport();
 
             Debug.LogError(resultMessage);
+
+            _logInProgress.Stop();
+        }
+
+        public override void UpdateUI(float deltaTime)
+        {
+            _logInProgress.UpdateProgress(deltaTime);
         }
     }
 }

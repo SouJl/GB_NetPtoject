@@ -52,5 +52,7 @@ namespace UI
         {
             Debug.LogError($"Account creation failed : {error.ErrorMessage}");
         }
+
+        public override void UpdateUI(float deltaTime) { }
     }
 }

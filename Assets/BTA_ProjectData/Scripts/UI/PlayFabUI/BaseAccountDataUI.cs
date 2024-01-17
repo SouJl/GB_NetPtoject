@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
@@ -7,12 +8,17 @@ namespace UI
     {
         [SerializeField]
         private InputField _usernameField;
-
         [SerializeField]
         private InputField _passwordField;
+        [SerializeField]
+        private Button _proceedButton;
+        [SerializeField]
+        private Button _returnButton;
 
         protected string _username;
         protected string _password;
+
+        public event Action<BaseAccountDataUI> OnReturn;
 
         private void Start()
         {
@@ -21,20 +27,33 @@ namespace UI
 
         protected virtual void SubscribeUI()
         {
+            _proceedButton.onClick.AddListener(AccountProceedAction);
+            _returnButton.onClick.AddListener(Return);
+
             _usernameField.onValueChanged.AddListener(ChangeUsername);
-            _passwordField.onValueChanged.AddListener(ChangePassword);
+            _passwordField.onValueChanged.AddListener(ChangePassword);   
+        }
+
+        protected abstract void AccountProceedAction();
+        
+        private void Return()
+        {
+            OnReturn?.Invoke(this);
         }
 
         private void ChangeUsername(string username)
         {
             _username = username;
-            Debug.Log(_username);
         }
 
         private void ChangePassword(string password)
         {
             _password = password;
-            Debug.Log(_password);
         }
+
+        public void Show()
+            => gameObject.SetActive(true);
+        public void Hide() 
+            => gameObject.SetActive(false);
     }
 }

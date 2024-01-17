@@ -2969,7 +2969,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _usernameField: {fileID: 3754696596715712301}
   _passwordField: {fileID: 3754696595677110833}
-  _userMailField: {fileID: 3754696595502995058}
+  _proceedButton: {fileID: 4075753272357024014}
+  _returnButton: {fileID: 4075753272296082793}
+  _userEmailField: {fileID: 3754696596715712301}
 --- !u!114 &1212366348010133210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3600,6 +3602,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _usernameField: {fileID: 312985306501785862}
   _passwordField: {fileID: 3754696597052762264}
+  _proceedButton: {fileID: 4075753272000320285}
+  _returnButton: {fileID: 4075753272612759680}
 --- !u!1 &1212366348842232050
 GameObject:
   m_ObjectHideFlags: 0
@@ -3986,8 +3990,8 @@ MonoBehaviour:
   _signInButton: {fileID: 4351429175188434710}
   _createAccountButton: {fileID: 4075753272683949256}
   _startCanvas: {fileID: 1212366348213421536}
-  _sighInCanvas: {fileID: 1212366348754227927}
-  _createAccountCanvas: {fileID: 1212366348005609454}
+  _sighInUI: {fileID: 1212366348754227928}
+  _createAccountUI: {fileID: 1212366348005609456}
 --- !u!114 &1212366349196006840
 MonoBehaviour:
   m_ObjectHideFlags: 0

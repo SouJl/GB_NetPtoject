@@ -19,7 +19,11 @@ namespace UI
         private void ChangeUserEmail(string userEmail)
         {
             _userEmail = userEmail;
-            Debug.Log(_userEmail);
+        }
+
+        protected override void AccountProceedAction()
+        {
+            
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,27 +14,41 @@ namespace UI
         [SerializeField]
         private Canvas _startCanvas;
         [SerializeField]
-        private Canvas _sighInCanvas;
+        private BaseAccountDataUI _sighInUI;
         [SerializeField]
-        private Canvas _createAccountCanvas;
+        private BaseAccountDataUI _createAccountUI;
 
 
         private void Start()
         {
             _signInButton.onClick.AddListener(OpenSignInWindow);
             _createAccountButton.onClick.AddListener(OpenCreateAccountWindow);
+
+            _sighInUI.OnReturn += ReturnFromAccountDataUI;
+            _createAccountUI.OnReturn += ReturnFromAccountDataUI;
+
+            _sighInUI.Hide();
+            _createAccountUI.Hide();
         }
 
         private void OpenSignInWindow()
         {
             _startCanvas.gameObject.SetActive(false);
-            _sighInCanvas.gameObject.SetActive(true);
+            
+            _sighInUI.Show();
         }
 
         private void OpenCreateAccountWindow()
         {
             _startCanvas.gameObject.SetActive(false);
-            _createAccountCanvas.gameObject.SetActive(true);
+            
+            _createAccountUI.Show();
+        }
+
+        private void ReturnFromAccountDataUI(BaseAccountDataUI dataUI)
+        {
+            dataUI.Hide();
+            _startCanvas.gameObject.SetActive(true);
         }
 
     }

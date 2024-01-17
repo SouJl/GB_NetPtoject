@@ -6,5 +6,11 @@
         {
             base.SubscribeUI();
         }
+
+        protected override void AccountProceedAction()
+        {
+
+        }
+
     }
 }

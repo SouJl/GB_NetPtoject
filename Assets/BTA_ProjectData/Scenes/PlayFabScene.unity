@@ -2886,6 +2886,7 @@ GameObject:
   - component: {fileID: 1212366348005609453}
   - component: {fileID: 1212366348005609454}
   - component: {fileID: 1212366348005609455}
+  - component: {fileID: 1212366348005609456}
   m_Layer: 5
   m_Name: CreateAccount
   m_TagString: Untagged
@@ -2954,6 +2955,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &1212366348005609456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212366348005609452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9cc30e78105fa0489b4a98686578303, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _usernameField: {fileID: 3754696596715712301}
+  _passwordField: {fileID: 3754696595677110833}
+  _userMailField: {fileID: 3754696595502995058}
 --- !u!114 &1212366348010133210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3541,6 +3557,7 @@ GameObject:
   - component: {fileID: 1212366348754227914}
   - component: {fileID: 1212366348754227927}
   - component: {fileID: 1212366348754227912}
+  - component: {fileID: 1212366348754227928}
   m_Layer: 5
   m_Name: SignIn
   m_TagString: Untagged
@@ -3569,6 +3586,20 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1212366348754227928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212366348754227926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b48358b1442d83a46beeb3c825886bdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _usernameField: {fileID: 312985306501785862}
+  _passwordField: {fileID: 3754696597052762264}
 --- !u!1 &1212366348842232050
 GameObject:
   m_ObjectHideFlags: 0

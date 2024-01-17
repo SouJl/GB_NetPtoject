@@ -26,7 +26,7 @@ namespace UI
 
         private void OnSuccess(LoginResult result)
         {
-            var resultMessage = $"[{result.InfoResultPayload.AccountInfo.Username}] - Login Complete";
+            var resultMessage = $"[{result.PlayFabId}] - Login Complete";
             Debug.Log(resultMessage);
 
         }

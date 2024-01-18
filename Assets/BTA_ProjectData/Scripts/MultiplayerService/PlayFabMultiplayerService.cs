@@ -9,12 +9,15 @@ namespace MultiplayerService
     public class PlayFabMultiplayerService : IMultiplayerService
     {
         public event Action OnLogInInitialize;
-        public event Action OnLogInSucceed;
+        public event Action<string> OnLogInSucceed;
         public event Action OnLogInError;
 
         public event Action OnCreateAccountInitialize;
         public event Action OnCreateAccountSucceed;
         public event Action OnCreateAccountError;
+
+        public event Action<UserData> OnGetAccountSuccess;
+        public event Action<string> OnGetAccountFailure;
 
         public PlayFabMultiplayerService(string titleId)
         {
@@ -63,7 +66,7 @@ namespace MultiplayerService
 
         private void LogInSuccess(LoginResult result)
         {
-            OnLogInSucceed?.Invoke();
+            OnLogInSucceed?.Invoke(result.PlayFabId);
         }
 
         private void LogInError(PlayFabError error)
@@ -74,6 +77,34 @@ namespace MultiplayerService
         public void LogIn(string userId)
         {
             OnLogInInitialize?.Invoke();
+        }
+
+        public void GetAccountInfo(string userId)
+        {
+            var request = new GetAccountInfoRequest
+            {
+                PlayFabId = userId
+            };
+
+            PlayFabClientAPI.GetAccountInfo(request, GetAccountSuccess, GetAccountFailure);
+        }
+
+
+        private void GetAccountSuccess(GetAccountInfoResult result)
+        {
+            var userData = new UserData
+            {
+                UserName = result.AccountInfo.Username,
+                CreatedTime = result.AccountInfo.Created
+            };
+
+            OnGetAccountSuccess?.Invoke(userData);
+        }
+
+        private void GetAccountFailure(PlayFabError error)
+        {
+            var errorMessage = error.GenerateErrorReport();
+            OnGetAccountFailure?.Invoke(errorMessage);
         }
     }
 }

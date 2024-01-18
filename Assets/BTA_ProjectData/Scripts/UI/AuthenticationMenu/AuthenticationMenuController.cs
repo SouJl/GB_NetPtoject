@@ -72,7 +72,7 @@ namespace UI
 
         private void LogInToMultiplayerService(UserData data)
         {
-            _multiplayerService.LogIn(data);   
+            _multiplayerService.LogIn(data);
         }
 
         private void LogInProccessStart()
@@ -80,9 +80,11 @@ namespace UI
             _connectionProgress.Start();
         }
 
-        private void LogInProccessEndOnSucceed()
+        private void LogInProccessEndOnSucceed(string playfabId)
         {
             _connectionProgress.Stop();
+
+            _gamePrefs.SetUserId(playfabId);
 
             _gamePrefs.ChangeGameState(GameState.Lobby);
         }

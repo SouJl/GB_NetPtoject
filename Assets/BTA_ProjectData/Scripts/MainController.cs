@@ -52,7 +52,7 @@ public class MainController : IDisposable
                 }
             case GameState.Lobby:
                 {
-                    _lobbyMenuController = new LobbyMenuController(_placeForUi, _gamePrefs);
+                    _lobbyMenuController = new LobbyMenuController(_placeForUi, _gamePrefs, _multiplayerService);
                     
                     _lifeCycle.AddController(_lobbyMenuController);
                     break;

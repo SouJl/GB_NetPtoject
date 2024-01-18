@@ -11,17 +11,20 @@ namespace UI
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/AuthenticationMenu");
 
-        private AuthenticationMenuView _view;
-
+        private readonly AuthenticationMenuView _view;
+        public readonly GamePrefs _gamePrefs;
         private ConnectionProgressController _connectionProgress;
 
-        public AuthenticationMenuController(Transform placeForUI, GameConfig gameConfig)
+        public AuthenticationMenuController(Transform placeForUI, GameConfig gameConfig, GamePrefs gamePrefs)
         {
             _view = LoadView(placeForUI);
+            
+            _gamePrefs = gamePrefs;
+
             _view.InitView();
             
             InitializeServie(gameConfig._PlayFabTitleId);
-
+     
             _connectionProgress = new ConnectionProgressController(_view.ConnetcionProgressPlacement);
             _view.SignInUI.OnConnectionStart += ConnectionStart;
             _view.SignInUI.OnConnectionEnd += ConnectionEnd;

@@ -1,18 +1,14 @@
 ﻿using PlayFab;
 using PlayFab.ClientModels;
+using System;
 using UnityEngine;
 
 namespace UI
 {
     public class SignInAccountDataUI : BaseAccountDataUI
     {
-        private LogInProgressSlider _logInProgress;
-
-        public void InitUI(LogInProgressSlider logInProgress)
-        {
-            _logInProgress = logInProgress;
-            _logInProgress.Init();
-        }
+        public event Action OnConnectionStart;
+        public event Action OnConnectionEnd;
 
         protected override void SubscribeUI()
         {
@@ -31,7 +27,7 @@ namespace UI
 
             PlayFabClientAPI.LoginWithPlayFab(request, OnSuccess, OnError);
 
-            _logInProgress.StartProgress();
+            OnConnectionStart?.Invoke();
         }
 
         private void OnSuccess(LoginResult result)
@@ -39,7 +35,7 @@ namespace UI
             var resultMessage = $"[{result.PlayFabId}] - Login Complete";
             Debug.Log(resultMessage);
 
-            _logInProgress.Stop();
+            OnConnectionEnd?.Invoke();
         }
         private void OnError(PlayFabError error)
         {
@@ -47,12 +43,7 @@ namespace UI
 
             Debug.LogError(resultMessage);
 
-            _logInProgress.Stop();
-        }
-
-        public override void UpdateUI(float deltaTime)
-        {
-            _logInProgress.UpdateProgress(deltaTime);
+            OnConnectionEnd?.Invoke();
         }
     }
 }

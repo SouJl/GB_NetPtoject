@@ -13,17 +13,23 @@ namespace UI
 
         private AuthenticationMenuView _view;
 
-        public AuthenticationMenuController(Transform placeForUi, GameConfig gameConfig)
-        {
-            _view = LoadView(placeForUi);
-            _view.InitView();
+        private ConnectionProgressController _connectionProgress;
 
+        public AuthenticationMenuController(Transform placeForUI, GameConfig gameConfig)
+        {
+            _view = LoadView(placeForUI);
+            _view.InitView();
+            
             InitializeServie(gameConfig._PlayFabTitleId);
+
+            _connectionProgress = new ConnectionProgressController(_view.ConnetcionProgressPlacement);
+            _view.SignInUI.OnConnectionStart += ConnectionStart;
+            _view.SignInUI.OnConnectionEnd += ConnectionEnd;
         }
 
-        private AuthenticationMenuView LoadView(Transform placeForUi)
+        private AuthenticationMenuView LoadView(Transform placeForUI)
         {
-            var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(_viewPath), placeForUi, false);
+            var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(_viewPath), placeForUI, false);
             return objectView.GetComponent<AuthenticationMenuView>();
         }
 
@@ -35,9 +41,19 @@ namespace UI
             }
         }
 
+        private void ConnectionStart()
+        {
+            _connectionProgress.Start();
+        }
+        private void ConnectionEnd()
+        {
+            _connectionProgress.Stop();
+        }
+
+
         public void ExecuteUpdate(float deltaTime)
         {
-            _view.ExecuteUpdate(deltaTime);
+            _connectionProgress.ExecuteUpdate(deltaTime);
         }
     }
 }

@@ -1,10 +1,9 @@
-﻿using Abstraction;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
-    public class AuthenticationMenuView : MonoBehaviour, IOnUpdate
+    public class AuthenticationMenuView : MonoBehaviour
     {
         [SerializeField]
         private Button _signInButton;
@@ -14,31 +13,33 @@ namespace UI
         [SerializeField]
         private Canvas _startCanvas;
         [SerializeField]
-        private SignInAccountDataUI _sighInUI;
+        private SignInAccountDataUI _signInUI;
         [SerializeField]
         private CreateAccountDataUI _createAccountUI;
         [SerializeField]
-        private LogInProgressSlider _logInProgress;
+        private Transform _connetcionProgressPlacement;
+
+        public Transform ConnetcionProgressPlacement => _connetcionProgressPlacement;
+
+        public SignInAccountDataUI SignInUI => _signInUI;
 
         public void InitView()
         {
             _signInButton.onClick.AddListener(OpenSignInWindow);
             _createAccountButton.onClick.AddListener(OpenCreateAccountWindow);
 
-            _sighInUI.OnReturn += ReturnFromAccountDataUI;
+            _signInUI.OnReturn += ReturnFromAccountDataUI;
             _createAccountUI.OnReturn += ReturnFromAccountDataUI;
 
-            _sighInUI.Hide();
+            _signInUI.Hide();
             _createAccountUI.Hide();
-
-            _sighInUI.InitUI(_logInProgress);
         }
 
         private void OpenSignInWindow()
         {
             _startCanvas.gameObject.SetActive(false);
 
-            _sighInUI.Show();
+            _signInUI.Show();
         }
 
         private void OpenCreateAccountWindow()
@@ -52,11 +53,6 @@ namespace UI
         {
             dataUI.Hide();
             _startCanvas.gameObject.SetActive(true);
-        }
-
-        public void ExecuteUpdate(float deltaTime)
-        {
-            _sighInUI.UpdateUI(deltaTime);
         }
     }
 }

@@ -13,26 +13,41 @@ namespace UI
         [SerializeField]
         private Canvas _startCanvas;
         [SerializeField]
-        private SignInAccountDataUI _signInUI;
+        private BaseAccountDataUI _signInUI;
         [SerializeField]
-        private CreateAccountDataUI _createAccountUI;
+        private BaseAccountDataUI _createAccountUI;
         [SerializeField]
         private Transform _connetcionProgressPlacement;
 
         public Transform ConnetcionProgressPlacement => _connetcionProgressPlacement;
 
-        public SignInAccountDataUI SignInUI => _signInUI;
+        public BaseAccountDataUI SignInUI => _signInUI;
+        public BaseAccountDataUI CreateAccountUI => _createAccountUI;
 
         public void InitView()
+        {
+            SubscribeUI();
+
+            _signInUI.Hide();
+            _createAccountUI.Hide();
+        }
+
+        private void SubscribeUI() 
         {
             _signInButton.onClick.AddListener(OpenSignInWindow);
             _createAccountButton.onClick.AddListener(OpenCreateAccountWindow);
 
             _signInUI.OnReturn += ReturnFromAccountDataUI;
             _createAccountUI.OnReturn += ReturnFromAccountDataUI;
+        }
 
-            _signInUI.Hide();
-            _createAccountUI.Hide();
+        private void UnsubscribeUI()
+        {
+            _signInButton.onClick.RemoveListener(OpenSignInWindow);
+            _createAccountButton.onClick.RemoveListener(OpenCreateAccountWindow);
+
+            _signInUI.OnReturn -= ReturnFromAccountDataUI;
+            _createAccountUI.OnReturn -= ReturnFromAccountDataUI;
         }
 
         private void OpenSignInWindow()
@@ -57,11 +72,10 @@ namespace UI
 
         private void OnDestroy()
         {
-            _signInButton.onClick.RemoveListener(OpenSignInWindow);
-            _createAccountButton.onClick.RemoveListener(OpenCreateAccountWindow);
+            _signInUI?.Dispose();
+            _createAccountUI?.Dispose();
 
-            _signInUI.OnReturn -= ReturnFromAccountDataUI;
-            _createAccountUI.OnReturn -= ReturnFromAccountDataUI;
+            UnsubscribeUI();
         }
     }
 }

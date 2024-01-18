@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Abstraction;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
-    public abstract class BaseAccountDataUI : MonoBehaviour
+    public abstract class BaseAccountDataUI : MonoBehaviour, IDisposable
     {
         [SerializeField]
         private InputField _usernameField;
@@ -18,6 +19,7 @@ namespace UI
         protected string _username;
         protected string _password;
 
+        public event Action<UserData> OnProceed;
         public event Action<BaseAccountDataUI> OnReturn;
 
         private void Start()
@@ -27,27 +29,29 @@ namespace UI
 
         protected virtual void SubscribeUI()
         {
-            _proceedButton.onClick.AddListener(AccountProceedAction);
+            _proceedButton.onClick.AddListener(Proceed);
             _returnButton.onClick.AddListener(Return);
 
             _usernameField.onValueChanged.AddListener(ChangeUsername);
             _passwordField.onValueChanged.AddListener(ChangePassword);   
         }
-
-        protected virtual void AccountProceedAction()
+        protected virtual void UnsubscribeUI()
         {
-            if (_username == null || _username == "")
-            {
-                Debug.Log("Username is null or empty");
-                return;
-            }
-            if (_password == null || _password == "")
-            {
-                Debug.Log("Password is null or empty");
-                return;
-            }
+            _proceedButton.onClick.RemoveListener(Proceed);
+            _returnButton.onClick.RemoveListener(Return);
+
+            _usernameField.onValueChanged.RemoveListener(ChangeUsername);
+            _passwordField.onValueChanged.RemoveListener(ChangePassword);
         }
-        
+
+        private void Proceed()
+        {
+            var userData = GetUserData();
+            OnProceed?.Invoke(userData);
+        }
+
+        protected abstract UserData GetUserData();
+
         private void Return()
         {
             OnReturn?.Invoke(this);
@@ -68,18 +72,9 @@ namespace UI
         public void Hide() 
             => gameObject.SetActive(false);
 
-        private void OnDestroy()
+        public void Dispose()
         {
-            OnUIDestoy();
-        }
-
-        protected virtual void OnUIDestoy() 
-        {
-            _proceedButton.onClick.RemoveListener(AccountProceedAction);
-            _returnButton.onClick.RemoveListener(Return);
-
-            _usernameField.onValueChanged.RemoveListener(ChangeUsername);
-            _passwordField.onValueChanged.RemoveListener(ChangePassword);
+            UnsubscribeUI();
         }
     }
 }

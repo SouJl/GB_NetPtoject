@@ -1,7 +1,6 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
-using PlayFab;
-using PlayFab.ClientModels;
+using Abstraction;
 
 namespace UI
 {
@@ -18,45 +17,41 @@ namespace UI
             _userEmailField.onValueChanged.AddListener(ChangeUserEmail);
         }
 
+        protected override void UnsubscribeUI()
+        {
+            base.UnsubscribeUI();
+            _userEmailField.onValueChanged.RemoveListener(ChangeUserEmail);
+        }
+
         private void ChangeUserEmail(string userEmail)
         {
             _userEmail = userEmail;
         }
 
-        protected override void AccountProceedAction()
+        protected override UserData GetUserData()
         {
-            base.AccountProceedAction();
-
+            if (_username == null || _username == "")
+            {
+                Debug.Log("Username is null or empty");
+                return null;
+            }
+            if (_password == null || _password == "")
+            {
+                Debug.Log("Password is null or empty");
+                return null;
+            }
             if (_userEmail == null || _userEmail == "")
             {
                 Debug.Log("Email is null or empty");
-                return;
+                return null;
             }
 
-            var request = new RegisterPlayFabUserRequest
+            return new UserData
             {
-                Username = _username,
+                UserName = _username,
                 Password = _password,
-                Email = _userEmail
+                UserEmail = _userEmail
             };
-
-            PlayFabClientAPI.RegisterPlayFabUser(request, OnSuccess, OnError);
-        }
-
-        private void OnSuccess(RegisterPlayFabUserResult result)
-        {
-            Debug.Log($"Account {_username} created successful");
-        }
-
-        private void OnError(PlayFabError error)
-        {
-            Debug.LogError($"Account creation failed : {error.ErrorMessage}");
-        }
-
-        protected override void OnUIDestoy()
-        {
-            base.OnUIDestoy();
-            _userEmailField.onValueChanged.RemoveListener(ChangeUserEmail);
         }
     }
 }

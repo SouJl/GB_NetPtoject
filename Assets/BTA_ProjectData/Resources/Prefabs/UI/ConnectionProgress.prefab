@@ -90,7 +90,7 @@ MonoBehaviour:
   _progressSlider: {fileID: 3999859195089211259}
   _minValue: 0
   _maxValue: 1
-  _speed: 1
+  _speed: 0.2
 --- !u!1 &3999859194140676989
 GameObject:
   m_ObjectHideFlags: 0

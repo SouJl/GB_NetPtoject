@@ -1,5 +1,4 @@
-﻿using PlayFab;
-using PlayFab.ClientModels;
+﻿using Abstraction;
 using System;
 using UnityEngine;
 
@@ -15,40 +14,29 @@ namespace UI
             base.SubscribeUI();
         }
 
-        protected override void AccountProceedAction()
+        protected override void UnsubscribeUI()
         {
-            base.AccountProceedAction();
+            base.UnsubscribeUI();
+        }
 
-            var request = new LoginWithPlayFabRequest
+        protected override UserData GetUserData()
+        {
+            if (_username == null || _username == "")
             {
-                Username = _username,
+                Debug.Log("Username is null or empty");
+                return null;
+            }
+            if (_password == null || _password == "")
+            {
+                Debug.Log("Password is null or empty");
+                return null;
+            }
+
+            return new UserData
+            {
+                UserName = _username,
                 Password = _password
             };
-
-            PlayFabClientAPI.LoginWithPlayFab(request, OnSuccess, OnError);
-
-            OnConnectionStart?.Invoke();
-        }
-
-        private void OnSuccess(LoginResult result)
-        {
-            var resultMessage = $"[{result.PlayFabId}] - Login Complete";
-            Debug.Log(resultMessage);
-
-            OnConnectionEnd?.Invoke();
-        }
-        private void OnError(PlayFabError error)
-        {
-            var resultMessage = error.GenerateErrorReport();
-
-            Debug.LogError(resultMessage);
-
-            OnConnectionEnd?.Invoke();
-        }
-
-        protected override void OnUIDestoy()
-        {
-            base.OnUIDestoy();
         }
     }
 }

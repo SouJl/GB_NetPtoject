@@ -1,5 +1,6 @@
 ﻿using Configs;
 using Enumerators;
+using MultiplayerService;
 using System;
 using UI;
 using UnityEngine;
@@ -10,6 +11,8 @@ public class MainController : IDisposable
     private readonly GameConfig _gameConfig;
     private readonly LifeCycleController _lifeCycle;
     private readonly GamePrefs _gamePrefs;
+
+    private readonly IMultiplayerService _multiplayerService;
 
     private AuthenticationMenuController _authenticationController;
     private LobbyMenuController _lobbyMenuController;
@@ -26,6 +29,8 @@ public class MainController : IDisposable
         _gamePrefs = new GamePrefs();
         _gamePrefs.OnGameStateChange += GameStateChanged;
 
+        _multiplayerService = new PlayFabMultiplayerService(_gameConfig.PlayFabTitleId);
+
         _gamePrefs.ChangeGameState(GameState.Authentication);
     }
 
@@ -40,7 +45,7 @@ public class MainController : IDisposable
                 break;
             case GameState.Authentication:
                 {
-                    _authenticationController = new AuthenticationMenuController(_placeForUi, _gameConfig, _gamePrefs);
+                    _authenticationController = new AuthenticationMenuController(_placeForUi, _gamePrefs, _multiplayerService);
                     
                     _lifeCycle.AddController(_authenticationController);
                     break;

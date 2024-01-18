@@ -12,6 +12,7 @@ public class MainController : IDisposable
     private readonly GamePrefs _gamePrefs;
 
     private AuthenticationMenuController _authenticationController;
+    private LobbyMenuController _lobbyMenuController;
 
     public MainController(
         Transform placeForUi, 
@@ -39,13 +40,16 @@ public class MainController : IDisposable
                 break;
             case GameState.Authentication:
                 {
-                    _authenticationController = new AuthenticationMenuController(_placeForUi, _gameConfig, _gamePrefs);                   
+                    _authenticationController = new AuthenticationMenuController(_placeForUi, _gameConfig, _gamePrefs);
+                    
                     _lifeCycle.AddController(_authenticationController);
-
                     break;
                 }
             case GameState.Lobby:
                 {
+                    _lobbyMenuController = new LobbyMenuController(_placeForUi, _gamePrefs);
+                    
+                    _lifeCycle.AddController(_lobbyMenuController);
                     break;
                 }
         }
@@ -53,7 +57,7 @@ public class MainController : IDisposable
 
     private void DisposeControllers()
     {
-        
+        _lifeCycle.Dispose();
     }
 
     public void Dispose()
@@ -62,5 +66,4 @@ public class MainController : IDisposable
 
         _gamePrefs.OnGameStateChange -= GameStateChanged;
     }
-
 }

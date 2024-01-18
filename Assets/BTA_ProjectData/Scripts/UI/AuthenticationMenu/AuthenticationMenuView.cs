@@ -54,5 +54,14 @@ namespace UI
             dataUI.Hide();
             _startCanvas.gameObject.SetActive(true);
         }
+
+        private void OnDestroy()
+        {
+            _signInButton.onClick.RemoveListener(OpenSignInWindow);
+            _createAccountButton.onClick.RemoveListener(OpenCreateAccountWindow);
+
+            _signInUI.OnReturn -= ReturnFromAccountDataUI;
+            _createAccountUI.OnReturn -= ReturnFromAccountDataUI;
+        }
     }
 }

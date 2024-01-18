@@ -1,5 +1,6 @@
 ﻿using Abstraction;
 using Configs;
+using Enumerators;
 using PlayFab;
 using Tools;
 using UnityEngine;
@@ -7,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace UI
 {
-    public class AuthenticationMenuController : IController, IOnUpdate
+    public class AuthenticationMenuController : BaseUIController, IOnUpdate
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/AuthenticationMenu");
 
@@ -33,6 +34,9 @@ namespace UI
         private AuthenticationMenuView LoadView(Transform placeForUI)
         {
             var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(_viewPath), placeForUI, false);
+            
+            AddGameObject(objectView);
+
             return objectView.GetComponent<AuthenticationMenuView>();
         }
 
@@ -51,12 +55,19 @@ namespace UI
         private void ConnectionEnd()
         {
             _connectionProgress.Stop();
-        }
 
+            _gamePrefs.ChangeGameState(GameState.Lobby);
+        }
 
         public void ExecuteUpdate(float deltaTime)
         {
             _connectionProgress.ExecuteUpdate(deltaTime);
+        }
+
+        protected override void OnDispose()
+        {
+            _view.SignInUI.OnConnectionStart -= ConnectionStart;
+            _view.SignInUI.OnConnectionEnd -= ConnectionEnd;
         }
     }
 }

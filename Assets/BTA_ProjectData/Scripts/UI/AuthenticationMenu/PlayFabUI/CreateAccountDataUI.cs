@@ -52,5 +52,11 @@ namespace UI
         {
             Debug.LogError($"Account creation failed : {error.ErrorMessage}");
         }
+
+        protected override void OnUIDestoy()
+        {
+            base.OnUIDestoy();
+            _userEmailField.onValueChanged.RemoveListener(ChangeUserEmail);
+        }
     }
 }

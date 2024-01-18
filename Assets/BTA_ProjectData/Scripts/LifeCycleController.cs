@@ -51,8 +51,12 @@ public class LifeCycleController : IDisposable
         for(int i =0; i < _dispoisables.Count; i++)
         {
             var entity = _dispoisables[i];
-            entity.Dispose();
+            entity?.Dispose();
         }
+
+        _dispoisables.Clear();
+        _onStarts.Clear();
+        _onUpdates.Clear();
     }
 
 }

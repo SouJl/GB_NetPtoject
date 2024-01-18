@@ -45,5 +45,10 @@ namespace UI
 
             OnConnectionEnd?.Invoke();
         }
+
+        protected override void OnUIDestoy()
+        {
+            base.OnUIDestoy();
+        }
     }
 }

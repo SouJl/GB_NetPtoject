@@ -67,5 +67,19 @@ namespace UI
             => gameObject.SetActive(true);
         public void Hide() 
             => gameObject.SetActive(false);
+
+        private void OnDestroy()
+        {
+            OnUIDestoy();
+        }
+
+        protected virtual void OnUIDestoy() 
+        {
+            _proceedButton.onClick.RemoveListener(AccountProceedAction);
+            _returnButton.onClick.RemoveListener(Return);
+
+            _usernameField.onValueChanged.RemoveListener(ChangeUsername);
+            _passwordField.onValueChanged.RemoveListener(ChangePassword);
+        }
     }
 }

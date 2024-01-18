@@ -6,9 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/BTA_ProjectData/Scenes/PlayFabScene.unity
-    guid: e60d8a87d1418e64d84176a41b8d577a
-  - enabled: 1
-    path: Assets/BTA_ProjectData/Scenes/PhotonScene.unity
-    guid: 6b5be744c55d4c842b4aff810f5f523d
+    path: Assets/BTA_ProjectData/Scenes/MainScene.unity
+    guid: c66e567b38b86d34d82b740fb7b00ad9
   m_configObjects: {}

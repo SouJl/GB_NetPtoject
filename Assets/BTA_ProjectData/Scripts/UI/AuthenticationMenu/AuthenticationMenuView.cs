@@ -1,14 +1,11 @@
+﻿using Abstraction;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
-    public class PlayFabGameInPanel : MonoBehaviour
+    public class AuthenticationMenuView : MonoBehaviour, IOnUpdate
     {
-
-        [SerializeField]
-        private string _titleId;
-
         [SerializeField]
         private Button _signInButton;
         [SerializeField]
@@ -23,7 +20,7 @@ namespace UI
         [SerializeField]
         private LogInProgressSlider _logInProgress;
 
-        private void Start()
+        public void InitView()
         {
             _signInButton.onClick.AddListener(OpenSignInWindow);
             _createAccountButton.onClick.AddListener(OpenCreateAccountWindow);
@@ -37,18 +34,17 @@ namespace UI
             _sighInUI.InitUI(_logInProgress);
         }
 
-
         private void OpenSignInWindow()
         {
             _startCanvas.gameObject.SetActive(false);
-            
+
             _sighInUI.Show();
         }
 
         private void OpenCreateAccountWindow()
         {
             _startCanvas.gameObject.SetActive(false);
-            
+
             _createAccountUI.Show();
         }
 
@@ -58,10 +54,9 @@ namespace UI
             _startCanvas.gameObject.SetActive(true);
         }
 
-        private void Update()
+        public void ExecuteUpdate(float deltaTime)
         {
-            _sighInUI.UpdateUI(Time.deltaTime);
+            _sighInUI.UpdateUI(deltaTime);
         }
     }
 }
-

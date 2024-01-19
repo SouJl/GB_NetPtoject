@@ -5,7 +5,7 @@ namespace MultiplayerService
 {
     public interface IMultiplayerService
     {
-        public event Action<string> OnLogInSucceed;
+        public event Action<UserData> OnLogInSucceed;
         public event Action<string> OnLogInError;
 
         public event Action OnCreateAccountSucceed;
@@ -15,7 +15,7 @@ namespace MultiplayerService
         public event Action<string> OnGetAccountFailure;
 
         public void LogIn(UserData data);
-        public void LogIn(string userId);
+        public void LogIn(string userId, bool needCreation);
 
         public void CreateAccount(UserData data);
 

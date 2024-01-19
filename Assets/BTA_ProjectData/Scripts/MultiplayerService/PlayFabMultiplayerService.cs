@@ -8,7 +8,7 @@ namespace MultiplayerService
 {
     public class PlayFabMultiplayerService : IMultiplayerService
     {
-        public event Action<string> OnLogInSucceed;
+        public event Action<UserData> OnLogInSucceed;
         public event Action<string> OnLogInError;
 
         public event Action OnCreateAccountSucceed;
@@ -16,6 +16,8 @@ namespace MultiplayerService
 
         public event Action<UserData> OnGetAccountSuccess;
         public event Action<string> OnGetAccountFailure;
+
+        private UserData _tempUserData;
 
         public PlayFabMultiplayerService(string titleId)
         {
@@ -31,7 +33,7 @@ namespace MultiplayerService
             {
                 Username = data.UserName,
                 Password = data.Password,
-                Email = data.UserEmail
+                Email = data.UserEmail,
             };
 
             PlayFabClientAPI.RegisterPlayFabUser(request, CreateAccountSuccess, CreateAccountError);
@@ -50,20 +52,23 @@ namespace MultiplayerService
 
         public void LogIn(UserData data)
         {
+            _tempUserData = data;
+
             var request = new LoginWithPlayFabRequest
             {
                 Username = data.UserName,
-                Password = data.Password,
+                Password = data.Password
             };
 
             PlayFabClientAPI.LoginWithPlayFab(request, LogInSuccess, LogInError);
         }
 
-        public void LogIn(string userId)
+        public void LogIn(string userId, bool needCreation)
         {
             var request = new LoginWithCustomIDRequest
             {
                 CustomId = userId,
+                CreateAccount = needCreation,
             };
 
             PlayFabClientAPI.LoginWithCustomID(request, LogInSuccess, LogInError);
@@ -71,11 +76,25 @@ namespace MultiplayerService
 
         private void LogInSuccess(LoginResult result)
         {
-            OnLogInSucceed?.Invoke(result.PlayFabId);
+            if(_tempUserData != null)
+            {
+                var userData = new UserData
+                {
+                    Id = result.PlayFabId,
+                    UserName = _tempUserData.UserName,
+                    Password = _tempUserData.Password
+                };
+
+                OnLogInSucceed?.Invoke(userData);
+
+                _tempUserData = null;
+            } 
         }
 
         private void LogInError(PlayFabError error)
         {
+            _tempUserData = null;
+
             var errorMessage = error.GenerateErrorReport();
             OnLogInError?.Invoke(errorMessage);
         }

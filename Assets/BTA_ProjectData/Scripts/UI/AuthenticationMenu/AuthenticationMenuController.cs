@@ -26,7 +26,7 @@ namespace UI
             _multiplayerService = multiplayerService;
 
             _view = LoadView(placeForUI);
-            _view.InitView();
+            _view.InitView(_gamePrefs.IsUserDataExist, _gamePrefs.UserName);
             
             _connectionProgress = new ConnectionProgressController(_view.ConnetcionProgressPlacement);
 
@@ -44,6 +44,9 @@ namespace UI
 
         private void Subscribe()
         {
+            _view.OnEnterTheLobby += EtnterUserInLobby;
+            _view.OnLogOut += LogOutUser;
+
             _view.SignInUI.OnProceed += LogInToMultiplayerService;
             _multiplayerService.OnLogInSucceed += LogInProccessEndOnSucceed;
             _multiplayerService.OnLogInError += LogInProccessEndError;
@@ -52,9 +55,12 @@ namespace UI
             _multiplayerService.OnCreateAccountSucceed += CrateAccountEndOnSucceed;
             _multiplayerService.OnCreateAccountError += CrateAccountEndError;
         }
-      
+
         private void Unsubscribe()
         {
+            _view.OnEnterTheLobby -= EtnterUserInLobby;
+            _view.OnLogOut -= LogOutUser;
+
             _view.SignInUI.OnProceed -= LogInToMultiplayerService;
             _multiplayerService.OnLogInSucceed -= LogInProccessEndOnSucceed;
             _multiplayerService.OnLogInError -= LogInProccessEndError;
@@ -62,6 +68,20 @@ namespace UI
             _view.CreateAccountUI.OnProceed -= CreateAcountInMultiplayerService;    
             _multiplayerService.OnCreateAccountSucceed -= CrateAccountEndOnSucceed;
             _multiplayerService.OnCreateAccountError -= CrateAccountEndError;
+        }
+
+        private void EtnterUserInLobby()
+        {
+            _multiplayerService.LogIn(_gamePrefs.GetUserData());
+
+            _connectionProgress.Start();
+        }
+
+        private void LogOutUser()
+        {
+            _gamePrefs.DeleteData();
+
+            _gamePrefs.ChangeGameState(GameState.Authentication);
         }
 
         #region LogIn
@@ -73,11 +93,16 @@ namespace UI
             _multiplayerService.LogIn(data);
         }
 
-        private void LogInProccessEndOnSucceed(string playfabId)
+        private void LogInProccessEndOnSucceed(UserData data)
         {
             _connectionProgress.Stop();
 
-            _gamePrefs.SetUserId(playfabId);
+            _gamePrefs.SetUserData(new UserData 
+            {
+                Id = data.Id,
+                UserName = data.UserName,
+                Password = data.Password
+            });
 
             _gamePrefs.ChangeGameState(GameState.Lobby);
         }

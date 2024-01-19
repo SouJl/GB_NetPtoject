@@ -31,7 +31,7 @@ namespace UI
 
             Subscribe();
 
-            LoadUserData(_gamePrefs.GetUserId());
+            LoadUserData(_gamePrefs.UserId);
         }
 
         private void Subscribe()

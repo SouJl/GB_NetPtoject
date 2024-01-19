@@ -2,15 +2,16 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace UI
 {
     public abstract class BaseAccountDataUI : MonoBehaviour, IDisposable
     {
         [SerializeField]
-        private InputField _usernameField;
+        private TMP_InputField _usernameField;
         [SerializeField]
-        private InputField _passwordField;
+        private TMP_InputField _passwordField;
         [SerializeField]
         private Button _proceedButton;
         [SerializeField]

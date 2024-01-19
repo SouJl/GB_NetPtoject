@@ -1,13 +1,13 @@
-﻿using UnityEngine.UI;
-using UnityEngine;
+﻿using UnityEngine;
 using Abstraction;
+using TMPro;
 
 namespace UI
 {
     public class CreateAccountDataUI : BaseAccountDataUI
     {
         [SerializeField]
-        private InputField _userEmailField;
+        private TMP_InputField _userEmailField;
 
         private string _userEmail;
 

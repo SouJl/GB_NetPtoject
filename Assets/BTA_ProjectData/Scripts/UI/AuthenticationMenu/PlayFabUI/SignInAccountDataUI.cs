@@ -1,14 +1,10 @@
 ﻿using Abstraction;
-using System;
 using UnityEngine;
 
 namespace UI
 {
     public class SignInAccountDataUI : BaseAccountDataUI
     {
-        public event Action OnConnectionStart;
-        public event Action OnConnectionEnd;
-
         protected override void SubscribeUI()
         {
             base.SubscribeUI();

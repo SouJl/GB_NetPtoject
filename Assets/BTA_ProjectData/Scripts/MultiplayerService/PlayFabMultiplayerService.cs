@@ -8,13 +8,11 @@ namespace MultiplayerService
 {
     public class PlayFabMultiplayerService : IMultiplayerService
     {
-        public event Action OnLogInInitialize;
         public event Action<string> OnLogInSucceed;
-        public event Action OnLogInError;
+        public event Action<string> OnLogInError;
 
-        public event Action OnCreateAccountInitialize;
         public event Action OnCreateAccountSucceed;
-        public event Action OnCreateAccountError;
+        public event Action<string> OnCreateAccountError;
 
         public event Action<UserData> OnGetAccountSuccess;
         public event Action<string> OnGetAccountFailure;
@@ -37,8 +35,6 @@ namespace MultiplayerService
             };
 
             PlayFabClientAPI.RegisterPlayFabUser(request, CreateAccountSuccess, CreateAccountError);
-            
-            OnCreateAccountInitialize?.Invoke();
         }
 
         private void CreateAccountSuccess(RegisterPlayFabUserResult result)
@@ -48,7 +44,8 @@ namespace MultiplayerService
 
         private void CreateAccountError(PlayFabError error)
         {
-            OnCreateAccountError?.Invoke();
+            var errorMessage = error.GenerateErrorReport();
+            OnCreateAccountError?.Invoke(errorMessage);
         }
 
         public void LogIn(UserData data)
@@ -60,8 +57,16 @@ namespace MultiplayerService
             };
 
             PlayFabClientAPI.LoginWithPlayFab(request, LogInSuccess, LogInError);
+        }
 
-            OnLogInInitialize?.Invoke();
+        public void LogIn(string userId)
+        {
+            var request = new LoginWithCustomIDRequest
+            {
+                CustomId = userId,
+            };
+
+            PlayFabClientAPI.LoginWithCustomID(request, LogInSuccess, LogInError);
         }
 
         private void LogInSuccess(LoginResult result)
@@ -71,13 +76,10 @@ namespace MultiplayerService
 
         private void LogInError(PlayFabError error)
         {
-            OnLogInError?.Invoke();
+            var errorMessage = error.GenerateErrorReport();
+            OnLogInError?.Invoke(errorMessage);
         }
 
-        public void LogIn(string userId)
-        {
-            OnLogInInitialize?.Invoke();
-        }
 
         public void GetAccountInfo(string userId)
         {

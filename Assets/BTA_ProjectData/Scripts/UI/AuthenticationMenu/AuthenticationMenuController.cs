@@ -45,12 +45,10 @@ namespace UI
         private void Subscribe()
         {
             _view.SignInUI.OnProceed += LogInToMultiplayerService;
-            _multiplayerService.OnLogInInitialize += LogInProccessStart;
             _multiplayerService.OnLogInSucceed += LogInProccessEndOnSucceed;
             _multiplayerService.OnLogInError += LogInProccessEndError;
 
             _view.CreateAccountUI.OnProceed += CreateAcountInMultiplayerService;
-            _multiplayerService.OnCreateAccountInitialize += CrateAccountStart;
             _multiplayerService.OnCreateAccountSucceed += CrateAccountEndOnSucceed;
             _multiplayerService.OnCreateAccountError += CrateAccountEndError;
         }
@@ -58,12 +56,10 @@ namespace UI
         private void Unsubscribe()
         {
             _view.SignInUI.OnProceed -= LogInToMultiplayerService;
-            _multiplayerService.OnLogInInitialize -= LogInProccessStart;
             _multiplayerService.OnLogInSucceed -= LogInProccessEndOnSucceed;
             _multiplayerService.OnLogInError -= LogInProccessEndError;
 
-            _view.CreateAccountUI.OnProceed -= CreateAcountInMultiplayerService;         
-            _multiplayerService.OnCreateAccountInitialize -= CrateAccountStart;
+            _view.CreateAccountUI.OnProceed -= CreateAcountInMultiplayerService;    
             _multiplayerService.OnCreateAccountSucceed -= CrateAccountEndOnSucceed;
             _multiplayerService.OnCreateAccountError -= CrateAccountEndError;
         }
@@ -72,12 +68,9 @@ namespace UI
 
         private void LogInToMultiplayerService(UserData data)
         {
-            _multiplayerService.LogIn(data);
-        }
-
-        private void LogInProccessStart()
-        {
             _connectionProgress.Start();
+
+            _multiplayerService.LogIn(data);
         }
 
         private void LogInProccessEndOnSucceed(string playfabId)
@@ -89,9 +82,11 @@ namespace UI
             _gamePrefs.ChangeGameState(GameState.Lobby);
         }
 
-        private void LogInProccessEndError()
+        private void LogInProccessEndError(string errorMessage)
         {
             _connectionProgress.Stop();
+
+            Debug.LogError($"Get error in LogIn proccess: {errorMessage}");
         }
 
         #endregion
@@ -100,12 +95,9 @@ namespace UI
 
         private void CreateAcountInMultiplayerService(UserData data)
         {
-            _multiplayerService.CreateAccount(data);
-        }
-
-        private void CrateAccountStart()
-        {
             _connectionProgress.Start();
+
+            _multiplayerService.CreateAccount(data);
         }
 
         private void CrateAccountEndOnSucceed()
@@ -113,9 +105,11 @@ namespace UI
             _connectionProgress.Stop();
         }
 
-        private void CrateAccountEndError()
+        private void CrateAccountEndError(string errorMessage)
         {
             _connectionProgress.Stop();
+
+            Debug.LogError($"Get error on account creation: {errorMessage}");
         }
 
         #endregion

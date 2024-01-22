@@ -9,13 +9,17 @@ namespace UI
         [SerializeField]
         private GameObject _userDataContainer;
         [SerializeField]
-        private Transform _connetcionProgressPlacement;
+        private Transform _loadUserInfoProgressPlacement;
+        [SerializeField]
+        private Transform _loadCatalogItemsProgressPlacement;
         [SerializeField]
         private TMP_Text _userName;
         [SerializeField]
         private TMP_Text _userCreatedTime;
 
-        public Transform ConnetcionProgressPlacement => _connetcionProgressPlacement;
+        public Transform LoadUserInfoPlacement => _loadUserInfoProgressPlacement;
+
+        public Transform LoadCatalogItemsProgressPlacement => _loadCatalogItemsProgressPlacement;
 
         public void InitUI()
         {

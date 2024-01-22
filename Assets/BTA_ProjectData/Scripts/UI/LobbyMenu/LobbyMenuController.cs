@@ -16,7 +16,8 @@ namespace UI
         private readonly GamePrefs _gamePrefs;
         private readonly IMultiplayerService _multiplayerService;
 
-        private ConnectionProgressController _connectionProgress;
+        private ConnectionProgressController _loadUserInfoProgress;
+        private ConnectionProgressController _loadCatalogItemsProgress;
 
         public LobbyMenuController(
             Transform placeForUI, 
@@ -29,26 +30,30 @@ namespace UI
             _gamePrefs = gamePrefs;
             _multiplayerService = multiplayerService;
 
-            _connectionProgress = new ConnectionProgressController(_view.ConnetcionProgressPlacement);
-
+            _loadUserInfoProgress 
+                = new ConnectionProgressController(_view.LoadUserInfoPlacement);
+            _loadCatalogItemsProgress 
+                = new ConnectionProgressController(_view.LoadCatalogItemsProgressPlacement);
             Subscribe();
 
             LoadUserData(_gamePrefs.UserId);
+            LoadAvailableItems();
         }
 
         private void Subscribe()
         {
             _multiplayerService.OnGetAccountSuccess += GetAccountSuccessed;
-            _multiplayerService.OnGetAccountFailure += GetAccountFailed;
-
             _multiplayerService.OnGetCatalogItemsSuccess += GetCatalogItems;
+
+            _multiplayerService.OnError += GetDataFailed;
         }
 
         private void Unsubscribe()
         {
-            _multiplayerService.OnGetAccountSuccess += GetAccountSuccessed;
-            _multiplayerService.OnGetAccountFailure += GetAccountFailed;
+            _multiplayerService.OnGetAccountSuccess -= GetAccountSuccessed;
             _multiplayerService.OnGetCatalogItemsSuccess -= GetCatalogItems;
+
+            _multiplayerService.OnError -= GetDataFailed;
         }
 
         private LobbyMenuView LoadView(Transform placeForUI)
@@ -64,16 +69,22 @@ namespace UI
         {
             _multiplayerService.GetAccountInfo(userId);
 
-            _connectionProgress.Start();
+            _loadUserInfoProgress.Start();
         }
+
+        private void LoadAvailableItems()
+        {
+            _multiplayerService.GetCatalogItems();
+
+            _loadCatalogItemsProgress.Start();
+        }
+
 
         private void GetAccountSuccessed(UserData userData)
         {
-            _connectionProgress.Stop();
+            _loadUserInfoProgress.Stop();
 
             _view.ShowUserData();
-
-            _multiplayerService.GetAvilableUserItems(userData.Id);
 
             UpdateUserDataUI(userData);
         }
@@ -84,11 +95,11 @@ namespace UI
             _view.SetUserCreatedTime(userData.CreatedTime.ToString());
         }
 
-        private void GetAccountFailed(string errorMessage)
+        private void GetDataFailed(string errorMessage)
         {
             Debug.LogError($"Something went wrong: {errorMessage}");
 
-            _connectionProgress.Stop();
+            _loadUserInfoProgress.Stop();
 
             _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication);
         }
@@ -96,10 +107,13 @@ namespace UI
 
         private void GetCatalogItems(IList<CatalogItem> items)
         {
+
             for(int i =0; i < items.Count; i++)
             {
                 Debug.Log($"ItemId: {items[i].ItemId}");
             }
+
+            _loadCatalogItemsProgress.Stop();
         }
 
 
@@ -112,7 +126,7 @@ namespace UI
 
         public void ExecuteUpdate(float deltaTime)
         {
-            _connectionProgress.ExecuteUpdate(deltaTime);
+            _loadUserInfoProgress.ExecuteUpdate(deltaTime);
         }
     }
 }

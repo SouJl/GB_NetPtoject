@@ -49,11 +49,11 @@ namespace UI
 
             _view.SignInUI.OnProceed += LogInToMultiplayerService;
             _multiplayerService.OnLogInSucceed += LogInProccessEndOnSucceed;
-            _multiplayerService.OnLogInError += LogInProccessEndError;
+            _multiplayerService.OnError += LogInProccessEndError;
 
             _view.CreateAccountUI.OnProceed += CreateAcountInMultiplayerService;
             _multiplayerService.OnCreateAccountSucceed += CrateAccountEndOnSucceed;
-            _multiplayerService.OnCreateAccountError += CrateAccountEndError;
+            _multiplayerService.OnError += CrateAccountEndError;
         }
 
         private void Unsubscribe()
@@ -63,11 +63,11 @@ namespace UI
 
             _view.SignInUI.OnProceed -= LogInToMultiplayerService;
             _multiplayerService.OnLogInSucceed -= LogInProccessEndOnSucceed;
-            _multiplayerService.OnLogInError -= LogInProccessEndError;
+            _multiplayerService.OnError -= LogInProccessEndError;
 
             _view.CreateAccountUI.OnProceed -= CreateAcountInMultiplayerService;    
             _multiplayerService.OnCreateAccountSucceed -= CrateAccountEndOnSucceed;
-            _multiplayerService.OnCreateAccountError -= CrateAccountEndError;
+            _multiplayerService.OnError -= CrateAccountEndError;
         }
 
         private void EtnterUserInLobby()

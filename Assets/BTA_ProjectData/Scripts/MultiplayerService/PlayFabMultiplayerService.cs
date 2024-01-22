@@ -14,13 +14,11 @@ namespace MultiplayerService
         private readonly string _mainCatalogVersion;
 
         public event Action<UserData> OnLogInSucceed;
-        public event Action<string> OnLogInError;
-
         public event Action OnCreateAccountSucceed;
-        public event Action<string> OnCreateAccountError;
-
         public event Action<UserData> OnGetAccountSuccess;
-        public event Action<string> OnGetAccountFailure;
+        public event Action<IList<CatalogItem>> OnGetCatalogItemsSuccess;
+
+        public event Action<string> OnError;
 
         private UserData _tempUserData;
 
@@ -44,18 +42,12 @@ namespace MultiplayerService
                 Email = data.UserEmail,
             };
 
-            PlayFabClientAPI.RegisterPlayFabUser(request, CreateAccountSuccess, CreateAccountError);
+            PlayFabClientAPI.RegisterPlayFabUser(request, CreateAccountSuccess, OnGetError);
         }
 
         private void CreateAccountSuccess(RegisterPlayFabUserResult result)
         {
             OnCreateAccountSucceed?.Invoke();
-        }
-
-        private void CreateAccountError(PlayFabError error)
-        {
-            var errorMessage = error.GenerateErrorReport();
-            OnCreateAccountError?.Invoke(errorMessage);
         }
 
         public void LogIn(UserData data)
@@ -68,18 +60,7 @@ namespace MultiplayerService
                 Password = data.Password
             };
 
-            PlayFabClientAPI.LoginWithPlayFab(request, LogInSuccess, LogInError);
-        }
-
-        public void LogIn(string userId, bool needCreation)
-        {
-            var request = new LoginWithCustomIDRequest
-            {
-                CustomId = userId,
-                CreateAccount = needCreation,
-            };
-
-            PlayFabClientAPI.LoginWithCustomID(request, LogInSuccess, LogInError);
+            PlayFabClientAPI.LoginWithPlayFab(request, LogInSuccess, OnGetError);
         }
 
         private void LogInSuccess(LoginResult result)
@@ -99,15 +80,6 @@ namespace MultiplayerService
             } 
         }
 
-        private void LogInError(PlayFabError error)
-        {
-            _tempUserData = null;
-
-            var errorMessage = error.GenerateErrorReport();
-            OnLogInError?.Invoke(errorMessage);
-        }
-
-
         public void GetAccountInfo(string userId)
         {
             var request = new GetAccountInfoRequest
@@ -115,7 +87,7 @@ namespace MultiplayerService
                 PlayFabId = userId
             };
 
-            PlayFabClientAPI.GetAccountInfo(request, GetAccountSuccess, GetAccountFailure);
+            PlayFabClientAPI.GetAccountInfo(request, GetAccountSuccess, OnGetError);
         }
 
 
@@ -131,29 +103,16 @@ namespace MultiplayerService
             OnGetAccountSuccess?.Invoke(userData);
         }
 
-        private void GetAccountFailure(PlayFabError error)
+        public void GetCatalogItems()
         {
-            var errorMessage = error.GenerateErrorReport();
-            OnGetAccountFailure?.Invoke(errorMessage);
-        }
-
-        public void GetAvilableUserItems(string playfabId)
-        {
-            var authContex = new PlayFabAuthenticationContext
-            {
-                PlayFabId = playfabId
-            };
-
             var request = new GetCatalogItemsRequest
             {
-                 CatalogVersion = _mainCatalogVersion,
+                CatalogVersion = _mainCatalogVersion
             };
 
-            PlayFabClientAPI.GetCatalogItems(request, GetCatalogItemsSuccess, GetCatalogFailure);
+            PlayFabClientAPI.GetCatalogItems(request, GetCatalogItemsSuccess, OnGetError);
         }
 
-        public event Action<IList<CatalogItem>> OnGetCatalogItemsSuccess;
-        public event Action<string> OnGetCatalogFailure;
         private void GetCatalogItemsSuccess(GetCatalogItemsResult result)
         {
             Debug.Log($"Catalog was loaded successfully!");
@@ -169,10 +128,14 @@ namespace MultiplayerService
             OnGetCatalogItemsSuccess?.Invoke(catalogItems);
         }
 
-        private void GetCatalogFailure(PlayFabError error)
+
+        private void OnGetError(PlayFabError error)
         {
+            _tempUserData = null;
+
             var errorMessage = error.GenerateErrorReport();
-            OnGetCatalogFailure?.Invoke(errorMessage);
-        }  
+            OnError?.Invoke(errorMessage);
+        }
+
     }
 }

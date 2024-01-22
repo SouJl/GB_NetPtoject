@@ -2,12 +2,17 @@
 using System;
 using PlayFab;
 using PlayFab.ClientModels;
-
+using Configs;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace MultiplayerService
 {
     public class PlayFabMultiplayerService : IMultiplayerService
     {
+        private readonly string _titleId;
+        private readonly string _mainCatalogVersion;
+
         public event Action<UserData> OnLogInSucceed;
         public event Action<string> OnLogInError;
 
@@ -19,11 +24,14 @@ namespace MultiplayerService
 
         private UserData _tempUserData;
 
-        public PlayFabMultiplayerService(string titleId)
+        public PlayFabMultiplayerService(GameConfig gameConfig)
         {
+            _titleId = gameConfig.PlayFabTitleId;
+            _mainCatalogVersion = gameConfig.ItemsInfoConfig.CatalogVersion;
+
             if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
             {
-                PlayFabSettings.staticSettings.TitleId = titleId;
+                PlayFabSettings.staticSettings.TitleId = _titleId;
             }
         }
 
@@ -115,6 +123,7 @@ namespace MultiplayerService
         {
             var userData = new UserData
             {
+                Id = result.AccountInfo.PlayFabId,
                 UserName = result.AccountInfo.Username,
                 CreatedTime = result.AccountInfo.Created
             };
@@ -127,5 +136,43 @@ namespace MultiplayerService
             var errorMessage = error.GenerateErrorReport();
             OnGetAccountFailure?.Invoke(errorMessage);
         }
+
+        public void GetAvilableUserItems(string playfabId)
+        {
+            var authContex = new PlayFabAuthenticationContext
+            {
+                PlayFabId = playfabId
+            };
+
+            var request = new GetCatalogItemsRequest
+            {
+                 CatalogVersion = _mainCatalogVersion,
+            };
+
+            PlayFabClientAPI.GetCatalogItems(request, GetCatalogItemsSuccess, GetCatalogFailure);
+        }
+
+        public event Action<IList<CatalogItem>> OnGetCatalogItemsSuccess;
+        public event Action<string> OnGetCatalogFailure;
+        private void GetCatalogItemsSuccess(GetCatalogItemsResult result)
+        {
+            Debug.Log($"Catalog was loaded successfully!");
+
+            var catalogItems = new List<CatalogItem>();
+
+            for(int i =0; i < result.Catalog.Count; i++)
+            {
+                var item = result.Catalog[i];
+                catalogItems.Add(item);
+            }
+
+            OnGetCatalogItemsSuccess?.Invoke(catalogItems);
+        }
+
+        private void GetCatalogFailure(PlayFabError error)
+        {
+            var errorMessage = error.GenerateErrorReport();
+            OnGetCatalogFailure?.Invoke(errorMessage);
+        }  
     }
 }

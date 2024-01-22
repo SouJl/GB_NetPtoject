@@ -29,7 +29,7 @@ public class MainController : IDisposable
         _gamePrefs = new GamePrefs();
         _gamePrefs.OnGameStateChange += GameStateChanged;
 
-        _multiplayerService = new PlayFabMultiplayerService(_gameConfig.PlayFabTitleId);
+        _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
 
         _gamePrefs.ChangeGameState(GameState.Authentication);
     }

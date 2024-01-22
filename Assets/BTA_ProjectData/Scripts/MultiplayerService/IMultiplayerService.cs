@@ -1,5 +1,7 @@
 ﻿using Abstraction;
+using PlayFab.ClientModels;
 using System;
+using System.Collections.Generic;
 
 namespace MultiplayerService
 {
@@ -14,11 +16,15 @@ namespace MultiplayerService
         public event Action<UserData> OnGetAccountSuccess;
         public event Action<string> OnGetAccountFailure;
 
+        public event Action<IList<CatalogItem>> OnGetCatalogItemsSuccess;
+
         public void LogIn(UserData data);
         public void LogIn(string userId, bool needCreation);
 
         public void CreateAccount(UserData data);
 
         public void GetAccountInfo(string userId);
+
+        public void GetAvilableUserItems(string playfabId);
     }
 }

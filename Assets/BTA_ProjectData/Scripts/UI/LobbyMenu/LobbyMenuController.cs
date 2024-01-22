@@ -1,5 +1,7 @@
 ﻿using Abstraction;
 using MultiplayerService;
+using PlayFab.ClientModels;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -38,12 +40,15 @@ namespace UI
         {
             _multiplayerService.OnGetAccountSuccess += GetAccountSuccessed;
             _multiplayerService.OnGetAccountFailure += GetAccountFailed;
+
+            _multiplayerService.OnGetCatalogItemsSuccess += GetCatalogItems;
         }
 
         private void Unsubscribe()
         {
             _multiplayerService.OnGetAccountSuccess += GetAccountSuccessed;
             _multiplayerService.OnGetAccountFailure += GetAccountFailed;
+            _multiplayerService.OnGetCatalogItemsSuccess -= GetCatalogItems;
         }
 
         private LobbyMenuView LoadView(Transform placeForUI)
@@ -67,6 +72,9 @@ namespace UI
             _connectionProgress.Stop();
 
             _view.ShowUserData();
+
+            _multiplayerService.GetAvilableUserItems(userData.Id);
+
             UpdateUserDataUI(userData);
         }
 
@@ -84,6 +92,16 @@ namespace UI
 
             _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication);
         }
+
+
+        private void GetCatalogItems(IList<CatalogItem> items)
+        {
+            for(int i =0; i < items.Count; i++)
+            {
+                Debug.Log($"ItemId: {items[i].ItemId}");
+            }
+        }
+
 
         protected override void OnDispose()
         {

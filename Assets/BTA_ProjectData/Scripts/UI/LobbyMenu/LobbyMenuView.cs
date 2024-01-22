@@ -16,15 +16,21 @@ namespace UI
         private TMP_Text _userName;
         [SerializeField]
         private TMP_Text _userCreatedTime;
+        [SerializeField]
+        private ItemsContainerUI _itemsContainer;
 
         public Transform LoadUserInfoPlacement => _loadUserInfoProgressPlacement;
 
         public Transform LoadCatalogItemsProgressPlacement => _loadCatalogItemsProgressPlacement;
 
+        public ItemsContainerUI ItemsContainer => _itemsContainer;
+
         public void InitUI()
         {
             _userName.text = "";
             _userCreatedTime.text = "";
+
+            _itemsContainer.InitUI();
 
             HideUserData();
         }

@@ -14,10 +14,10 @@ namespace Configs
         [SerializeField] private List<ItemInfo> _weaponItemsInfoCollection;
 
         public string CatalogVersion => _catalogVersion;
-        public IList<ItemInfo> ConsumableItemsInfoCollection => _consumableItemsInfoCollection;
-        public IList<ItemInfo> AmmoItemsInfoCollection => _ammoItemsInfoCollection;
-        public IList<ItemInfo> ShieldItemsInfoCollection => _shieldItemsInfoCollection;
-        public IList<ItemInfo> WeaponItemsInfoCollection => _weaponItemsInfoCollection;
+        public List<ItemInfo> ConsumableItemsInfoCollection => _consumableItemsInfoCollection;
+        public List<ItemInfo> AmmoItemsInfoCollection => _ammoItemsInfoCollection;
+        public List<ItemInfo> ShieldItemsInfoCollection => _shieldItemsInfoCollection;
+        public List<ItemInfo> WeaponItemsInfoCollection => _weaponItemsInfoCollection;
        
     }
 }

@@ -6,5 +6,6 @@ namespace Configs
     public class GameConfig : ScriptableObject
     {
         [field: SerializeField] public string PlayFabTitleId { get; private set; }
+        [field: SerializeField] public ItemsInfoConfig ItemsInfoConfig { get; private set; }
     }
 }

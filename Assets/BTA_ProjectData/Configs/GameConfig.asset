@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e675ddd47db2b34889b094bd1143b36, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  <_PlayFabTitleId>k__BackingField: C7257
+  <PlayFabTitleId>k__BackingField: C7257
+  <ItemsInfoConfig>k__BackingField: {fileID: 11400000, guid: 669168852ab4714418aaabbd8ce0314c, type: 2}

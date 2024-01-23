@@ -13,20 +13,19 @@ namespace UI
 
         private string _itemId;
 
-        public string ItemId => _itemId;
+        public GameObject SelfGameObject => gameObject;
 
-        public void InitUI()
+
+        public void InitUI(string name, Sprite icon)
         {
-            _itemName.text = "";
-
-            Hide();
+            _itemName.text = name;
+            _itemIcon.sprite = icon;
         }
 
-        public void SetItemUI(string itemId, string name, Sprite iconSprite)
+        public void DeinintUi()
         {
-            _itemId = itemId;
-            _itemName.text = name;
-            _itemIcon.sprite = iconSprite;
+            _itemName.text = null;
+            _itemIcon.sprite = null;
         }
 
         public void Show()

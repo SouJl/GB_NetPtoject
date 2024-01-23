@@ -30,8 +30,6 @@ namespace UI
             _userName.text = "";
             _userCreatedTime.text = "";
 
-            _itemsContainer.InitUI();
-
             HideUserData();
         }
 

@@ -11,12 +11,11 @@ namespace MultiplayerService
     public class PlayFabMultiplayerService : IMultiplayerService
     {
         private readonly string _titleId;
-        private readonly string _mainCatalogVersion;
 
         public event Action<UserData> OnLogInSucceed;
         public event Action OnCreateAccountSucceed;
         public event Action<UserData> OnGetAccountSuccess;
-        public event Action<IList<CatalogItem>> OnGetCatalogItemsSuccess;
+        public event Action<List<CatalogItem>> OnGetCatalogItemsSuccess;
 
         public event Action<string> OnError;
 
@@ -25,7 +24,6 @@ namespace MultiplayerService
         public PlayFabMultiplayerService(GameConfig gameConfig)
         {
             _titleId = gameConfig.PlayFabTitleId;
-            _mainCatalogVersion = gameConfig.ItemsInfoConfig.CatalogVersion;
 
             if (string.IsNullOrEmpty(PlayFabSettings.staticSettings.TitleId))
             {
@@ -103,11 +101,11 @@ namespace MultiplayerService
             OnGetAccountSuccess?.Invoke(userData);
         }
 
-        public void GetCatalogItems()
+        public void GetCatalogItems(string catalogId)
         {
             var request = new GetCatalogItemsRequest
             {
-                CatalogVersion = _mainCatalogVersion
+                CatalogVersion = catalogId
             };
 
             PlayFabClientAPI.GetCatalogItems(request, GetCatalogItemsSuccess, OnGetError);

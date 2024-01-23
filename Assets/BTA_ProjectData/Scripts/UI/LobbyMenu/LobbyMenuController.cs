@@ -1,8 +1,6 @@
 ﻿using Abstraction;
 using Configs;
 using MultiplayerService;
-using PlayFab.ClientModels;
-using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -19,7 +17,8 @@ namespace UI
         private readonly IMultiplayerService _multiplayerService;
 
         private ConnectionProgressController _loadUserInfoProgress;
-        private ConnectionProgressController _loadCatalogItemsProgress;
+
+        private ItemsContainerController _itemsContainerController;
 
         public LobbyMenuController(
             Transform placeForUI, 
@@ -37,18 +36,22 @@ namespace UI
 
             _loadUserInfoProgress 
                 = new ConnectionProgressController(_view.LoadUserInfoPlacement);
-            _loadCatalogItemsProgress 
-                = new ConnectionProgressController(_view.LoadCatalogItemsProgressPlacement);
+
+            _itemsContainerController 
+                = new ItemsContainerController(
+                    _gameConfig.ItemsInfoConfig, 
+                    _view.ItemsContainer, 
+                    _view.LoadCatalogItemsProgressPlacement, 
+                    multiplayerService);
+
             Subscribe();
 
             LoadUserData(_gamePrefs.UserId);
-            LoadAvailableItems();
         }
 
         private void Subscribe()
         {
             _multiplayerService.OnGetAccountSuccess += GetAccountSuccessed;
-            _multiplayerService.OnGetCatalogItemsSuccess += GetCatalogItems;
 
             _multiplayerService.OnError += GetDataFailed;
         }
@@ -56,8 +59,6 @@ namespace UI
         private void Unsubscribe()
         {
             _multiplayerService.OnGetAccountSuccess -= GetAccountSuccessed;
-            _multiplayerService.OnGetCatalogItemsSuccess -= GetCatalogItems;
-
             _multiplayerService.OnError -= GetDataFailed;
         }
 
@@ -76,14 +77,6 @@ namespace UI
 
             _loadUserInfoProgress.Start();
         }
-
-        private void LoadAvailableItems()
-        {
-            _multiplayerService.GetCatalogItems();
-
-            _loadCatalogItemsProgress.Start();
-        }
-
 
         private void GetAccountSuccessed(UserData userData)
         {
@@ -105,76 +98,15 @@ namespace UI
             Debug.LogError($"Something went wrong: {errorMessage}");
 
             _loadUserInfoProgress.Stop();
-            _loadCatalogItemsProgress.Stop();
 
             _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication);
-        }
-
-
-        private void GetCatalogItems(IList<CatalogItem> items)
-        {
-
-            for(int i =0; i < items.Count; i++)
-            {
-                var itemInfo = GetItemInfo(items[i].ItemId);
-                
-                if (itemInfo == null)
-                    continue;
-
-                _view.ItemsContainer.AddItem(
-                    itemInfo.ItemId, 
-                    items[i].DisplayName, 
-                    itemInfo.ItemIcon);
-            }
-
-            _view.ItemsContainer.Show();
-
-            _loadCatalogItemsProgress.Stop();
-        }
-
-        private ItemInfo GetItemInfo(string itemId)
-        {
-            var itemInfoConfigs = _gameConfig.ItemsInfoConfig;
-
-            for(int i =0; i< itemInfoConfigs.WeaponItemsInfoCollection.Count; i++)
-            {
-                var item = itemInfoConfigs.WeaponItemsInfoCollection[i];
-                if(item.ItemId.Equals(itemId))
-                {
-                    return item;
-                }
-            }
-            for (int i = 0; i < itemInfoConfigs.AmmoItemsInfoCollection.Count; i++)
-            {
-                var item = itemInfoConfigs.AmmoItemsInfoCollection[i];
-                if (item.ItemId.Equals(itemId))
-                {
-                    return item;
-                }
-            }
-            for (int i = 0; i < itemInfoConfigs.ShieldItemsInfoCollection.Count; i++)
-            {
-                var item = itemInfoConfigs.ShieldItemsInfoCollection[i];
-                if (item.ItemId.Equals(itemId))
-                {
-                    return item;
-                }
-            }
-            for (int i = 0; i < itemInfoConfigs.ConsumableItemsInfoCollection.Count; i++)
-            {
-                var item = itemInfoConfigs.ConsumableItemsInfoCollection[i];
-                if (item.ItemId.Equals(itemId))
-                {
-                    return item;
-                }
-            }
-
-            return null;
         }
 
         protected override void OnDispose()
         {
             base.OnDispose();
+
+            _itemsContainerController?.Dispose();
 
             Unsubscribe();
         }
@@ -182,7 +114,8 @@ namespace UI
         public void ExecuteUpdate(float deltaTime)
         {
             _loadUserInfoProgress.ExecuteUpdate(deltaTime);
-            _loadCatalogItemsProgress.ExecuteUpdate(deltaTime);
+
+            _itemsContainerController.ExecuteUpdate(deltaTime);
         }
     }
 }

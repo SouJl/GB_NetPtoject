@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Enumerators;
+using System;
 using UnityEngine;
 
 namespace Configs
@@ -7,6 +8,7 @@ namespace Configs
     public class ItemInfo
     {
         public string ItemId;
+        public ItemType Type;
         public Sprite ItemIcon;
     }
 }

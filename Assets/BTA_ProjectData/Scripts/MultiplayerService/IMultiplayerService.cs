@@ -10,7 +10,7 @@ namespace MultiplayerService
         public event Action<UserData> OnLogInSucceed;
         public event Action OnCreateAccountSucceed;
         public event Action<UserData> OnGetAccountSuccess;
-        public event Action<IList<CatalogItem>> OnGetCatalogItemsSuccess;
+        public event Action<List<CatalogItem>> OnGetCatalogItemsSuccess;
 
         public event Action<string> OnError;
 
@@ -20,6 +20,6 @@ namespace MultiplayerService
 
         public void GetAccountInfo(string userId);
 
-        public void GetCatalogItems();
+        public void GetCatalogItems(string catalogId);
     }
 }

@@ -8,16 +8,10 @@ namespace Configs
     {
         [SerializeField] private string _catalogVersion = "bta 1.0.0";   
         [Space(20)]
-        [SerializeField] private List<ItemInfo> _consumableItemsInfoCollection;
-        [SerializeField] private List<ItemInfo> _ammoItemsInfoCollection;
-        [SerializeField] private List<ItemInfo> _shieldItemsInfoCollection;
-        [SerializeField] private List<ItemInfo> _weaponItemsInfoCollection;
+        [SerializeField] private List<ItemInfo> _availableItemsInfo;
+
 
         public string CatalogVersion => _catalogVersion;
-        public List<ItemInfo> ConsumableItemsInfoCollection => _consumableItemsInfoCollection;
-        public List<ItemInfo> AmmoItemsInfoCollection => _ammoItemsInfoCollection;
-        public List<ItemInfo> ShieldItemsInfoCollection => _shieldItemsInfoCollection;
-        public List<ItemInfo> WeaponItemsInfoCollection => _weaponItemsInfoCollection;
-       
+        public List<ItemInfo> AvailableItemsInfo => _availableItemsInfo;
     }
 }

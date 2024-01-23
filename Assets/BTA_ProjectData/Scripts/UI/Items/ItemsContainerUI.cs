@@ -5,22 +5,46 @@ namespace UI
 {
     public class ItemsContainerUI : MonoBehaviour
     {
+        private readonly Dictionary<string, ItemInfoUI> _itemsCollection = new();
+        
         [SerializeField]
-        private List<ItemInfoUI> _items;
+        private GameObject _itemInfoPrefab;
+        [SerializeField]
+        private Transform _placeForItems;
 
-        private int _enableItemsCount;
-
-        public void InitUI()
+        public void Display(IList<ItemModel> items)
         {
-            for(int i =0; i < _items.Count; i++)
+            Clear();
+
+            for (int i = 0; i < items.Count; i++)
             {
-                var item = _items[i];
-                item.InitUI();
+                var item = items[i];
+                _itemsCollection[item.Id] = CreateItemView(item);
             }
+        }
 
-            _enableItemsCount = 0;
+        public void Clear()
+        {
+            foreach (var buttonView in _itemsCollection.Values)
+                DestroyItemView(buttonView);
 
-            Hide();
+            _itemsCollection.Clear();
+        }
+
+        private void DestroyItemView(ItemInfoUI buttonView)
+        {
+            buttonView.DeinintUi();
+            Destroy(buttonView.SelfGameObject);
+        }
+
+        private ItemInfoUI CreateItemView(ItemModel item)
+        {
+            GameObject objectView = Instantiate(_itemInfoPrefab, _placeForItems, false);
+            var buttonView = objectView.GetComponent<ItemInfoUI>();
+
+            buttonView.InitUI(item.Name, item.Icon);
+
+            return buttonView;
         }
 
         public void Show()
@@ -33,26 +57,6 @@ namespace UI
             gameObject.SetActive(false);
         }
 
-        public void AddItem(
-            string itemId, 
-            string itemName, 
-            Sprite itemIcon)
-        {
-            if (_enableItemsCount >= _items.Count)
-                return;
-
-            var item = _items[_enableItemsCount];
-            item.SetItemUI(itemId, itemName, itemIcon);
-            item.Show();
-
-            _enableItemsCount++;
-        }
-
-        public void RemoveItem(string itemId)
-        {
-            var item = _items.Find(itm => itm.ItemId == itemId);
-
-            item.Hide();
-        }
+        private void OnDestroy() => Clear();
     }
 }

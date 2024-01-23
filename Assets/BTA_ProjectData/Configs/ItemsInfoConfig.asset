@@ -15,25 +15,66 @@ MonoBehaviour:
   _catalogVersion: bta 1.0.0
   _consumableItemsInfoCollection:
   - ItemId: medicalKit_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: 66b43a0d2af2e8e4d9ae819ab4b78a6c, type: 3}
   - ItemId: injection_speed_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: 4703fced59df4ef4da0dd8f4331048f7, type: 3}
   - ItemId: injection_damage_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: 035e8399e8eb7c04ebca64bf8b4ef114, type: 3}
   _ammoItemsInfoCollection:
   - ItemId: ammo_battery_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: 434993171fa91504c8c0197f21477c3d, type: 3}
   _shieldItemsInfoCollection:
   - ItemId: shield_energo_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: 2792eaac4c3ce2a4a9f1942f80e3d15d, type: 3}
   _weaponItemsInfoCollection:
   - ItemId: weapon_blaster_energo_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: 1ea35ec24302396478d8e695689d7db3, type: 3}
   - ItemId: weapon_blaster_plasma_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: a3550049f1e867b47a7037be5eff1fef, type: 3}
   - ItemId: weapon_rifle_plasma_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: dffc1d6b89f15ca49b76f9d27ec8d79d, type: 3}
   - ItemId: weapon_rifle_laser_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: 2e0f57a43084e5741b7f369b7501c5bf, type: 3}
   - ItemId: weapon_thrower_plasma_id
+    Type: 0
     ItemIcon: {fileID: 21300000, guid: e31f3301fdd67204bb45f729af7605f2, type: 3}
+  _availableItemsInfo:
+  - ItemId: weapon_blaster_energo_id
+    Type: 4
+    ItemIcon: {fileID: 21300000, guid: 1ea35ec24302396478d8e695689d7db3, type: 3}
+  - ItemId: weapon_blaster_plasma_id
+    Type: 4
+    ItemIcon: {fileID: 21300000, guid: a3550049f1e867b47a7037be5eff1fef, type: 3}
+  - ItemId: weapon_rifle_plasma_id
+    Type: 4
+    ItemIcon: {fileID: 21300000, guid: dffc1d6b89f15ca49b76f9d27ec8d79d, type: 3}
+  - ItemId: weapon_rifle_laser_id
+    Type: 4
+    ItemIcon: {fileID: 21300000, guid: 2e0f57a43084e5741b7f369b7501c5bf, type: 3}
+  - ItemId: weapon_thrower_plasma_id
+    Type: 4
+    ItemIcon: {fileID: 21300000, guid: e31f3301fdd67204bb45f729af7605f2, type: 3}
+  - ItemId: medicalKit_id
+    Type: 5
+    ItemIcon: {fileID: 21300000, guid: 66b43a0d2af2e8e4d9ae819ab4b78a6c, type: 3}
+  - ItemId: injection_speed_id
+    Type: 5
+    ItemIcon: {fileID: 21300000, guid: 4703fced59df4ef4da0dd8f4331048f7, type: 3}
+  - ItemId: injection_damage_id
+    Type: 5
+    ItemIcon: {fileID: 21300000, guid: 035e8399e8eb7c04ebca64bf8b4ef114, type: 3}
+  - ItemId: shield_energo_id
+    Type: 2
+    ItemIcon: {fileID: 21300000, guid: 2792eaac4c3ce2a4a9f1942f80e3d15d, type: 3}
+  - ItemId: ammo_battery_id
+    Type: 1
+    ItemIcon: {fileID: 21300000, guid: 434993171fa91504c8c0197f21477c3d, type: 3}

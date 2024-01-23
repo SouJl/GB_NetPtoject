@@ -1,0 +1,345 @@
+{
+  "CatalogVersion": "bta 1.0.0",
+  "Catalog": [
+    {
+      "ItemId": "weapon_blaster_energo_id",
+      "ItemClass": "weapon",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Energo Blaster",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 1000
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"weapon",
+        "blaster\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "weapon_blaster_plasma_id",
+      "ItemClass": "weapon",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Plasma Blaster",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 1500
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"weapon",
+        "blaster\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "weapon_rifle_laser_id",
+      "ItemClass": "weapon",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Energo Rifle",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 1800
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"weapon",
+        "rifle\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "weapon_thrower_plasma_id",
+      "ItemClass": "weapon",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Plasma Thrower",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 3500
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"weapon",
+        "thrower\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "medicalKit_id",
+      "ItemClass": "medical",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Medical Kit",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 150
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"consumables",
+        "medical\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": 12,
+        "UsagePeriod": 86400,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": true,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "shield_energo_id",
+      "ItemClass": "shield",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Energo Shield",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 500
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"shield",
+        "energo\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "injection_speed_id",
+      "ItemClass": "injection",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Speed Injection",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 300
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"consumables",
+        "injection\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": 2,
+        "UsagePeriod": 3600,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": true,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "injection_damage_id",
+      "ItemClass": "injection",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Damage Injection",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 500
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"consumables",
+        "injection\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": 2,
+        "UsagePeriod": 3600,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "starterPack_reward_id",
+      "ItemClass": "reward",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": null,
+      "Description": null,
+      "VirtualCurrencyPrices": {},
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"reward\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": 1,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": {
+        "BundledItems": [
+          "medicalKit_id",
+          "medicalKit_id",
+          "injection_speed_id",
+          "injection_damage_id",
+          "weapon_blaster_energo_id",
+          "ammo_battery_id",
+          "ammo_battery_id",
+          "ammo_battery_id",
+          "ammo_battery_id",
+          "ammo_battery_id"
+        ],
+        "BundledResultTables": [],
+        "BundledVirtualCurrencies": null
+      },
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "ammo_battery_id",
+      "ItemClass": "ammo",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Battery",
+      "Description": null,
+      "VirtualCurrencyPrices": {},
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"ammo\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": 200,
+        "UsagePeriod": 86400,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": true,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "weapon_rifle_plasma_id",
+      "ItemClass": "weapon",
+      "CatalogVersion": "bta 1.0.0",
+      "DisplayName": "Plasma Rifle",
+      "Description": null,
+      "VirtualCurrencyPrices": {
+        "BP": 2000
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [
+        "\"weapon",
+        "rifle\""
+      ],
+      "CustomData": null,
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    }
+  ],
+  "DropTables": []
+}

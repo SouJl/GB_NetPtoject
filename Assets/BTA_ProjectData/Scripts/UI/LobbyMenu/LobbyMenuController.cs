@@ -89,6 +89,8 @@ namespace UI
             _view.ShowUserData();
 
             UpdateUserDataUI(userData);
+
+            _netManager.Connect();
         }
 
         private void UpdateUserDataUI(UserData userData)

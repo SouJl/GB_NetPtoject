@@ -16,6 +16,8 @@ namespace UI
         private readonly GamePrefs _gamePrefs;
         private readonly IMultiplayerService _multiplayerService;
 
+        private readonly GameNetManager _netManager;
+
         private ConnectionProgressController _loadUserInfoProgress;
 
         private ItemsContainerController _itemsContainerController;
@@ -33,6 +35,8 @@ namespace UI
             
             _gamePrefs = gamePrefs;
             _multiplayerService = multiplayerService;
+
+            _netManager = new GameNetManager(gameConfig);
 
             _loadUserInfoProgress 
                 = new ConnectionProgressController(_view.LoadUserInfoPlacement);
@@ -113,6 +117,8 @@ namespace UI
 
         public void ExecuteUpdate(float deltaTime)
         {
+            _netManager.ExecuteUpdate(deltaTime);
+
             _loadUserInfoProgress.ExecuteUpdate(deltaTime);
 
             _itemsContainerController.ExecuteUpdate(deltaTime);

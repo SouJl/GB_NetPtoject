@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
 namespace Configs
 {
@@ -7,5 +8,6 @@ namespace Configs
     {
         [field: SerializeField] public string PlayFabTitleId { get; private set; }
         [field: SerializeField] public ItemsInfoConfig ItemsInfoConfig { get; private set; }
+        [field: SerializeField] public ServerSettings PhotonServerSettings { get; private set; }
     }
 }

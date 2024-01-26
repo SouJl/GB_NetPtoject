@@ -14,6 +14,7 @@ public class MainController : IDisposable
 
     private readonly IMultiplayerService _multiplayerService;
 
+    private MainMenuController _mainMenuController;
     private AuthenticationMenuController _authenticationController;
     private LobbyMenuController _lobbyMenuController;
 
@@ -31,7 +32,7 @@ public class MainController : IDisposable
 
         _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
 
-        _gamePrefs.ChangeGameState(GameState.Authentication);
+        _gamePrefs.ChangeGameState(GameState.MainMenu);
     }
 
 
@@ -43,11 +44,20 @@ public class MainController : IDisposable
         {
             default:
                 break;
+            case GameState.MainMenu:
+                {
+                    _mainMenuController = new MainMenuController(_placeForUi, _gamePrefs);
+                    
+                    _lifeCycle.AddController(_mainMenuController);
+
+                    break;
+                }
             case GameState.Authentication:
                 {
                     _authenticationController = new AuthenticationMenuController(_placeForUi, _gamePrefs, _multiplayerService);
                     
                     _lifeCycle.AddController(_authenticationController);
+
                     break;
                 }
             case GameState.Lobby:
@@ -55,6 +65,12 @@ public class MainController : IDisposable
                     _lobbyMenuController = new LobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _multiplayerService);
                     
                     _lifeCycle.AddController(_lobbyMenuController);
+
+                    break;
+                }
+            case GameState.Exit:
+                {
+                    ExitFromGame();
                     break;
                 }
         }
@@ -63,6 +79,14 @@ public class MainController : IDisposable
     private void DisposeControllers()
     {
         _lifeCycle.Dispose();
+    }
+
+    private void ExitFromGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        Application.Quit();
     }
 
     public void Dispose()

@@ -90,7 +90,7 @@ namespace UI
 
             UpdateUserDataUI(userData);
 
-            _netManager.Connect();
+            //_netManager.Connect();
         }
 
         private void UpdateUserDataUI(UserData userData)

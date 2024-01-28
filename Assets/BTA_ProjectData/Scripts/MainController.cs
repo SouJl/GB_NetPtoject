@@ -10,6 +10,8 @@ public class MainController : IDisposable
     private readonly Transform _placeForUi;
     private readonly GameConfig _gameConfig;
     private readonly LifeCycleController _lifeCycle;
+    private readonly PhotonNetManager _netManager;
+
     private readonly GamePrefs _gamePrefs;
 
     private readonly IMultiplayerService _multiplayerService;
@@ -21,11 +23,13 @@ public class MainController : IDisposable
     public MainController(
         Transform placeForUi, 
         GameConfig gameConfig, 
-        LifeCycleController lifeCycle)
+        LifeCycleController lifeCycle,
+        PhotonNetManager netManager)
     {
         _placeForUi = placeForUi;
         _gameConfig = gameConfig;
         _lifeCycle = lifeCycle;
+        _netManager = netManager;
 
         _gamePrefs = new GamePrefs();
         _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
@@ -59,7 +63,7 @@ public class MainController : IDisposable
                 break;
             case GameState.MainMenu:
                 {
-                    _mainMenuController = new MainMenuController(_placeForUi, _gamePrefs);
+                    _mainMenuController = new MainMenuController(_placeForUi, _gamePrefs, _netManager);
                     
                     _lifeCycle.AddController(_mainMenuController);
 

@@ -7,6 +7,8 @@ public class Main : MonoBehaviour
     private Transform _placeForUI;
     [SerializeField]
     private GameConfig _gameConfig;
+    [SerializeField]
+    private PhotonNetManager _netManager;
 
     private float _deltaTime;
 
@@ -17,7 +19,8 @@ public class Main : MonoBehaviour
     {
         _deltaTime = Time.deltaTime;
         _gameLifecycle = new LifeCycleController();
-        _mainController = new MainController(_placeForUI, _gameConfig, _gameLifecycle);
+        _mainController 
+            = new MainController(_placeForUI, _gameConfig, _gameLifecycle, _netManager);
     }
 
     private void Start()

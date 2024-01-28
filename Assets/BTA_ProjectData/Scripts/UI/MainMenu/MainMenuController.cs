@@ -10,17 +10,24 @@ namespace UI
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/MainMenu");
 
         private readonly GamePrefs _gamePrefs;
+        private readonly PhotonNetManager _netManager;
         private readonly MainMenuUI _view;
 
-        public MainMenuController(Transform placeForUI, GamePrefs gamePrefs)
+        public MainMenuController(
+            Transform placeForUI, 
+            GamePrefs gamePrefs, 
+            PhotonNetManager netManager)
         {
             _gamePrefs = gamePrefs;
-            
+            _netManager = netManager;
+
             _view = LoadView(placeForUI);
 
             _view.InitUI(gamePrefs.UserName);
 
             Subscribe();
+
+            _netManager.Connect();
         }
 
         private MainMenuUI LoadView(Transform placeForUI)

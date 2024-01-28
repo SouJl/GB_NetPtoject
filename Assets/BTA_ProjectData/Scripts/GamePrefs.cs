@@ -25,26 +25,28 @@ public class GamePrefs
 
     public GamePrefs()
     {
-        Load();
+       
     }
 
-    private void Save()
+    public void Save()
     {
         PlayerPrefs.SetString(AuthUserId, _userId);
         PlayerPrefs.SetString(AuthUserName, _userName);
         PlayerPrefs.SetString(AuthUserPassword, _userPassword);
     }
 
-    private void Load()
+    public bool Load()
     {
         _isUserDataExist = CheckDataExist();
 
         if (_isUserDataExist == false)
-            return;
+            return false;
 
         _userId = PlayerPrefs.GetString(AuthUserId);
         _userName = PlayerPrefs.GetString(AuthUserName);
         _userPassword = PlayerPrefs.GetString(AuthUserPassword);
+
+        return true;
     }
 
     private bool CheckDataExist()

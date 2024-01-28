@@ -17,7 +17,8 @@ namespace UI
             _gamePrefs = gamePrefs;
             
             _view = LoadView(placeForUI);
-            _view.InitUI();
+
+            _view.InitUI(gamePrefs.UserName);
 
             Subscribe();
         }
@@ -33,6 +34,7 @@ namespace UI
 
         private void Subscribe()
         {
+            _view.OnSwitchUserPressed += SwitchUser;
             _view.OnJoinGamePressed += JoinGame;
             _view.OnCreateGamePressed += CreateGame;
             _view.OnExitGamePressed += ExitGame;
@@ -40,14 +42,24 @@ namespace UI
 
         private void Unsubscribe()
         {
+            _view.OnSwitchUserPressed -= SwitchUser;
             _view.OnJoinGamePressed -= JoinGame;
             _view.OnCreateGamePressed -= CreateGame;
             _view.OnExitGamePressed -= ExitGame;
         }
 
+
+        private void SwitchUser()
+        {
+            _gamePrefs.DeleteData();
+
+            _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication);
+        }
+
+
         private void JoinGame()
         {
-            _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication);
+            _gamePrefs.ChangeGameState(Enumerators.GameState.Lobby);
         }
 
         private void CreateGame()

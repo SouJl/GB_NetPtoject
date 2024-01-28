@@ -28,13 +28,26 @@ public class MainController : IDisposable
         _lifeCycle = lifeCycle;
 
         _gamePrefs = new GamePrefs();
-        _gamePrefs.OnGameStateChange += GameStateChanged;
-
         _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
 
-        _gamePrefs.ChangeGameState(GameState.MainMenu);
+        InitialGameLoad();
     }
 
+    private void InitialGameLoad()
+    {
+        _gamePrefs.OnGameStateChange += GameStateChanged;
+
+        var userSate = _gamePrefs.Load();
+
+        if(userSate == false)
+        {
+            _gamePrefs.ChangeGameState(GameState.Authentication);
+        }
+        else
+        {
+            _gamePrefs.ChangeGameState(GameState.MainMenu);
+        }
+    }
 
     private void GameStateChanged(GameState state)
     {

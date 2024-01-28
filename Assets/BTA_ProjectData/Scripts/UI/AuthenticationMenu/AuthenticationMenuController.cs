@@ -104,7 +104,7 @@ namespace UI
                 Password = data.Password
             });
 
-            _gamePrefs.ChangeGameState(GameState.Lobby);
+            _gamePrefs.ChangeGameState(GameState.MainMenu);
         }
 
         private void LogInProccessEndError(string errorMessage)

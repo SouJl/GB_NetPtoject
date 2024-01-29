@@ -4,6 +4,7 @@ using Photon.Realtime;
 using System;
 using System.Collections.Generic;
 using Configs;
+using UI;
 
 public class PhotonNetManager : MonoBehaviourPunCallbacks
 {
@@ -58,14 +59,14 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(roomName);
     }
 
-    public void CreateRoom()
+    public void CreateRoom(CreationRoomData data)
     {
         var roomOptions = new RoomOptions
         {
-            MaxPlayers = 5,
+            MaxPlayers = data.MaxPlayers,
         };
 
-        PhotonNetwork.JoinOrCreateRoom("TestRoom", roomOptions, _lobby);
+        PhotonNetwork.JoinOrCreateRoom(data.RoomName, roomOptions, _lobby);
     }
 
     #region PUN CALLBACKS

@@ -29,7 +29,7 @@ namespace UI
             _netManager = netManager;
 
             _view = LoadView(placeForUI);
-            _view.InitUI();
+            _view.InitUI(gameConfig);
 
             Subscribe();
         }
@@ -68,13 +68,11 @@ namespace UI
         private void JoinRoom(string roomName)
         {
             _netManager.JoinRoom(roomName);
-
-          //  _gamePrefs.ChangeGameState(GameState.Room);
         }
 
-        private void CreateRoom()
+        private void CreateRoom(CreationRoomData data)
         {
-            _netManager.CreateRoom();
+            _netManager.CreateRoom(data);
         }
 
         private void Close()
@@ -82,14 +80,14 @@ namespace UI
             _netManager.LeaveLobby();
         }
 
-
         private void LeftedFromLobby()
         {
             _gamePrefs.ChangeGameState(GameState.MainMenu);
         }
+
         private void JoinedInRoom(Room room)
         {
-            _view.ShowInRoom(room.Name);
+            _gamePrefs.ChangeGameState(GameState.Room);
         }
 
         private void RefreshRoomData(List<RoomInfo> roomsInfo)

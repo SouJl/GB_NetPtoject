@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: 
   <PlayFabTitleId>k__BackingField: C7257
+  <PhotonLobbyName>k__BackingField: bta_lobby
   <ItemsInfoConfig>k__BackingField: {fileID: 11400000, guid: 669168852ab4714418aaabbd8ce0314c, type: 2}
   <PhotonServerSettings>k__BackingField: {fileID: 11400000, guid: a8a7d2bba45362841a24d215b5255885, type: 2}

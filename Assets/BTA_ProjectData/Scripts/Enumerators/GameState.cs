@@ -6,7 +6,8 @@
         MainMenu        = 1,
         Authentication  = 2,
         Lobby           = 3,
-        Game            = 4,
-        Exit            = 5,
+        Room            = 4,
+        Game            = 5,
+        Exit            = 6,
     }
 }

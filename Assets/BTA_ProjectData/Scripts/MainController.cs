@@ -18,6 +18,7 @@ public class MainController : IDisposable
 
     private MainMenuController _mainMenuController;
     private AuthenticationMenuController _authenticationController;
+    private GameLobbyMenuController _gameLobbyMenuController;
     private LobbyMenuController _lobbyMenuController;
 
     public MainController(
@@ -33,6 +34,8 @@ public class MainController : IDisposable
 
         _gamePrefs = new GamePrefs();
         _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
+        
+        _netManager.Init(gameConfig);
 
         InitialGameLoad();
     }
@@ -79,9 +82,13 @@ public class MainController : IDisposable
                 }
             case GameState.Lobby:
                 {
-                    _lobbyMenuController = new LobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _multiplayerService);
+                    _gameLobbyMenuController = new GameLobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
                     
-                    _lifeCycle.AddController(_lobbyMenuController);
+                    _lifeCycle.AddController(_gameLobbyMenuController);
+
+                   /* _lobbyMenuController = new LobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _multiplayerService);
+                    
+                    _lifeCycle.AddController(_lobbyMenuController);*/
 
                     break;
                 }

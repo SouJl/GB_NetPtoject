@@ -45,6 +45,8 @@ namespace UI
             _view.OnJoinGamePressed += JoinGame;
             _view.OnCreateGamePressed += CreateGame;
             _view.OnExitGamePressed += ExitGame;
+
+            _netManager.OnJoinInLobby += JoinedInLobby;
         }
 
         private void Unsubscribe()
@@ -53,8 +55,9 @@ namespace UI
             _view.OnJoinGamePressed -= JoinGame;
             _view.OnCreateGamePressed -= CreateGame;
             _view.OnExitGamePressed -= ExitGame;
-        }
 
+            _netManager.OnJoinInLobby -= JoinedInLobby;
+        }
 
         private void SwitchUser()
         {
@@ -63,10 +66,9 @@ namespace UI
             _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication);
         }
 
-
         private void JoinGame()
         {
-            _gamePrefs.ChangeGameState(Enumerators.GameState.Lobby);
+            _netManager.JoinLobby();
         }
 
         private void CreateGame()
@@ -76,6 +78,11 @@ namespace UI
         private void ExitGame()
         {
             _gamePrefs.ChangeGameState(Enumerators.GameState.Exit);
+        }
+
+        private void JoinedInLobby()
+        {
+            _gamePrefs.ChangeGameState(Enumerators.GameState.Lobby);
         }
 
         protected override void OnDispose()

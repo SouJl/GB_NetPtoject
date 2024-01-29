@@ -20,6 +20,7 @@ public class MainController : IDisposable
     private AuthenticationMenuController _authenticationController;
     private GameLobbyMenuController _gameLobbyMenuController;
     private LobbyMenuController _lobbyMenuController;
+    private RoomMenuController _roomMenuController;
 
     public MainController(
         Transform placeForUi, 
@@ -89,6 +90,14 @@ public class MainController : IDisposable
                    /* _lobbyMenuController = new LobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _multiplayerService);
                     
                     _lifeCycle.AddController(_lobbyMenuController);*/
+
+                    break;
+                }
+            case GameState.Room:
+                {
+                    _roomMenuController = new RoomMenuController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
+
+                    _lifeCycle.AddController(_gameLobbyMenuController);
 
                     break;
                 }

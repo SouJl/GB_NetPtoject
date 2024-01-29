@@ -48,10 +48,7 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
 
     public void LeaveLobby()
     {
-        if (PhotonNetwork.InLobby)
-        {
-            PhotonNetwork.LeaveLobby();
-        }
+        PhotonNetwork.LeaveLobby();
     }
 
     public void JoinRoom(string roomName)

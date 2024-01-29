@@ -50,7 +50,6 @@ namespace UI
             _view.OnClosePressed += Close;
 
             _netManager.OnLeftFromLobby += LeftedFromLobby;
-            _netManager.OnJoinInRoom += JoinedInRoom;
             _netManager.OnRoomsUpdate += RefreshRoomData;
         }
 
@@ -61,18 +60,21 @@ namespace UI
             _view.OnClosePressed -= Close;
 
             _netManager.OnLeftFromLobby -= LeftedFromLobby;
-            _netManager.OnJoinInRoom -= JoinedInRoom;
             _netManager.OnRoomsUpdate -= RefreshRoomData;
         }
 
         private void JoinRoom(string roomName)
         {
             _netManager.JoinRoom(roomName);
+
+            _gamePrefs.ChangeGameState(GameState.Room);
         }
 
         private void CreateRoom(CreationRoomData data)
         {
             _netManager.CreateRoom(data);
+
+            _gamePrefs.ChangeGameState(GameState.Room);
         }
 
         private void Close()
@@ -83,11 +85,6 @@ namespace UI
         private void LeftedFromLobby()
         {
             _gamePrefs.ChangeGameState(GameState.MainMenu);
-        }
-
-        private void JoinedInRoom(Room room)
-        {
-            _gamePrefs.ChangeGameState(GameState.Room);
         }
 
         private void RefreshRoomData(List<RoomInfo> roomsInfo)

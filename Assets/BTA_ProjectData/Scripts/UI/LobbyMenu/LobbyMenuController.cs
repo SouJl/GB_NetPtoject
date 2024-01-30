@@ -1,13 +1,14 @@
 ﻿using Abstraction;
 using Configs;
 using MultiplayerService;
+using Prefs;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace UI
 {
-    public class LobbyMenuController : BaseUIController, IOnUpdate
+    public class LobbyMenuController : BaseController, IOnUpdate
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/LobbyMenu");
 

@@ -1,44 +1,63 @@
 ﻿using Abstraction;
 using Configs;
 using Photon.Realtime;
+using Prefs;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace UI
+namespace GameLobby
 {
-    public class RoomMenuController : BaseUIController
+    public class InRoomController : BaseController
     {
-        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/RoomMenu");
+        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/InRoomMenu");
 
-        private readonly RoomMenuUI _view;
+        private readonly InRoomMenuUI _view;
         private readonly GameConfig _gameConfig;
-        private readonly GamePrefs _gamePrefs;
+        private readonly GameLobbyPrefs _lobbyPrefs;
         private readonly PhotonNetManager _netManager;
 
-        public RoomMenuController(
+        public InRoomController(
             Transform placeForUI,
             GameConfig gameConfig,
-            GamePrefs gamePrefs,
+            GameLobbyPrefs lobbyPrefs,
             PhotonNetManager netManager)
         {
             _gameConfig = gameConfig;
-            _gamePrefs = gamePrefs;
+            _lobbyPrefs = lobbyPrefs;
             _netManager = netManager;
 
             _view = LoadView(placeForUI);
             _view.InitUI();
 
             Subscribe();
+
+            InitLobbyData(_lobbyPrefs);        
         }
 
-        private RoomMenuUI LoadView(Transform placeForUI)
+        private void InitLobbyData(GameLobbyPrefs lobbyPrefs)
+        {
+            if (lobbyPrefs.IsNeedRoomCreation)
+            {
+                _netManager.CreateRoom(new CreationRoomData 
+                {
+                    RoomName = lobbyPrefs.RoomName,
+                    MaxPlayers = lobbyPrefs.RoomMaxPlayers
+                });
+            }
+            else
+            {
+                _netManager.JoinRoom(lobbyPrefs.RoomName);
+            }
+        }
+
+        private InRoomMenuUI LoadView(Transform placeForUI)
         {
             var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(_viewPath), placeForUI, false);
 
             AddGameObject(objectView);
 
-            return objectView.GetComponent<RoomMenuUI>();
+            return objectView.GetComponent<InRoomMenuUI>();
         }
 
         private void Subscribe()

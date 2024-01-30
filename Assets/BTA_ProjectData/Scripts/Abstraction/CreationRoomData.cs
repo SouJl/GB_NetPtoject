@@ -1,4 +1,4 @@
-﻿namespace UI
+﻿namespace Abstraction
 {
     public class CreationRoomData
     {

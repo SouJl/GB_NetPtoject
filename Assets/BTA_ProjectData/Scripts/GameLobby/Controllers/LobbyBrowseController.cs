@@ -5,28 +5,28 @@ using Photon.Realtime;
 using Prefs;
 using System.Collections.Generic;
 using Tools;
+using UI;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-namespace UI
+namespace GameLobby
 {
-    public class GameLobbyMenuController : BaseController
+    public class LobbyBrowseController : BaseController
     {
-        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/GameLobbyMenu");
+        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/LobbyBrowseMenu");
 
         private readonly LobbyBrowseMenuUI _view;
         private readonly GameConfig _gameConfig;
-        private readonly GamePrefs _gamePrefs;
+        private readonly GameLobbyPrefs _lobbyPrefs;
         private readonly PhotonNetManager _netManager;
 
-        public GameLobbyMenuController(
-            Transform placeForUI,
-            GameConfig gameConfig,
-            GamePrefs gamePrefs,
-            PhotonNetManager netManager)
+        public LobbyBrowseController(
+           Transform placeForUI,
+           GameConfig gameConfig,
+           GameLobbyPrefs lobbyPrefs,
+           PhotonNetManager netManager)
         {
             _gameConfig = gameConfig;
-            _gamePrefs = gamePrefs;
+            _lobbyPrefs = lobbyPrefs;
             _netManager = netManager;
 
             _view = LoadView(placeForUI);
@@ -47,45 +47,39 @@ namespace UI
         private void Subscribe()
         {
             _view.OnJoinRoomPressed += JoinRoom;
-            _view.OnHostGamePressed += CreateRoom;
+            _view.OnHostGamePressed += OpenHostGameMenu;
             _view.OnClosePressed += Close;
 
-            _netManager.OnLeftFromLobby += LeftedFromLobby;
-            _netManager.OnRoomsUpdate += RefreshRoomData;
+            _netManager.OnRoomsUpdate -= RefreshRoomData;
         }
 
         private void Unsubscribe()
         {
             _view.OnJoinRoomPressed -= JoinRoom;
-            _view.OnHostGamePressed -= CreateRoom;
+            _view.OnHostGamePressed -= OpenHostGameMenu;
             _view.OnClosePressed -= Close;
 
-            _netManager.OnLeftFromLobby -= LeftedFromLobby;
             _netManager.OnRoomsUpdate -= RefreshRoomData;
         }
 
         private void JoinRoom(string roomName)
         {
-            _netManager.JoinRoom(roomName);
+            _lobbyPrefs.SetRoomData(new CreationRoomData
+            {
+                RoomName = roomName
+            });
 
-            _gamePrefs.ChangeGameState(GameState.Room);
+            _lobbyPrefs.ChangeState(GameLobbyState.InRoom);
         }
 
-        private void CreateRoom()
+        private void OpenHostGameMenu()
         {
-           // _netManager.CreateRoom(data);
-
-            _gamePrefs.ChangeGameState(GameState.Room);
+            _lobbyPrefs.ChangeState(GameLobbyState.CreateRoom);
         }
 
         private void Close()
         {
-            _netManager.LeaveLobby();
-        }
-
-        private void LeftedFromLobby()
-        {
-            _gamePrefs.ChangeGameState(GameState.MainMenu);
+            _lobbyPrefs.ChangeState(GameLobbyState.Exit);
         }
 
         private void RefreshRoomData(List<RoomInfo> roomsInfo)

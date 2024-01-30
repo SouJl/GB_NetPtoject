@@ -1,11 +1,12 @@
 ﻿using Abstraction;
+using Prefs;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace UI
 {
-    public class MainMenuController : BaseUIController
+    public class MainMenuController : BaseController
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/MainMenu");
 
@@ -45,8 +46,6 @@ namespace UI
             _view.OnJoinGamePressed += JoinGame;
             _view.OnCreateGamePressed += CreateGame;
             _view.OnExitGamePressed += ExitGame;
-
-            _netManager.OnJoinInLobby += JoinedInLobby;
         }
 
         private void Unsubscribe()
@@ -55,8 +54,6 @@ namespace UI
             _view.OnJoinGamePressed -= JoinGame;
             _view.OnCreateGamePressed -= CreateGame;
             _view.OnExitGamePressed -= ExitGame;
-
-            _netManager.OnJoinInLobby -= JoinedInLobby;
         }
 
         private void SwitchUser()
@@ -68,13 +65,14 @@ namespace UI
 
         private void JoinGame()
         {
-            _netManager.JoinLobby();
+            _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby);
         }
 
         private void CreateGame()
         {
             Debug.Log("CreateGame");
         }
+
         private void ExitGame()
         {
             _gamePrefs.ChangeGameState(Enumerators.GameState.Exit);
@@ -82,7 +80,7 @@ namespace UI
 
         private void JoinedInLobby()
         {
-            _gamePrefs.ChangeGameState(Enumerators.GameState.Lobby);
+            _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby);
         }
 
         protected override void OnDispose()

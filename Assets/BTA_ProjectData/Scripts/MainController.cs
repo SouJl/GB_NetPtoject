@@ -1,6 +1,8 @@
 ﻿using Configs;
 using Enumerators;
+using GameLobby;
 using MultiplayerService;
+using Prefs;
 using System;
 using UI;
 using UnityEngine;
@@ -18,9 +20,7 @@ public class MainController : IDisposable
 
     private MainMenuController _mainMenuController;
     private AuthenticationMenuController _authenticationController;
-    private GameLobbyMenuController _gameLobbyMenuController;
-    private LobbyMenuController _lobbyMenuController;
-    private RoomMenuController _roomMenuController;
+    private GameLobbyController _gameLobbyController;
 
     public MainController(
         Transform placeForUi, 
@@ -81,23 +81,15 @@ public class MainController : IDisposable
 
                     break;
                 }
-            case GameState.Lobby:
+            case GameState.EnterLobby:
                 {
-                    _gameLobbyMenuController = new GameLobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
+                    _gameLobbyController = new GameLobbyController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
                     
-                    _lifeCycle.AddController(_gameLobbyMenuController);
+                    _lifeCycle.AddController(_gameLobbyController);
 
                    /* _lobbyMenuController = new LobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _multiplayerService);
                     
                     _lifeCycle.AddController(_lobbyMenuController);*/
-
-                    break;
-                }
-            case GameState.Room:
-                {
-                    _roomMenuController = new RoomMenuController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
-
-                    _lifeCycle.AddController(_gameLobbyMenuController);
 
                     break;
                 }

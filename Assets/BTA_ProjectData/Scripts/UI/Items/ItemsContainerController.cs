@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UI
 {
-    public class ItemsContainerController : BaseUIController, IOnUpdate
+    public class ItemsContainerController : BaseController, IOnUpdate
     {
         private readonly ItemsInfoConfig _itemsInfoConfig;
         private readonly ItemsContainerUI _containerView;

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Configs;
 using UI;
+using Abstraction;
 
 public class PhotonNetManager : MonoBehaviourPunCallbacks
 {

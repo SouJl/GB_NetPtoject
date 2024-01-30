@@ -1,13 +1,14 @@
 ﻿using Abstraction;
 using Enumerators;
 using MultiplayerService;
+using Prefs;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace UI
 {
-    public class AuthenticationMenuController : BaseUIController, IOnUpdate
+    public class AuthenticationMenuController : BaseController, IOnUpdate
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/AuthenticationMenu");
 

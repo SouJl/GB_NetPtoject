@@ -4,7 +4,6 @@ using Photon.Realtime;
 using System;
 using System.Collections.Generic;
 using Configs;
-using UI;
 using Abstraction;
 
 public class PhotonNetManager : MonoBehaviourPunCallbacks
@@ -128,6 +127,12 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("OnPlayerEnteredRoom");
         OnPlayerEnterInRoom?.Invoke(newPlayer);
+    }
+
+    public override void OnLeftRoom()
+    {
+        Debug.Log("OnPlayerEnteredRoom");
+        OnLeftFromRoom?.Invoke();
     }
 
     #endregion

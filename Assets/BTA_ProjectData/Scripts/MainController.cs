@@ -95,7 +95,7 @@ public class MainController : IDisposable
                 break;
             case GameState.Loading:
                 {
-                    _loadingScreenController = new LoadingScreenController(_placeForUi);
+                    _loadingScreenController = new LoadingScreenController(_placeForUi, LoadingScreenType.GameLoading);
 
                     _lifeCycle.AddController(_loadingScreenController);
 

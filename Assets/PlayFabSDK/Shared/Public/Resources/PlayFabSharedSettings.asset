@@ -15,7 +15,7 @@ MonoBehaviour:
   TitleId: C7257
   DeveloperSecretKey: T9IPCXF937SRKS16ZXPIRZX75SF9PP45WDC9S431DUBKKOR71H
   ProductionEnvironmentUrl: 
-  RequestType: 2
+  RequestType: 0
   DisableDeviceInfo: 0
   DisableFocusTimeCollection: 0
   RequestTimeout: 2000

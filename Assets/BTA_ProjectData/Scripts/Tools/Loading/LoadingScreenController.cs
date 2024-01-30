@@ -14,9 +14,11 @@ namespace Tools
         private ProgressController _connectionProgress;
 
         public LoadingScreenController(
-            Transform placeForUI)
+            Transform placeForUI, LoadingScreenType type)
         {
             _view = LoadView(placeForUI);
+
+            _view.InitUI(GetLoadingText(type));
 
             _connectionProgress = new ProgressController(_view.LoaddingProgressPlace);
 
@@ -30,6 +32,24 @@ namespace Tools
             AddGameObject(objectView);
 
             return objectView.GetComponent<LoadingScreenUI>();
+        }
+
+        private string GetLoadingText(LoadingScreenType type)
+        {
+            switch (type)
+            {
+                default:
+                    return string.Empty;
+
+                case LoadingScreenType.GameLoading:
+                    {
+                        return "CONNECT TO GAME...";
+                    }
+                case LoadingScreenType.LobbyLoading:
+                    {
+                        return "JOIN IN LOBBY...";
+                    }
+            }
         }
 
         public void ExecuteUpdate(float deltaTime)

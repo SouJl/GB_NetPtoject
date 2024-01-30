@@ -56,7 +56,7 @@ namespace GameLobby
                     break;
                 case GameLobbyState.Loading:
                     {
-                        _loadingScreenController = new LoadingScreenController(_placeForUi);
+                        _loadingScreenController = new LoadingScreenController(_placeForUi, LoadingScreenType.LobbyLoading);
 
                         break;
                     }
@@ -99,9 +99,6 @@ namespace GameLobby
             _netManager.OnLeftFromLobby += LeftedFromLobby;
             
             _netManager.LeaveLobby();
-
-            _lobbyPrefs.ChangeState(GameLobbyState.Loading);
-
         }
 
         private void LeftedFromLobby()

@@ -26,6 +26,8 @@ namespace UI
 
             _view.InitUI(gamePrefs.UserName);
 
+            _netManager.SetUserData(gamePrefs.UserName);
+            
             Subscribe();
         }
 

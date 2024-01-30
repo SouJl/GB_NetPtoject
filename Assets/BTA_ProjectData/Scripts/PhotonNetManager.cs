@@ -21,6 +21,7 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
     public event Action<Room> OnJoinInRoom;
     public event Action OnLeftFromRoom;
     public event Action<List<RoomInfo>> OnRoomsUpdate;
+    public event Action<Player> OnPlayerEnterInRoom;
 
     public void Init(GameConfig gameConfig)
     {
@@ -41,6 +42,12 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
 
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.GameVersion = Application.version;
+    }
+
+
+    public void SetUserData(string nickName)
+    {
+        PhotonNetwork.LocalPlayer.NickName = nickName;
     }
 
     public void JoinLobby()
@@ -66,6 +73,11 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
         };
 
         PhotonNetwork.JoinOrCreateRoom(data.RoomName, roomOptions, _lobby);
+    }
+
+    public Player[] GetPlayerInRomm()
+    {
+        return PhotonNetwork.PlayerList;
     }
 
     #region PUN CALLBACKS
@@ -110,6 +122,12 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("OnRoomListUpdate");
         OnRoomsUpdate?.Invoke(roomList);
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Debug.Log("OnPlayerEnteredRoom");
+        OnPlayerEnterInRoom?.Invoke(newPlayer);
     }
 
     #endregion

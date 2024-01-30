@@ -63,17 +63,33 @@ namespace GameLobby
         private void Subscribe()
         {
             _netManager.OnJoinInRoom += JoinedInRoom;
+            _netManager.OnPlayerEnterInRoom += PlayerEnterInRoom;
         }
+
 
         private void Unsubscribe()
         {
             _netManager.OnJoinInRoom -= JoinedInRoom;
+            _netManager.OnPlayerEnterInRoom -= PlayerEnterInRoom;
         }
 
 
         private void JoinedInRoom(Room room)
         {
             _view.SetRoomData(room);
+
+            var playersInRoom = _netManager.GetPlayerInRomm();
+
+            for(int i =0; i< playersInRoom.Length; i++)
+            {
+                var player = playersInRoom[i];
+                _view.AddPlayer(player);
+            }
+        }
+
+        private void PlayerEnterInRoom(Player player)
+        {
+            _view.AddPlayer(player);
         }
 
         protected override void OnDispose()

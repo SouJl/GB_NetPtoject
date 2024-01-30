@@ -3,17 +3,18 @@ using Configs;
 using MultiplayerService;
 using PlayFab.ClientModels;
 using System.Collections.Generic;
+using Tools;
 using UnityEngine;
 
 namespace UI
 {
-    public class ItemsContainerController : BaseUIController, IOnUpdate
+    public class ItemsContainerController : BaseController, IOnUpdate
     {
         private readonly ItemsInfoConfig _itemsInfoConfig;
         private readonly ItemsContainerUI _containerView;
         private readonly IMultiplayerService _multiplayerService;
 
-        private ConnectionProgressController _loadCatalogItemsProgress;
+        private ProgressController _loadCatalogItemsProgress;
 
         private List<ItemModel> _availableCatalogItems;
 
@@ -28,7 +29,7 @@ namespace UI
             _multiplayerService = multiplayerService;
 
             _loadCatalogItemsProgress
-                = new ConnectionProgressController(loadCatalogItemsProgressPos);
+                = new ProgressController(loadCatalogItemsProgressPos);
 
             Subscribe();
 

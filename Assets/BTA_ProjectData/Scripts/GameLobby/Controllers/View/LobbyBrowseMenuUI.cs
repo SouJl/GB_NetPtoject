@@ -7,7 +7,7 @@ using Configs;
 
 namespace UI
 {
-    public class GameLobbyMenuUI : MonoBehaviour
+    public class LobbyBrowseMenuUI : MonoBehaviour
     {
         [SerializeField]
         private Button _joinRoomButton;
@@ -21,14 +21,8 @@ namespace UI
         [SerializeField]
         private GameObject _roomInfoPrefab;
 
-        [Space(10)]
-        [SerializeField]
-        private GameObject _lobbyObjectsUI;
-        [SerializeField]
-        private CreateRoomUI _createRoomUI;
-
         public event Action<string> OnJoinRoomPressed;
-        public event Action<CreationRoomData> OnCreateRoomPressed;
+        public event Action OnHostGamePressed;
         public event Action OnClosePressed;
 
         private string _selectedRoomName;
@@ -37,29 +31,21 @@ namespace UI
 
         public void InitUI(GameConfig gameConfig)
         {
-            _createRoomUI.InitUI(gameConfig.RoomMinPlayers, gameConfig.RoomMaxPlayers);
-
             SubscribeUI();
         }
 
         private void SubscribeUI()
         {
             _joinRoomButton.onClick.AddListener(JoinSelectedRoom);
-            _hostGameButton.onClick.AddListener(OpenRoomCreationMenu);
+            _hostGameButton.onClick.AddListener(() => OnHostGamePressed?.Invoke());
             _closeButton.onClick.AddListener(() => OnClosePressed?.Invoke());
-
-            _createRoomUI.OnCreateRoomPressed += CreateRoom;
-            _createRoomUI.OnBackPressed += BackFromCreationMenu;
         }
 
         private void UnsubscribeUI()
         {
             _joinRoomButton.onClick.RemoveListener(JoinSelectedRoom);
-            _hostGameButton.onClick.RemoveListener(OpenRoomCreationMenu);
+            _hostGameButton.onClick.RemoveAllListeners();
             _closeButton.onClick.RemoveAllListeners();
-
-            _createRoomUI.OnCreateRoomPressed -= CreateRoom;
-            _createRoomUI.OnBackPressed -= BackFromCreationMenu;
         }
 
         private void JoinSelectedRoom()
@@ -69,25 +55,7 @@ namespace UI
 
             OnJoinRoomPressed?.Invoke(_selectedRoomName);
         }
-
-        private void OpenRoomCreationMenu()
-        {
-            _createRoomUI.Show();
-            _lobbyObjectsUI.SetActive(false);
-        }
      
-        private void CreateRoom(CreationRoomData data)
-        {
-            _createRoomUI.Hide();
-            OnCreateRoomPressed?.Invoke(data);
-        }
-
-        private void BackFromCreationMenu()
-        {
-            _createRoomUI.Hide();
-            _lobbyObjectsUI.SetActive(true);
-        }
-
         public void AddRooms(List<RoomInfo> _roomsInfo)
         {
             ClearRoomsData();
@@ -137,8 +105,6 @@ namespace UI
 
         private void OnDestroy()
         {
-            _createRoomUI?.Dispose();
-
             ClearRoomsData();
 
             UnsubscribeUI();

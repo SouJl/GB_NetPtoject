@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 3999859194110338405}
   - component: {fileID: 3999859194110338404}
   m_Layer: 5
-  m_Name: ConnectionProgress
+  m_Name: ProgessRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

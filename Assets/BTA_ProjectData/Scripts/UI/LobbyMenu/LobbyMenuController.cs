@@ -1,13 +1,14 @@
 ﻿using Abstraction;
 using Configs;
 using MultiplayerService;
+using Prefs;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace UI
 {
-    public class LobbyMenuController : BaseUIController, IOnUpdate
+    public class LobbyMenuController : BaseController, IOnUpdate
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/LobbyMenu");
 
@@ -18,7 +19,7 @@ namespace UI
 
         private readonly GameNetManager _netManager;
 
-        private ConnectionProgressController _loadUserInfoProgress;
+        private ProgressController _loadUserInfoProgress;
 
         private ItemsContainerController _itemsContainerController;
 
@@ -39,7 +40,7 @@ namespace UI
             _netManager = new GameNetManager(gameConfig);
 
             _loadUserInfoProgress 
-                = new ConnectionProgressController(_view.LoadUserInfoPlacement);
+                = new ProgressController(_view.LoadUserInfoPlacement);
 
             _itemsContainerController 
                 = new ItemsContainerController(

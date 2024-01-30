@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using Configs;
 using UI;
+using Abstraction;
 
 public class PhotonNetManager : MonoBehaviourPunCallbacks
 {
     private TypedLobby _lobby;
 
     public event Action OnConnectedToServer;
+    public event Action OnDisConnectedFromServer;
 
     public event Action OnJoinInLobby;
     public event Action OnLeftFromLobby;
@@ -76,7 +78,8 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log("OnDisconenctedFromMaster");
+        Debug.Log($"OnDisconenctedFromMaster by {cause} cause");
+        OnDisConnectedFromServer?.Invoke();
     }
 
     public override void OnJoinedLobby()

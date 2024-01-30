@@ -2,10 +2,11 @@
 using TMPro;
 using UnityEngine.UI;
 using System;
+using Abstraction;
 
-namespace UI
+namespace GameLobby
 {
-    public class CreateRoomUI : MonoBehaviour, IDisposable
+    public class CreateRoomUI : MonoBehaviour
     {
         [SerializeField]
         private TMP_InputField _roomName;
@@ -23,15 +24,14 @@ namespace UI
         [SerializeField]
         private Button _backButton;
 
-        private CreationRoomData _roomData;
+        private string _createRoomName;
+        private byte _maxPlayersInRoom;
 
         public event Action OnBackPressed;
         public event Action<CreationRoomData> OnCreateRoomPressed;
 
         public void InitUI(int minPlayersValue, int maxPlayersValue)
         {
-            _roomData = new CreationRoomData();
-
             SubscribeUI();
 
             _minPlayersValue.text = minPlayersValue.ToString();
@@ -42,8 +42,6 @@ namespace UI
             _playersSliderValue.value = maxPlayersValue / 2;
 
             _currentPlayersValue.text = _playersSliderValue.value.ToString();
-
-            Hide();
         }
 
         public void SubscribeUI()
@@ -64,12 +62,12 @@ namespace UI
 
         private void NameChanged(string name)
         {
-            _roomData.RoomName = name;
+            _createRoomName = name;
         }
 
         private void PlayersValueChanged(float value)
         {
-            _roomData.MaxPlayers = (byte)value;
+            _maxPlayersInRoom = (byte)value;
 
             _currentPlayersValue.text = value.ToString();
         }
@@ -78,37 +76,19 @@ namespace UI
         {
             OnBackPressed?.Invoke();
         }
+
         private void CreateRoom()
         {
-            OnCreateRoomPressed?.Invoke(_roomData);
+            OnCreateRoomPressed?.Invoke(new CreationRoomData 
+            {
+                RoomName = _createRoomName,
+                MaxPlayers = _maxPlayersInRoom
+            });
         }
 
-        public void Show()
+        private void OnDestroy()
         {
-            gameObject.SetActive(true);
-        }
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-        }
-
-        #region IDisposable
-        
-        private bool _isDisposed;
-
-        public void Dispose()
-        {
-            if (_isDisposed)
-                return;
-
-            _isDisposed = true;
-
             UnsubscribeUI();
-
-            Hide();
         }
-
-        #endregion
     }
 }

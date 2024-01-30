@@ -1,7 +1,10 @@
 ﻿using Configs;
 using Enumerators;
+using GameLobby;
 using MultiplayerService;
+using Prefs;
 using System;
+using Tools;
 using UI;
 using UnityEngine;
 
@@ -16,11 +19,10 @@ public class MainController : IDisposable
 
     private readonly IMultiplayerService _multiplayerService;
 
+    private LoadingScreenController _loadingScreenController;
     private MainMenuController _mainMenuController;
     private AuthenticationMenuController _authenticationController;
-    private GameLobbyMenuController _gameLobbyMenuController;
-    private LobbyMenuController _lobbyMenuController;
-    private RoomMenuController _roomMenuController;
+    private GameLobbyController _gameLobbyController;
 
     public MainController(
         Transform placeForUi, 
@@ -43,11 +45,32 @@ public class MainController : IDisposable
 
     private void InitialGameLoad()
     {
-        _gamePrefs.OnGameStateChange += GameStateChanged;
+        Subscribe();
 
+        _netManager.Connect();
+
+        _gamePrefs.ChangeGameState(GameState.Loading);
+    }
+
+    private void Subscribe()
+    {
+        _gamePrefs.OnGameStateChange += GameStateChanged;
+        _netManager.OnConnectedToServer += Connected;
+        _netManager.OnDisConnectedFromServer += Disconnected;
+    }
+
+    private void Unsubscribe()
+    {
+        _gamePrefs.OnGameStateChange -= GameStateChanged;
+        _netManager.OnConnectedToServer -= Connected;
+        _netManager.OnDisConnectedFromServer -= Disconnected;
+    }
+
+    private void Connected()
+    {
         var userSate = _gamePrefs.Load();
 
-        if(userSate == false)
+        if (userSate == false)
         {
             _gamePrefs.ChangeGameState(GameState.Authentication);
         }
@@ -55,6 +78,11 @@ public class MainController : IDisposable
         {
             _gamePrefs.ChangeGameState(GameState.MainMenu);
         }
+    }
+
+    private void Disconnected()
+    {
+        _gamePrefs.ChangeGameState(GameState.Exit);
     }
 
     private void GameStateChanged(GameState state)
@@ -65,6 +93,14 @@ public class MainController : IDisposable
         {
             default:
                 break;
+            case GameState.Loading:
+                {
+                    _loadingScreenController = new LoadingScreenController(_placeForUi);
+
+                    _lifeCycle.AddController(_loadingScreenController);
+
+                    break;
+                }
             case GameState.MainMenu:
                 {
                     _mainMenuController = new MainMenuController(_placeForUi, _gamePrefs, _netManager);
@@ -81,23 +117,11 @@ public class MainController : IDisposable
 
                     break;
                 }
-            case GameState.Lobby:
+            case GameState.EnterLobby:
                 {
-                    _gameLobbyMenuController = new GameLobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
+                    _gameLobbyController = new GameLobbyController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
                     
-                    _lifeCycle.AddController(_gameLobbyMenuController);
-
-                   /* _lobbyMenuController = new LobbyMenuController(_placeForUi, _gameConfig, _gamePrefs, _multiplayerService);
-                    
-                    _lifeCycle.AddController(_lobbyMenuController);*/
-
-                    break;
-                }
-            case GameState.Room:
-                {
-                    _roomMenuController = new RoomMenuController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
-
-                    _lifeCycle.AddController(_gameLobbyMenuController);
+                    _lifeCycle.AddController(_gameLobbyController);
 
                     break;
                 }
@@ -126,6 +150,6 @@ public class MainController : IDisposable
     {
         DisposeControllers();
 
-        _gamePrefs.OnGameStateChange -= GameStateChanged;
+        Unsubscribe();
     }
 }

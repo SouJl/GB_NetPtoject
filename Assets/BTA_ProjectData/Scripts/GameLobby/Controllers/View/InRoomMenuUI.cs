@@ -2,9 +2,9 @@
 using TMPro;
 using Photon.Realtime;
 
-namespace UI
+namespace GameLobby
 {
-    public class RoomMenuUI : MonoBehaviour
+    public class InRoomMenuUI : MonoBehaviour
     {
         [SerializeField]
         private TMP_Text _roomName;

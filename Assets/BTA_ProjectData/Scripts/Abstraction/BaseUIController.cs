@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Abstraction
 {
-    public class BaseUIController : IController, IDisposable
+    public class BaseController : IController, IDisposable
     {
         private List<GameObject> _gameObjects;
         private bool _isDisposed;

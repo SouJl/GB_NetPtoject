@@ -3,9 +3,10 @@
     public enum GameLobbyState
     {
         None        = 0,
-        Browse      = 1,
-        CreateRoom  = 2,
-        InRoom      = 3,
-        Exit        = 4,
+        Loading     = 1,
+        Browse      = 2,
+        CreateRoom  = 3,
+        InRoom      = 4,
+        Exit        = 5,
     }
 }

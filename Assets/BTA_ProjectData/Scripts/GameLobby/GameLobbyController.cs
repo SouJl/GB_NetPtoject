@@ -2,12 +2,12 @@
 using Configs;
 using Enumerators;
 using Prefs;
-using System;
+using Tools;
 using UnityEngine;
 
 namespace GameLobby
 {
-    public class GameLobbyController : BaseController
+    public class GameLobbyController : BaseController, IOnUpdate
     {
         private readonly Transform _placeForUi;
         private readonly GameConfig _gameConfig;
@@ -15,6 +15,7 @@ namespace GameLobby
         private readonly PhotonNetManager _netManager;
         private readonly GameLobbyPrefs _lobbyPrefs;
 
+        private LoadingScreenController _loadingScreenController;
         private LobbyBrowseController _lobbyBrowseController;
         private CreateRoomController _createRoomController;
         private InRoomController _inRoomController;
@@ -36,6 +37,8 @@ namespace GameLobby
             _lobbyPrefs.OnStateChange += LobbyStateChanged;
             
             _netManager.JoinLobby();
+
+            _lobbyPrefs.ChangeState(GameLobbyState.Loading);
         }
 
         private void JoinedInLobby()
@@ -51,6 +54,12 @@ namespace GameLobby
             {
                 default:
                     break;
+                case GameLobbyState.Loading:
+                    {
+                        _loadingScreenController = new LoadingScreenController(_placeForUi);
+
+                        break;
+                    }
                 case GameLobbyState.Browse:
                     {
                         _lobbyBrowseController
@@ -79,6 +88,7 @@ namespace GameLobby
 
         private void DisposeControllers()
         {
+            _loadingScreenController?.Dispose();
             _lobbyBrowseController?.Dispose();
             _createRoomController?.Dispose();
             _inRoomController?.Dispose();
@@ -87,13 +97,17 @@ namespace GameLobby
         private void ExitFromLobby()
         {
             _netManager.OnLeftFromLobby += LeftedFromLobby;
+            
             _netManager.LeaveLobby();
+
+            _lobbyPrefs.ChangeState(GameLobbyState.Loading);
 
         }
 
         private void LeftedFromLobby()
         {
             _netManager.OnLeftFromLobby -= LeftedFromLobby;
+
             _gamePrefs.ChangeGameState(GameState.MainMenu);
         }
 
@@ -105,6 +119,14 @@ namespace GameLobby
 
             _netManager.OnJoinInLobby -= JoinedInLobby;
             _lobbyPrefs.OnStateChange -= LobbyStateChanged;
+        }
+
+        public void ExecuteUpdate(float deltaTime)
+        {
+            if(_loadingScreenController != null)
+            {
+                _loadingScreenController.ExecuteUpdate(deltaTime);
+            }
         }
     }
 }

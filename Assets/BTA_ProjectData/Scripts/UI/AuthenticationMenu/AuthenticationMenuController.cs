@@ -16,7 +16,7 @@ namespace UI
         private readonly GamePrefs _gamePrefs;
         private readonly IMultiplayerService _multiplayerService;
 
-        private ConnectionProgressController _connectionProgress;
+        private ProgressController _connectionProgress;
 
         public AuthenticationMenuController(
             Transform placeForUI, 
@@ -29,7 +29,7 @@ namespace UI
             _view = LoadView(placeForUI);
             _view.InitView(_gamePrefs.IsUserDataExist, _gamePrefs.UserName);
             
-            _connectionProgress = new ConnectionProgressController(_view.ConnetcionProgressPlacement);
+            _connectionProgress = new ProgressController(_view.ConnetcionProgressPlacement);
 
             Subscribe();
         }

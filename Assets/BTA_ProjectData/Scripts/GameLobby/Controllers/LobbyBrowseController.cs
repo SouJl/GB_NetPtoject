@@ -50,7 +50,7 @@ namespace GameLobby
             _view.OnHostGamePressed += OpenHostGameMenu;
             _view.OnClosePressed += Close;
 
-            _netManager.OnRoomsUpdate -= RefreshRoomData;
+            _netManager.OnRoomsUpdate += RefreshRoomData;
         }
 
         private void Unsubscribe()

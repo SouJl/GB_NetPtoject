@@ -1,14 +1,13 @@
 ﻿using Abstraction;
-using Tools;
 using UnityEngine;
 
-namespace UI
+namespace Tools
 {
-    public class ConnectionProgressController : IController, IOnUpdate
+    public class ProgressController : BaseController, IOnUpdate
     {
-        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/ConnectionProgress");
+        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/ProgessRing");
 
-        private readonly ConnectionProgressUI _view;
+        private readonly ProgressRingUI _view;
         private readonly float _minValue;
         private readonly float _maxValue;
         private readonly float _speed;
@@ -16,7 +15,7 @@ namespace UI
         private float _currentProgress;
         private bool _isEnable;
 
-        public ConnectionProgressController(Transform placeForUI)
+        public ProgressController(Transform placeForUI)
         {
             _view = LoadView(placeForUI);
             _view.InitUI();
@@ -26,10 +25,13 @@ namespace UI
             _speed = _view.Speed;
         }
 
-        private ConnectionProgressUI LoadView(Transform placeForUI)
+        private ProgressRingUI LoadView(Transform placeForUI)
         {
             var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(_viewPath), placeForUI, false);
-            return objectView.GetComponent<ConnectionProgressUI>();
+
+            AddGameObject(objectView);
+
+            return objectView.GetComponent<ProgressRingUI>();
         }
 
         public void Start()
@@ -65,6 +67,13 @@ namespace UI
                 _currentProgress = 0;
 
             _view.UpdateProgressValue(resultValue);
+        }
+
+        protected override void OnDispose()
+        {
+            base.OnDispose();
+
+            Stop();
         }
     }
 }

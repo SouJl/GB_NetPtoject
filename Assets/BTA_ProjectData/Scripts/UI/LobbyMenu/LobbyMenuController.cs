@@ -19,7 +19,7 @@ namespace UI
 
         private readonly GameNetManager _netManager;
 
-        private ConnectionProgressController _loadUserInfoProgress;
+        private ProgressController _loadUserInfoProgress;
 
         private ItemsContainerController _itemsContainerController;
 
@@ -40,7 +40,7 @@ namespace UI
             _netManager = new GameNetManager(gameConfig);
 
             _loadUserInfoProgress 
-                = new ConnectionProgressController(_view.LoadUserInfoPlacement);
+                = new ProgressController(_view.LoadUserInfoPlacement);
 
             _itemsContainerController 
                 = new ItemsContainerController(

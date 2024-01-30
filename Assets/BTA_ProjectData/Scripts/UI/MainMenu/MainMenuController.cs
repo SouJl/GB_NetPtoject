@@ -27,8 +27,6 @@ namespace UI
             _view.InitUI(gamePrefs.UserName);
 
             Subscribe();
-
-            _netManager.Connect();
         }
 
         private MainMenuUI LoadView(Transform placeForUI)
@@ -76,11 +74,6 @@ namespace UI
         private void ExitGame()
         {
             _gamePrefs.ChangeGameState(Enumerators.GameState.Exit);
-        }
-
-        private void JoinedInLobby()
-        {
-            _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby);
         }
 
         protected override void OnDispose()

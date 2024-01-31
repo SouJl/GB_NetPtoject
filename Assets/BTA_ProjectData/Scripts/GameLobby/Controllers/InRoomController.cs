@@ -1,5 +1,6 @@
 ﻿using Abstraction;
 using Configs;
+using Enumerators;
 using Photon.Realtime;
 using Prefs;
 using Tools;
@@ -111,7 +112,7 @@ namespace GameLobby
 
         private void LeftedFromRoom()
         {
-            _lobbyPrefs.ChangeState(Enumerators.GameLobbyState.Exit);
+            _lobbyPrefs.ChangeState(GameLobbyState.Exit);
         }
 
         protected override void OnDispose()

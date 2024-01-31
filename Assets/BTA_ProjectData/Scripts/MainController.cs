@@ -103,6 +103,8 @@ public class MainController : IDisposable
 
                     _lifeCycle.AddController(_loadingScreenController);
 
+                    _loadingScreenController.Start();
+
                     break;
                 }
             case GameState.MainMenu:

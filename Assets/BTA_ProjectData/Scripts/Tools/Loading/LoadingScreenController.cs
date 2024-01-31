@@ -20,8 +20,6 @@ namespace Tools
             _view.InitUI(GetLoadingText(type));
 
             _connectionProgress = new ProgressController(_view.LoaddingProgressPlace);
-
-            _connectionProgress.Start();
         }
 
         private LoadingScreenUI LoadView(Transform placeForUI)
@@ -49,6 +47,17 @@ namespace Tools
                         return "JOIN IN LOBBY...";
                     }
             }
+        }
+
+        public void Start()
+        {
+            _connectionProgress.Start();
+        }
+
+        public void Stop()
+        {
+
+            _connectionProgress.Stop();
         }
 
         public void ExecuteUpdate(float deltaTime)

@@ -32,6 +32,8 @@ namespace UI
         public void InitUI(GameConfig gameConfig)
         {
             SubscribeUI();
+
+            Hide();
         }
 
         private void SubscribeUI()
@@ -56,6 +58,16 @@ namespace UI
             OnJoinRoomPressed?.Invoke(_selectedRoomName);
         }
      
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
         public void AddRooms(List<RoomInfo> _roomsInfo)
         {
             ClearRoomsData();

@@ -15,8 +15,9 @@ namespace GameLobby
         private readonly PhotonNetManager _netManager;
         private readonly StateTransition _stateTransition;
         private readonly GameLobbyPrefs _lobbyPrefs;
+        
+        private readonly LifeCycleController _lobbyLifeCycle;
 
-        private LoadingScreenController _loadingScreenController;
         private LobbyBrowseController _lobbyBrowseController;
         private CreateRoomController _createRoomController;
         private InRoomController _inRoomController;
@@ -36,18 +37,11 @@ namespace GameLobby
 
             _lobbyPrefs = new GameLobbyPrefs();
 
-            _netManager.OnJoinInLobby += JoinedInLobby;
+            _lobbyLifeCycle = new LifeCycleController();
+
             _lobbyPrefs.OnStateChange += LobbyStateChanged;
             
-            _lobbyPrefs.ChangeState(GameLobbyState.Loading);
-
-            _netManager.JoinLobby();
-        }
-
-        private void JoinedInLobby()
-        {
-            _stateTransition.Invoke(
-                () => _lobbyPrefs.ChangeState(GameLobbyState.Browse));
+            _lobbyPrefs.ChangeState(GameLobbyState.Browse);
         }
 
         private void LobbyStateChanged(GameLobbyState state)
@@ -58,28 +52,28 @@ namespace GameLobby
             {
                 default:
                     break;
-                case GameLobbyState.Loading:
-                    {
-                        _loadingScreenController = new LoadingScreenController(_placeForUi, LoadingScreenType.LobbyLoading);
-
-                        break;
-                    }
                 case GameLobbyState.Browse:
                     {
                         _lobbyBrowseController
                             = new LobbyBrowseController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager, _stateTransition);
+
+                        _lobbyLifeCycle.AddController(_lobbyBrowseController);
                         break;
                     }
                 case GameLobbyState.CreateRoom:
                     {
                         _createRoomController 
                             = new CreateRoomController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager, _stateTransition);
+
+                        _lobbyLifeCycle.AddController(_createRoomController);
                         break;
                     }
                 case GameLobbyState.InRoom:
                     {
                         _inRoomController 
                             = new InRoomController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager);
+
+                        _lobbyLifeCycle.AddController(_inRoomController);
                         break;
                     }
                 case GameLobbyState.Exit:
@@ -92,10 +86,7 @@ namespace GameLobby
 
         private void DisposeControllers()
         {
-            _loadingScreenController?.Dispose();
-            _lobbyBrowseController?.Dispose();
-            _createRoomController?.Dispose();
-            _inRoomController?.Dispose();
+            _lobbyLifeCycle?.Dispose();
         }
 
         private void ExitFromLobby()
@@ -118,16 +109,12 @@ namespace GameLobby
 
             DisposeControllers();
 
-            _netManager.OnJoinInLobby -= JoinedInLobby;
             _lobbyPrefs.OnStateChange -= LobbyStateChanged;
         }
 
         public void ExecuteUpdate(float deltaTime)
         {
-            if(_loadingScreenController != null)
-            {
-                _loadingScreenController.ExecuteUpdate(deltaTime);
-            }
+            _lobbyLifeCycle.OnUpdate(deltaTime);
         }
     }
 }

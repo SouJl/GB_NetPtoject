@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace GameLobby
 {
-    public class LobbyBrowseController : BaseController
+    public class LobbyBrowseController : BaseController, IOnUpdate
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/LobbyBrowseMenu");
 
@@ -19,6 +19,8 @@ namespace GameLobby
         private readonly GameLobbyPrefs _lobbyPrefs;
         private readonly PhotonNetManager _netManager;
         private readonly StateTransition _stateTransition;
+
+        private readonly LoadingScreenController _loadingScreenController;
 
         public LobbyBrowseController(
            Transform placeForUI,
@@ -32,11 +34,14 @@ namespace GameLobby
             _netManager = netManager;
             _stateTransition = stateTransition;
 
+            _loadingScreenController = new LoadingScreenController(placeForUI, LoadingScreenType.LobbyLoading);
+
             _view = LoadView(placeForUI);
             _view.InitUI(gameConfig);
 
             Subscribe();
 
+            JoinInLobby();
         }
 
         private LobbyBrowseMenuUI LoadView(Transform placeForUI)
@@ -54,6 +59,7 @@ namespace GameLobby
             _view.OnHostGamePressed += OpenHostGameMenu;
             _view.OnClosePressed += Close;
 
+            _netManager.OnJoinInLobby += JoinedInLobby;
             _netManager.OnRoomsUpdate += RefreshRoomData;
         }
 
@@ -62,7 +68,8 @@ namespace GameLobby
             _view.OnJoinRoomPressed -= JoinRoom;
             _view.OnHostGamePressed -= OpenHostGameMenu;
             _view.OnClosePressed -= Close;
-
+          
+            _netManager.OnJoinInLobby -= JoinedInLobby;
             _netManager.OnRoomsUpdate -= RefreshRoomData;
         }
 
@@ -86,6 +93,12 @@ namespace GameLobby
             _lobbyPrefs.ChangeState(GameLobbyState.Exit);
         }
 
+        private void JoinedInLobby()
+        {
+            _loadingScreenController.Stop();
+            _view.Show();
+        }
+
         private void RefreshRoomData(List<RoomInfo> roomsInfo)
         {
             if (roomsInfo.Count == 0)
@@ -94,11 +107,25 @@ namespace GameLobby
             _view.AddRooms(roomsInfo);
         }
 
+
+        private void JoinInLobby()
+        {
+            _netManager.JoinLobby();
+            _loadingScreenController.Start();
+        }
+
         protected override void OnDispose()
         {
             base.OnDispose();
 
             Unsubscribe();
+
+            _loadingScreenController?.Dispose();
+        }
+
+        public void ExecuteUpdate(float deltaTime)
+        {
+            _loadingScreenController.ExecuteUpdate(deltaTime);
         }
     }
 }

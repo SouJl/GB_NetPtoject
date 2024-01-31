@@ -13,14 +13,16 @@ namespace UI
         private readonly GamePrefs _gamePrefs;
         private readonly PhotonNetManager _netManager;
         private readonly MainMenuUI _view;
-
+        private readonly StateTransition _stateTransition;
         public MainMenuController(
             Transform placeForUI, 
             GamePrefs gamePrefs, 
-            PhotonNetManager netManager)
+            PhotonNetManager netManager,
+            StateTransition stateTransition)
         {
             _gamePrefs = gamePrefs;
             _netManager = netManager;
+            _stateTransition = stateTransition;
 
             _view = LoadView(placeForUI);
 
@@ -60,11 +62,15 @@ namespace UI
         {
             _gamePrefs.DeleteData();
 
-            _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication);
+            _stateTransition.Invoke(
+                () => _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication));
         }
 
         private void JoinGame()
         {
+            /*
+            _stateTransition.Invoke(
+                () => _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby));*/
             _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby);
         }
 

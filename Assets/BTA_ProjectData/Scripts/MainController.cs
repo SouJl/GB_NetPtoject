@@ -14,6 +14,7 @@ public class MainController : IDisposable
     private readonly GameConfig _gameConfig;
     private readonly LifeCycleController _lifeCycle;
     private readonly PhotonNetManager _netManager;
+    private readonly StateTransition _stateTransition;
 
     private readonly GamePrefs _gamePrefs;
 
@@ -28,12 +29,14 @@ public class MainController : IDisposable
         Transform placeForUi, 
         GameConfig gameConfig, 
         LifeCycleController lifeCycle,
-        PhotonNetManager netManager)
+        PhotonNetManager netManager,
+        StateTransition stateTransition)
     {
         _placeForUi = placeForUi;
         _gameConfig = gameConfig;
         _lifeCycle = lifeCycle;
         _netManager = netManager;
+        _stateTransition = stateTransition;
 
         _gamePrefs = new GamePrefs();
         _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
@@ -76,7 +79,8 @@ public class MainController : IDisposable
         }
         else
         {
-            _gamePrefs.ChangeGameState(GameState.MainMenu);
+            _stateTransition.Invoke(
+                () => _gamePrefs.ChangeGameState(GameState.MainMenu));
         }
     }
 
@@ -103,7 +107,7 @@ public class MainController : IDisposable
                 }
             case GameState.MainMenu:
                 {
-                    _mainMenuController = new MainMenuController(_placeForUi, _gamePrefs, _netManager);
+                    _mainMenuController = new MainMenuController(_placeForUi, _gamePrefs, _netManager, _stateTransition);
                     
                     _lifeCycle.AddController(_mainMenuController);
 
@@ -119,7 +123,7 @@ public class MainController : IDisposable
                 }
             case GameState.EnterLobby:
                 {
-                    _gameLobbyController = new GameLobbyController(_placeForUi, _gameConfig, _gamePrefs, _netManager);
+                    _gameLobbyController = new GameLobbyController(_placeForUi, _gameConfig, _gamePrefs, _netManager, _stateTransition);
                     
                     _lifeCycle.AddController(_gameLobbyController);
 

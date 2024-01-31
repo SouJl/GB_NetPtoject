@@ -1,4 +1,5 @@
 ﻿using Configs;
+using Tools;
 using UnityEngine;
 
 public class Main : MonoBehaviour
@@ -9,6 +10,8 @@ public class Main : MonoBehaviour
     private GameConfig _gameConfig;
     [SerializeField]
     private PhotonNetManager _netManager;
+    [SerializeField]
+    private StateTransition _stateTransition;
 
     private float _deltaTime;
 
@@ -20,7 +23,7 @@ public class Main : MonoBehaviour
         _deltaTime = Time.deltaTime;
         _gameLifecycle = new LifeCycleController();
         _mainController 
-            = new MainController(_placeForUI, _gameConfig, _gameLifecycle, _netManager);
+            = new MainController(_placeForUI, _gameConfig, _gameLifecycle, _netManager, _stateTransition);
     }
 
     private void Start()

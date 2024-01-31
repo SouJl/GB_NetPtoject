@@ -16,16 +16,19 @@ namespace GameLobby
         private readonly GameConfig _gameConfig;
         private readonly GameLobbyPrefs _lobbyPrefs;
         private readonly PhotonNetManager _netManager;
+        private readonly StateTransition _stateTransition;
 
         public CreateRoomController(
             Transform placeForUI,
             GameConfig gameConfig,
             GameLobbyPrefs lobbyPrefs,
-            PhotonNetManager netManager)
+            PhotonNetManager netManager,
+            StateTransition stateTransition)
         {
             _gameConfig = gameConfig;
             _lobbyPrefs = lobbyPrefs;
             _netManager = netManager;
+            _stateTransition = stateTransition;
 
             _view = LoadView(placeForUI);
 
@@ -58,7 +61,7 @@ namespace GameLobby
         private void CreateRoom(CreationRoomData creationData)
         {
             _lobbyPrefs.SetRoomData(creationData, true);
-            _lobbyPrefs.ChangeState(GameLobbyState.InRoom);
+            _stateTransition.Invoke(() => _lobbyPrefs.ChangeState(GameLobbyState.InRoom));
         }
 
         private void BackToLobbyBrowse()

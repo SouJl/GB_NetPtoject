@@ -13,6 +13,7 @@ namespace GameLobby
         private readonly GameConfig _gameConfig;
         private readonly GamePrefs _gamePrefs;
         private readonly PhotonNetManager _netManager;
+        private readonly StateTransition _stateTransition;
         private readonly GameLobbyPrefs _lobbyPrefs;
 
         private LoadingScreenController _loadingScreenController;
@@ -24,12 +25,14 @@ namespace GameLobby
             Transform placeForUI,
             GameConfig gameConfig,
             GamePrefs gamePrefs,
-            PhotonNetManager netManager)
+            PhotonNetManager netManager,
+            StateTransition stateTransition)
         {
             _placeForUi = placeForUI;
             _gameConfig = gameConfig;
             _gamePrefs = gamePrefs;
             _netManager = netManager;
+            _stateTransition = stateTransition;
 
             _lobbyPrefs = new GameLobbyPrefs();
 
@@ -43,7 +46,8 @@ namespace GameLobby
 
         private void JoinedInLobby()
         {
-            _lobbyPrefs.ChangeState(GameLobbyState.Browse);
+            _stateTransition.Invoke(
+                () => _lobbyPrefs.ChangeState(GameLobbyState.Browse));
         }
 
         private void LobbyStateChanged(GameLobbyState state)
@@ -63,13 +67,13 @@ namespace GameLobby
                 case GameLobbyState.Browse:
                     {
                         _lobbyBrowseController
-                            = new LobbyBrowseController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager);
+                            = new LobbyBrowseController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager, _stateTransition);
                         break;
                     }
                 case GameLobbyState.CreateRoom:
                     {
                         _createRoomController 
-                            = new CreateRoomController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager);
+                            = new CreateRoomController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager, _stateTransition);
                         break;
                     }
                 case GameLobbyState.InRoom:

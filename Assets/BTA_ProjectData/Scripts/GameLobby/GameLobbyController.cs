@@ -39,9 +39,9 @@ namespace GameLobby
             _netManager.OnJoinInLobby += JoinedInLobby;
             _lobbyPrefs.OnStateChange += LobbyStateChanged;
             
-            _netManager.JoinLobby();
-
             _lobbyPrefs.ChangeState(GameLobbyState.Loading);
+
+            _netManager.JoinLobby();
         }
 
         private void JoinedInLobby()

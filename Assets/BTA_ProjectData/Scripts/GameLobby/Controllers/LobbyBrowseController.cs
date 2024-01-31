@@ -36,6 +36,7 @@ namespace GameLobby
             _view.InitUI(gameConfig);
 
             Subscribe();
+
         }
 
         private LobbyBrowseMenuUI LoadView(Transform placeForUI)

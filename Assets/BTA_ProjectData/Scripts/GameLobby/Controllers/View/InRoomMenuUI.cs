@@ -2,6 +2,8 @@
 using TMPro;
 using Photon.Realtime;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using System;
 
 namespace GameLobby
 {
@@ -13,12 +15,31 @@ namespace GameLobby
         private Transform _playersInfoContainer;
         [SerializeField]
         private GameObject _playerInfoPrefab;
+        [SerializeField]
+        private Button _startGameButton;
+        [SerializeField]
+        private Button _exitButton;
 
         private List<PlayerInfoObjectUI> _playerCollection = new();
+
+        public event Action OnStartGamePressed;
+        public event Action OnExitPressed;
 
         public void InitUI()
         {
             _roomName.text = "";
+            SubscribeUI();
+        }
+
+        private void SubscribeUI()
+        {
+            _startGameButton.onClick.AddListener(() => OnStartGamePressed?.Invoke());
+            _exitButton.onClick.AddListener(() => OnExitPressed?.Invoke());
+        }
+        private void UnsubscribeUI()
+        {
+            _startGameButton.onClick.RemoveAllListeners();
+            _exitButton.onClick.RemoveAllListeners();
         }
 
         public void SetRoomData(Room room)
@@ -51,6 +72,8 @@ namespace GameLobby
             }
 
             _playerCollection.Clear();
+
+            UnsubscribeUI();
         }
     }
 }

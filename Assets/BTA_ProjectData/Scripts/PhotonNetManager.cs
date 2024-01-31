@@ -74,6 +74,11 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinOrCreateRoom(data.RoomName, roomOptions, _lobby);
     }
 
+    public void LeaveRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+    }
+
     public Player[] GetPlayerInRomm()
     {
         return PhotonNetwork.PlayerList;
@@ -131,7 +136,7 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        Debug.Log("OnPlayerEnteredRoom");
+        Debug.Log("OnLeftRoom");
         OnLeftFromRoom?.Invoke();
     }
 

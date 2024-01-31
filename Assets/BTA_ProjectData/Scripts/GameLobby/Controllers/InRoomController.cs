@@ -62,17 +62,34 @@ namespace GameLobby
 
         private void Subscribe()
         {
+            _view.OnStartGamePressed += StartGame;
+            _view.OnExitPressed += ExitFromRoom;
+
             _netManager.OnJoinInRoom += JoinedInRoom;
             _netManager.OnPlayerEnterInRoom += PlayerEnterInRoom;
+            _netManager.OnLeftFromRoom += LeftedFromRoom;
         }
 
-
+  
         private void Unsubscribe()
         {
+            _view.OnStartGamePressed += StartGame;
+            _view.OnExitPressed += ExitFromRoom;
+
             _netManager.OnJoinInRoom -= JoinedInRoom;
             _netManager.OnPlayerEnterInRoom -= PlayerEnterInRoom;
+            _netManager.OnLeftFromRoom -= LeftedFromRoom;
         }
 
+        private void StartGame()
+        {
+            Debug.Log("StartGame");
+        }
+
+        private void ExitFromRoom()
+        {
+            _netManager.LeaveRoom();
+        }
 
         private void JoinedInRoom(Room room)
         {
@@ -90,6 +107,11 @@ namespace GameLobby
         private void PlayerEnterInRoom(Player player)
         {
             _view.AddPlayer(player);
+        }
+
+        private void LeftedFromRoom()
+        {
+            _lobbyPrefs.ChangeState(Enumerators.GameLobbyState.Exit);
         }
 
         protected override void OnDispose()

@@ -20,7 +20,7 @@ namespace GameLobby
         [SerializeField]
         private Button _exitButton;
 
-        private List<PlayerInfoObjectUI> _playerCollection = new();
+        private Dictionary<string, PlayerInfoObjectUI> _playerCollection = new();
 
         public event Action OnStartGamePressed;
         public event Action OnExitPressed;
@@ -50,7 +50,17 @@ namespace GameLobby
         public void AddPlayer(Player player)
         {
             var playerUI = CreatePlayerInfoView(player);
-            _playerCollection.Add(playerUI);
+            
+            _playerCollection[player.NickName] = playerUI;
+        }
+
+        public void RemovePlayer(Player player) 
+        {
+            var playerUI = _playerCollection[player.NickName];
+            
+            Destroy(playerUI.gameObject);
+
+            _playerCollection.Remove(player.NickName);
         }
 
         private PlayerInfoObjectUI CreatePlayerInfoView(Player player)
@@ -65,10 +75,9 @@ namespace GameLobby
 
         private void OnDestroy()
         {
-            for(int i =0; i < _playerCollection.Count; i++)
+            foreach(var playerInfo in _playerCollection)
             {
-                var playerInfo = _playerCollection[i];
-                Destroy(playerInfo.gameObject);
+                Destroy(playerInfo.Value.gameObject);
             }
 
             _playerCollection.Clear();

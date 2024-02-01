@@ -68,10 +68,10 @@ namespace GameLobby
 
             _netManager.OnJoinInRoom += JoinedInRoom;
             _netManager.OnPlayerEnterInRoom += PlayerEnterInRoom;
+            _netManager.OnPlayerLeftFromRoom += PlayerLeftedFromRoom;
             _netManager.OnLeftFromRoom += LeftedFromRoom;
         }
 
-  
         private void Unsubscribe()
         {
             _view.OnStartGamePressed += StartGame;
@@ -79,6 +79,7 @@ namespace GameLobby
 
             _netManager.OnJoinInRoom -= JoinedInRoom;
             _netManager.OnPlayerEnterInRoom -= PlayerEnterInRoom;
+            _netManager.OnPlayerLeftFromRoom -= PlayerLeftedFromRoom;
             _netManager.OnLeftFromRoom -= LeftedFromRoom;
         }
 
@@ -108,6 +109,11 @@ namespace GameLobby
         private void PlayerEnterInRoom(Player player)
         {
             _view.AddPlayer(player);
+        }
+
+        private void PlayerLeftedFromRoom(Player leftedPlayer)
+        {
+            _view.RemovePlayer(leftedPlayer);
         }
 
         private void LeftedFromRoom()

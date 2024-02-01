@@ -21,6 +21,7 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
     public event Action OnLeftFromRoom;
     public event Action<List<RoomInfo>> OnRoomsUpdate;
     public event Action<Player> OnPlayerEnterInRoom;
+    public event Action<Player> OnPlayerLeftFromRoom;
 
     public void Init(GameConfig gameConfig)
     {
@@ -132,6 +133,12 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("OnPlayerEnteredRoom");
         OnPlayerEnterInRoom?.Invoke(newPlayer);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log("OnPlayerEnteredRoom");
+        OnPlayerLeftFromRoom?.Invoke(otherPlayer);
     }
 
     public override void OnLeftRoom()

@@ -1,5 +1,6 @@
 ﻿using Abstraction;
 using Enumerators;
+using ParrelSync;
 using System;
 using UnityEngine;
 
@@ -25,13 +26,20 @@ namespace Prefs
 
         public event Action<GameState> OnGameStateChange;
 
+        private bool _isClone;
+
         public GamePrefs()
         {
-
+            _isClone = ClonesManager.IsClone();
         }
 
         public void Save()
         {
+            if (_isClone)
+            {
+                return;
+            }
+
             PlayerPrefs.SetString(AuthUserId, _userId);
             PlayerPrefs.SetString(AuthUserName, _userName);
             PlayerPrefs.SetString(AuthUserPassword, _userPassword);
@@ -39,6 +47,11 @@ namespace Prefs
 
         public bool Load()
         {
+            if (_isClone)
+            {
+                return false;
+            }
+
             _isUserDataExist = CheckDataExist();
 
             if (_isUserDataExist == false)
@@ -65,6 +78,11 @@ namespace Prefs
 
         public void DeleteData()
         {
+            if (_isClone)
+            {
+                return;
+            }
+
             PlayerPrefs.DeleteAll();
 
             _isUserDataExist = false;

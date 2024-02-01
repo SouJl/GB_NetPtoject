@@ -80,9 +80,19 @@ public class PhotonNetManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
     }
 
-    public Player[] GetPlayerInRomm()
+    public Player[] GetPlayerInRoom()
     {
         return PhotonNetwork.PlayerList;
+    }
+
+    public void ChangeRoomOpenState(bool state)
+    {
+        PhotonNetwork.CurrentRoom.IsOpen = state;
+    }
+
+    public void UpdateRoomData(Room room)
+    {
+        PhotonNetwork.CurrentRoom.IsOpen = room.IsOpen;
     }
 
     #region PUN CALLBACKS

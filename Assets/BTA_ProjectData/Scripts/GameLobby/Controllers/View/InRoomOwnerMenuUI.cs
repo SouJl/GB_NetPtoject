@@ -7,7 +7,7 @@ using System;
 
 namespace GameLobby
 {
-    public class InRoomMenuUI : MonoBehaviour
+    public class InRoomOwnerMenuUI : MonoBehaviour, IRoomMenuUI
     {
         [SerializeField]
         private TMP_Text _roomName;
@@ -25,9 +25,9 @@ namespace GameLobby
         public event Action OnStartGamePressed;
         public event Action OnExitPressed;
 
-        public void InitUI()
+        public void InitUI(string roomName)
         {
-            _roomName.text = "";
+            _roomName.text = roomName;
             SubscribeUI();
         }
 
@@ -40,11 +40,6 @@ namespace GameLobby
         {
             _startGameButton.onClick.RemoveAllListeners();
             _exitButton.onClick.RemoveAllListeners();
-        }
-
-        public void SetRoomData(Room room)
-        {
-            _roomName.text = $"ROOM NAME: {room.Name}";
         }
 
         public void AddPlayer(Player player)
@@ -68,7 +63,7 @@ namespace GameLobby
             GameObject objectView = Instantiate(_playerInfoPrefab, _playersInfoContainer, false);
             var view = objectView.GetComponent<PlayerInfoObjectUI>();
 
-            view.InitUI(player.NickName);
+            view.InitUI(player.NickName, player.IsMasterClient);
 
             return view;
         }

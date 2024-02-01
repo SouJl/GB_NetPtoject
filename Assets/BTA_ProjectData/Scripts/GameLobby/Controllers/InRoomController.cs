@@ -3,6 +3,7 @@ using Configs;
 using Enumerators;
 using Photon.Realtime;
 using Prefs;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -11,12 +12,18 @@ namespace GameLobby
 {
     public class InRoomController : BaseController
     {
-        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/InRoomMenu");
+        private readonly ResourcePath _viewOwnerPath = new ResourcePath("Prefabs/UI/InRoomOwnerMenu");
+        private readonly ResourcePath _viewClientPath = new ResourcePath("Prefabs/UI/InRoomClientMenu");
 
-        private readonly InRoomMenuUI _view;
+        private readonly Transform _placeForUI;
         private readonly GameConfig _gameConfig;
         private readonly GameLobbyPrefs _lobbyPrefs;
         private readonly PhotonNetManager _netManager;
+
+        private IRoomMenuUI _view;
+
+        private List<Player> _playersInRoom;
+        private Room _roomData;
 
         public InRoomController(
             Transform placeForUI,
@@ -24,19 +31,23 @@ namespace GameLobby
             GameLobbyPrefs lobbyPrefs,
             PhotonNetManager netManager)
         {
+            _placeForUI = placeForUI;
             _gameConfig = gameConfig;
             _lobbyPrefs = lobbyPrefs;
             _netManager = netManager;
 
-            _view = LoadView(placeForUI);
-            _view.InitUI();
+            var prefabPath = lobbyPrefs.IsNeedRoomCreation 
+                ? _viewOwnerPath 
+                : _viewClientPath;
+
+            _view = LoadView(_placeForUI, prefabPath);
 
             Subscribe();
 
-            InitLobbyData(_lobbyPrefs);        
+            InitRoomData(_lobbyPrefs);        
         }
 
-        private void InitLobbyData(GameLobbyPrefs lobbyPrefs)
+        private void InitRoomData(GameLobbyPrefs lobbyPrefs)
         {
             if (lobbyPrefs.IsNeedRoomCreation)
             {
@@ -52,13 +63,13 @@ namespace GameLobby
             }
         }
 
-        private InRoomMenuUI LoadView(Transform placeForUI)
+        private IRoomMenuUI LoadView(Transform placeForUI, ResourcePath path)
         {
-            var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(_viewPath), placeForUI, false);
+            var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(path), placeForUI, false);
 
             AddGameObject(objectView);
 
-            return objectView.GetComponent<InRoomMenuUI>();
+            return objectView.GetComponent<IRoomMenuUI>();
         }
 
         private void Subscribe()
@@ -95,21 +106,41 @@ namespace GameLobby
 
         private void JoinedInRoom(Room room)
         {
-            _view.SetRoomData(room);
+            _roomData = room;
 
-            var playersInRoom = _netManager.GetPlayerInRomm();
+            _view.InitUI(_roomData.Name);
+
+            _playersInRoom = new List<Player>();
+
+            var playersInRoom = _netManager.GetPlayerInRoom();
 
             for(int i =0; i< playersInRoom.Length; i++)
             {
                 var player = playersInRoom[i];
-                _view.AddPlayer(player);
+                PlayerEnterInRoom(player);
             }
         }
 
         private void PlayerEnterInRoom(Player player)
         {
             _view.AddPlayer(player);
+            
+            _playersInRoom.Add(player);
+
+            if (IsExceededPlayersLimit())
+            {
+                _netManager.ChangeRoomOpenState(false);
+            }
         }
+
+        private bool IsExceededPlayersLimit()
+        {
+            if (_playersInRoom.Count >= _roomData.MaxPlayers)
+                return true;
+
+            return false;
+        }
+
 
         private void PlayerLeftedFromRoom(Player leftedPlayer)
         {

@@ -15,14 +15,14 @@ namespace GameLobby
         private readonly CreateRoomUI _view;
         private readonly GameConfig _gameConfig;
         private readonly GameLobbyPrefs _lobbyPrefs;
-        private readonly PhotonNetManager _netManager;
+        private readonly GameNetManager _netManager;
         private readonly StateTransition _stateTransition;
 
         public CreateRoomController(
             Transform placeForUI,
             GameConfig gameConfig,
             GameLobbyPrefs lobbyPrefs,
-            PhotonNetManager netManager,
+            GameNetManager netManager,
             StateTransition stateTransition)
         {
             _gameConfig = gameConfig;

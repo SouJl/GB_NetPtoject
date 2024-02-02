@@ -17,16 +17,18 @@ namespace GameLobby
         private readonly LobbyBrowseMenuUI _view;
         private readonly GameConfig _gameConfig;
         private readonly GameLobbyPrefs _lobbyPrefs;
-        private readonly PhotonNetManager _netManager;
+        private readonly GameNetManager _netManager;
         private readonly StateTransition _stateTransition;
 
         private readonly LoadingScreenController _loadingScreenController;
+
+        private List<RoomInfo> _lobbyRoomsInfoCollection = new();
 
         public LobbyBrowseController(
            Transform placeForUI,
            GameConfig gameConfig,
            GameLobbyPrefs lobbyPrefs,
-           PhotonNetManager netManager,
+           GameNetManager netManager,
            StateTransition stateTransition)
         {
             _gameConfig = gameConfig;
@@ -75,6 +77,14 @@ namespace GameLobby
 
         private void JoinRoom(string roomName)
         {
+            var room = _lobbyRoomsInfoCollection.Find(r => r.Name == roomName);
+
+            if (!room.IsOpen)
+            {
+                Debug.LogWarning($"Romm {roomName} is closed");
+                return;
+            }
+
             _lobbyPrefs.SetRoomData(new CreationRoomData
             {
                 RoomName = roomName
@@ -103,6 +113,13 @@ namespace GameLobby
         {
             if (roomsInfo.Count == 0)
                 return;
+
+            for(int i =0; i< roomsInfo.Count; i++)
+            {
+                var roomInfo = roomsInfo[i];
+              
+                _lobbyRoomsInfoCollection.Add(roomInfo);
+            }
 
             _view.AddRooms(roomsInfo);
         }

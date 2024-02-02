@@ -637,7 +637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _roomName: {fileID: 3859724978015401804}
   _playersInfoContainer: {fileID: 3112903228937951837}
-  _playerInfoPrefab: {fileID: 856399088198932723, guid: 0171b8764a6e854448419cf5374c18f8, type: 3}
+  _playerInfoPrefab: {fileID: 2723950521795771324, guid: 0171b8764a6e854448419cf5374c18f8, type: 3}
   _startGameButton: {fileID: 7552848111565901172}
   _exitButton: {fileID: 529061036424500}
 --- !u!1 &3859724978015401794

@@ -8,18 +8,21 @@ namespace Prefs
     {
         private GameLobbyState _lobbyState;
 
+        private string _nickName;
         private bool _isNeedRoomCreation;
-        private string _roomName;
-        private byte _roomMaxPlayers;
-        
-        public bool IsNeedRoomCreation => _isNeedRoomCreation;
-        public string RoomName => _roomName;
-        public byte RoomMaxPlayers => _roomMaxPlayers;
+        private CreationRoomData _creationData;
 
+        public string NickName => _nickName;
+        public bool IsNeedRoomCreation => _isNeedRoomCreation;
+        public CreationRoomData CreationData => _creationData;
 
         public event Action<GameLobbyState> OnStateChange;
-
         
+        public GameLobbyPrefs(string userNickName)
+        {
+            _nickName = userNickName;
+        }
+
         public void ChangeState(GameLobbyState state)
         {
             _lobbyState = state;
@@ -29,8 +32,7 @@ namespace Prefs
 
         public void SetRoomData(CreationRoomData data, bool isNeedCreation = false)
         {
-            _roomName = data.RoomName;
-            _roomMaxPlayers = data.MaxPlayers;
+            _creationData = data;
 
             _isNeedRoomCreation = isNeedCreation;
         }

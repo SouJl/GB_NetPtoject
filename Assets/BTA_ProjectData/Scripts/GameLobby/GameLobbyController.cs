@@ -12,7 +12,7 @@ namespace GameLobby
         private readonly Transform _placeForUi;
         private readonly GameConfig _gameConfig;
         private readonly GamePrefs _gamePrefs;
-        private readonly PhotonNetManager _netManager;
+        private readonly GameNetManager _netManager;
         private readonly StateTransition _stateTransition;
         private readonly GameLobbyPrefs _lobbyPrefs;
         
@@ -26,7 +26,7 @@ namespace GameLobby
             Transform placeForUI,
             GameConfig gameConfig,
             GamePrefs gamePrefs,
-            PhotonNetManager netManager,
+            GameNetManager netManager,
             StateTransition stateTransition)
         {
             _placeForUi = placeForUI;
@@ -35,7 +35,7 @@ namespace GameLobby
             _netManager = netManager;
             _stateTransition = stateTransition;
 
-            _lobbyPrefs = new GameLobbyPrefs();
+            _lobbyPrefs = new GameLobbyPrefs(gamePrefs.UserName);
 
             _lobbyLifeCycle = new LifeCycleController();
 

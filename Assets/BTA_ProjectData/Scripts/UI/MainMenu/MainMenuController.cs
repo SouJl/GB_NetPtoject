@@ -11,13 +11,13 @@ namespace UI
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/MainMenu");
 
         private readonly GamePrefs _gamePrefs;
-        private readonly PhotonNetManager _netManager;
+        private readonly GameNetManager _netManager;
         private readonly MainMenuUI _view;
         private readonly StateTransition _stateTransition;
         public MainMenuController(
             Transform placeForUI, 
             GamePrefs gamePrefs, 
-            PhotonNetManager netManager,
+            GameNetManager netManager,
             StateTransition stateTransition)
         {
             _gamePrefs = gamePrefs;

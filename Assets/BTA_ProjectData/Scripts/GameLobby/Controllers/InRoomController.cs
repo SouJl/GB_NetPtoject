@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using Configs;
 using Enumerators;
+using ExitGames.Client.Photon;
 using Photon.Realtime;
 using Prefs;
 using System.Collections.Generic;
@@ -18,9 +19,11 @@ namespace GameLobby
         private readonly Transform _placeForUI;
         private readonly GameConfig _gameConfig;
         private readonly GameLobbyPrefs _lobbyPrefs;
-        private readonly PhotonNetManager _netManager;
+        private readonly GameNetManager _netManager;
 
         private IRoomMenuUI _view;
+
+        private Player _masterPlayer;
 
         private List<Player> _playersInRoom;
         private Room _roomData;
@@ -29,37 +32,33 @@ namespace GameLobby
             Transform placeForUI,
             GameConfig gameConfig,
             GameLobbyPrefs lobbyPrefs,
-            PhotonNetManager netManager)
+            GameNetManager netManager)
         {
             _placeForUI = placeForUI;
             _gameConfig = gameConfig;
             _lobbyPrefs = lobbyPrefs;
             _netManager = netManager;
 
-            var prefabPath = lobbyPrefs.IsNeedRoomCreation 
-                ? _viewOwnerPath 
+            var prefabPath = lobbyPrefs.IsNeedRoomCreation
+                ? _viewOwnerPath
                 : _viewClientPath;
 
             _view = LoadView(_placeForUI, prefabPath);
 
             Subscribe();
 
-            InitRoomData(_lobbyPrefs);        
+            InitRoomData(_lobbyPrefs);
         }
 
         private void InitRoomData(GameLobbyPrefs lobbyPrefs)
         {
             if (lobbyPrefs.IsNeedRoomCreation)
             {
-                _netManager.CreateRoom(new CreationRoomData 
-                {
-                    RoomName = lobbyPrefs.RoomName,
-                    MaxPlayers = lobbyPrefs.RoomMaxPlayers
-                });
+                _netManager.CreateRoom(lobbyPrefs.CreationData);
             }
             else
             {
-                _netManager.JoinRoom(lobbyPrefs.RoomName);
+                _netManager.JoinRoom(lobbyPrefs.CreationData.RoomName);
             }
         }
 
@@ -81,7 +80,9 @@ namespace GameLobby
             _netManager.OnPlayerEnterInRoom += PlayerEnterInRoom;
             _netManager.OnPlayerLeftFromRoom += PlayerLeftedFromRoom;
             _netManager.OnLeftFromRoom += LeftedFromRoom;
+            _netManager.OnPlayerPropsUpdated += UpdatePlayersProperties;
         }
+
 
         private void Unsubscribe()
         {
@@ -92,15 +93,40 @@ namespace GameLobby
             _netManager.OnPlayerEnterInRoom -= PlayerEnterInRoom;
             _netManager.OnPlayerLeftFromRoom -= PlayerLeftedFromRoom;
             _netManager.OnLeftFromRoom -= LeftedFromRoom;
+            _netManager.OnPlayerPropsUpdated -= UpdatePlayersProperties;
         }
 
         private void StartGame()
         {
-            Debug.Log("StartGame");
+            var player = _playersInRoom.Find(p => p.NickName == _lobbyPrefs.NickName);
+
+            if (!player.IsMasterClient)
+            {
+                var props = new Hashtable
+                {
+                    {BTAConst.PLAYER_READY, "Ready"}
+                };
+
+                _netManager.SetPlayerProperties(props);
+            }
+            else
+            {
+                _view.UpdatePlayerData(player, "Ready");
+
+                Debug.Log("Start Game");
+            }
         }
 
         private void ExitFromRoom()
         {
+            if (_masterPlayer != null)
+            {
+                for (int i = 0; i < _playersInRoom.Count; i++)
+                {
+                    _netManager.CloseConnectionToClient(_playersInRoom[i]);
+                }
+            }
+
             _netManager.LeaveRoom();
         }
 
@@ -114,17 +140,25 @@ namespace GameLobby
 
             var playersInRoom = _netManager.GetPlayerInRoom();
 
-            for(int i =0; i< playersInRoom.Length; i++)
+            for (int i = 0; i < playersInRoom.Length; i++)
             {
                 var player = playersInRoom[i];
                 PlayerEnterInRoom(player);
+            }
+
+            for (int i = 0; i < room.ExpectedUsers.Length; i++)
+            {
+                Debug.Log($"ExpectedUser[{i + 1}] - {room.ExpectedUsers[i]}");
             }
         }
 
         private void PlayerEnterInRoom(Player player)
         {
+            if (player.IsMasterClient)
+                _masterPlayer = player;
+
             _view.AddPlayer(player);
-            
+
             _playersInRoom.Add(player);
 
             if (IsExceededPlayersLimit())
@@ -141,7 +175,6 @@ namespace GameLobby
             return false;
         }
 
-
         private void PlayerLeftedFromRoom(Player leftedPlayer)
         {
             _view.RemovePlayer(leftedPlayer);
@@ -152,9 +185,31 @@ namespace GameLobby
             _lobbyPrefs.ChangeState(GameLobbyState.Exit);
         }
 
+
+        private void UpdatePlayersProperties(Player player, Hashtable properties)
+        {
+            if (_playersInRoom.Count == 0)
+                return;
+
+            var targetPlayer = _playersInRoom.Find(p => p.ActorNumber == player.ActorNumber);
+
+            if (targetPlayer != null)
+            {
+                object playerState;
+
+                if (properties.TryGetValue(BTAConst.PLAYER_READY, out playerState))
+                {
+                    _view.UpdatePlayerData(targetPlayer, (string)playerState);
+                }
+            }
+        }
+
         protected override void OnDispose()
         {
             base.OnDispose();
+
+            _playersInRoom.Clear();
+            _masterPlayer = null;
 
             Unsubscribe();
         }

@@ -13,5 +13,7 @@ namespace GameLobby
         public void AddPlayer(Player player);
 
         public void RemovePlayer(Player player);
+
+        public void UpdatePlayerData(Player target, string state);
     }
 }

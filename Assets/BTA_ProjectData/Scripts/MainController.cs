@@ -13,7 +13,7 @@ public class MainController : IDisposable
     private readonly Transform _placeForUi;
     private readonly GameConfig _gameConfig;
     private readonly LifeCycleController _lifeCycle;
-    private readonly PhotonNetManager _netManager;
+    private readonly GameNetManager _netManager;
     private readonly StateTransition _stateTransition;
 
     private readonly GamePrefs _gamePrefs;
@@ -29,7 +29,7 @@ public class MainController : IDisposable
         Transform placeForUi, 
         GameConfig gameConfig, 
         LifeCycleController lifeCycle,
-        PhotonNetManager netManager,
+        GameNetManager netManager,
         StateTransition stateTransition)
     {
         _placeForUi = placeForUi;

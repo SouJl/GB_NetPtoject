@@ -9,7 +9,7 @@ public class Main : MonoBehaviour
     [SerializeField]
     private GameConfig _gameConfig;
     [SerializeField]
-    private PhotonNetManager _netManager;
+    private GameNetManager _netManager;
     [SerializeField]
     private StateTransition _stateTransition;
 

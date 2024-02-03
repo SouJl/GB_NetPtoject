@@ -1,4 +1,5 @@
-﻿using Configs;
+﻿using Abstraction;
+using Configs;
 using Enumerators;
 using GameLobby;
 using MultiplayerService;
@@ -41,6 +42,28 @@ public class MainController : IDisposable
         _gamePrefs = new GamePrefs();
         _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
         
+        _netManager.Init(gameConfig);
+
+        InitialGameLoad();
+    }
+
+    public MainController(
+        Transform placeForUi, 
+        GameConfig gameConfig,
+        LifeCycleController lifeCycle,
+        GameNetManager netManager,
+        StateTransition stateTransition,
+        UserData settedUser)
+    {
+        _placeForUi = placeForUi;
+        _gameConfig = gameConfig;
+        _lifeCycle = lifeCycle;
+        _netManager = netManager;
+        _stateTransition = stateTransition;
+
+        _gamePrefs = new GamePrefs(settedUser);
+        _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
+
         _netManager.Init(gameConfig);
 
         InitialGameLoad();

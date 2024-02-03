@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -603,8 +603,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1569277595}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -528.81146, y: -150.86528, z: 2.4048398}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -627,6 +627,10 @@ MonoBehaviour:
   _gameConfig: {fileID: 11400000, guid: fadf4b46c333eb342a57d7ab5c3b35dd, type: 2}
   _netManager: {fileID: 1910132860}
   _stateTransition: {fileID: 1233446510}
+  _isCloneApplication: 0
+  _cloneUserId: 28B6E54FE89BE10E
+  _cloneUserName: UserTest
+  _clonePassword: qwe123
 --- !u!1 &1628162829
 GameObject:
   m_ObjectHideFlags: 0

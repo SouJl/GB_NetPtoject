@@ -12,6 +12,8 @@ namespace Prefs
         private const string AuthUserName = "authorization_user_name";
         private const string AuthUserPassword = "authorization_user_passw";
 
+        private readonly UserData _settedUserData;
+
         private GameState _gameState;
 
         private bool _isUserDataExist;
@@ -33,6 +35,12 @@ namespace Prefs
             _isClone = ClonesManager.IsClone();
         }
 
+        public GamePrefs(UserData settedData)
+        {
+            _isClone = ClonesManager.IsClone();
+            _settedUserData = settedData;
+        }
+
         public void Save()
         {
             if (_isClone)
@@ -49,7 +57,11 @@ namespace Prefs
         {
             if (_isClone)
             {
-                return false;
+                _userId = _settedUserData.Id;
+                _userName = _settedUserData.UserName;
+                _userPassword = _settedUserData.Password;
+
+                return true;
             }
 
             _isUserDataExist = CheckDataExist();

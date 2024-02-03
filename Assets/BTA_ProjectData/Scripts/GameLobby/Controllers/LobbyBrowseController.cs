@@ -107,6 +107,7 @@ namespace GameLobby
         private void JoinedInLobby()
         {
             _loadingScreenController.Stop();
+
             _view.Show();
         }
 

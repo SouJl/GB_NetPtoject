@@ -47,7 +47,7 @@ namespace UI
         {
             _view.OnSwitchUserPressed += SwitchUser;
             _view.OnJoinGamePressed += JoinGame;
-            _view.OnCreateGamePressed += CreateGame;
+            _view.OnConnectToGame += ConnectToGame;
             _view.OnExitGamePressed += ExitGame;
         }
 
@@ -55,7 +55,7 @@ namespace UI
         {
             _view.OnSwitchUserPressed -= SwitchUser;
             _view.OnJoinGamePressed -= JoinGame;
-            _view.OnCreateGamePressed -= CreateGame;
+            _view.OnConnectToGame -= ConnectToGame;
             _view.OnExitGamePressed -= ExitGame;
         }
 
@@ -69,15 +69,14 @@ namespace UI
 
         private void JoinGame()
         {
-            /*
-            _stateTransition.Invoke(
-                () => _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby));*/
             _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby);
         }
 
-        private void CreateGame()
+        private void ConnectToGame(string name)
         {
-            Debug.Log("CreateGame");
+            _gamePrefs.SetGame(name);
+
+            _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby);
         }
 
         private void ExitGame()

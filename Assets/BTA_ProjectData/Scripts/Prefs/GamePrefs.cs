@@ -21,10 +21,18 @@ namespace Prefs
         private string _userName;
         private string _userPassword;
 
+        private bool _isSettedGameName;
+        private string _settedGamName;
+
         public bool IsUserDataExist => _isUserDataExist;
         public string UserId => _userId;
         public string UserName => _userName;
         public string UserPassword => _userPassword;
+
+        public bool IsSettedGameName => _isSettedGameName;
+        public string SettedGamName => _settedGamName;
+
+        public string SettedGameName { get; internal set; }
 
         public event Action<GameState> OnGameStateChange;
 
@@ -126,6 +134,12 @@ namespace Prefs
             };
 
             return userData;
+        }
+
+        public void SetGame(string gameName)
+        {
+            _isSettedGameName = true;
+            _settedGamName = gameName;
         }
     }
 }

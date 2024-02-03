@@ -42,8 +42,20 @@ namespace GameLobby
             _lobbyLifeCycle = new LifeCycleController();
 
             _lobbyPrefs.OnStateChange += LobbyStateChanged;
-            
-            _lobbyPrefs.ChangeState(GameLobbyState.Browse);
+
+            if (gamePrefs.IsSettedGameName)
+            {
+                _lobbyPrefs.SetRoomData(new CreationRoomData
+                {
+                    RoomName = gamePrefs.SettedGamName
+                });
+
+                _lobbyPrefs.ChangeState(GameLobbyState.InRoom);
+            }
+            else
+            {
+                _lobbyPrefs.ChangeState(GameLobbyState.Browse);
+            }
         }
 
         private void LobbyStateChanged(GameLobbyState state)

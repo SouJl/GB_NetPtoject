@@ -92,7 +92,7 @@ namespace MultiplayerService
             var roomOptions = new RoomOptions
             {
                 MaxPlayers = data.MaxPlayers,
-                IsOpen = !data.IClosed,
+                IsVisible = !data.IClosed,
             };
 
             PhotonNetwork.JoinOrCreateRoom(data.RoomName, roomOptions, _lobby, data.ReserveSlots);

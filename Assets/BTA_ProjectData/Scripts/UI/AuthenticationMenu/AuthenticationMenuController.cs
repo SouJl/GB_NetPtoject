@@ -98,12 +98,7 @@ namespace UI
         {
             _connectionProgress.Stop();
 
-            _gamePrefs.SetUserData(new UserData 
-            {
-                Id = data.Id,
-                UserName = data.UserName,
-                Password = data.Password
-            });
+            _gamePrefs.SetUserData(data);
 
             _gamePrefs.ChangeGameState(GameState.MainMenu);
         }
@@ -126,9 +121,13 @@ namespace UI
             _multiplayerService.CreateAccount(data);
         }
 
-        private void CrateAccountEndOnSucceed()
+        private void CrateAccountEndOnSucceed(UserData data)
         {
             _connectionProgress.Stop();
+
+            _gamePrefs.SetUserData(data);
+
+            _gamePrefs.ChangeGameState(GameState.MainMenu);
         }
 
         private void CrateAccountEndError(string errorMessage)

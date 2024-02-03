@@ -1,4 +1,5 @@
 ﻿using Configs;
+using MultiplayerService;
 using Tools;
 using UnityEngine;
 
@@ -34,5 +35,13 @@ public class Main : MonoBehaviour
     private void Update()
     {
         _gameLifecycle.OnUpdate(_deltaTime);
+    }
+
+
+    private void OnDestroy()
+    {
+        _gameLifecycle?.Dispose();
+
+        _mainController?.Dispose();
     }
 }

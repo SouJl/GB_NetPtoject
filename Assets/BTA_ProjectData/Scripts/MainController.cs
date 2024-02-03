@@ -146,6 +146,8 @@ public class MainController : IDisposable
 
     private void ExitFromGame()
     {
+        Dispose();
+
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
@@ -154,6 +156,8 @@ public class MainController : IDisposable
 
     public void Dispose()
     {
+        _netManager.Disconnect();
+
         DisposeControllers();
 
         Unsubscribe();

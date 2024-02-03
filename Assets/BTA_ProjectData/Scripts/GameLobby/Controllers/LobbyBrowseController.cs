@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using Configs;
 using Enumerators;
+using MultiplayerService;
 using Photon.Realtime;
 using Prefs;
 using System.Collections.Generic;
@@ -114,14 +115,19 @@ namespace GameLobby
             if (roomsInfo.Count == 0)
                 return;
 
-            for(int i =0; i< roomsInfo.Count; i++)
+            _lobbyRoomsInfoCollection.Clear();
+
+            for (int i =0; i< roomsInfo.Count; i++)
             {
                 var roomInfo = roomsInfo[i];
-              
+
+                if (roomInfo.RemovedFromList)
+                    continue;
+
                 _lobbyRoomsInfoCollection.Add(roomInfo);
             }
 
-            _view.AddRooms(roomsInfo);
+            _view.AddRooms(_lobbyRoomsInfoCollection);
         }
 
 

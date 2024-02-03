@@ -71,9 +71,9 @@ namespace Tools
 
         protected override void OnDispose()
         {
-            base.OnDispose();
-
             Stop();
+
+            base.OnDispose();
         }
     }
 }

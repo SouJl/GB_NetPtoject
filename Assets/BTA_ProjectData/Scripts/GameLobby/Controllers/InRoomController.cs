@@ -2,6 +2,7 @@
 using Configs;
 using Enumerators;
 using ExitGames.Client.Photon;
+using MultiplayerService;
 using Photon.Realtime;
 using Prefs;
 using System.Collections.Generic;
@@ -146,9 +147,13 @@ namespace GameLobby
                 PlayerEnterInRoom(player);
             }
 
-            for (int i = 0; i < room.ExpectedUsers.Length; i++)
+            if (room.ExpectedUsers != null) 
             {
-                Debug.Log($"ExpectedUser[{i + 1}] - {room.ExpectedUsers[i]}");
+
+                for (int i = 0; i < room.ExpectedUsers.Length; i++)
+                {
+                    Debug.Log($"ExpectedUser[{i + 1}] - {room.ExpectedUsers[i]}");
+                }
             }
         }
 

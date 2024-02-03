@@ -13,7 +13,7 @@ namespace MultiplayerService
         private readonly string _titleId;
 
         public event Action<UserData> OnLogInSucceed;
-        public event Action OnCreateAccountSucceed;
+        public event Action<UserData> OnCreateAccountSucceed;
         public event Action<UserData> OnGetAccountSuccess;
         public event Action<List<CatalogItem>> OnGetCatalogItemsSuccess;
 
@@ -33,6 +33,8 @@ namespace MultiplayerService
 
         public void CreateAccount(UserData data)
         {
+            _tempUserData = data;
+
             var request = new RegisterPlayFabUserRequest
             {
                 Username = data.UserName,
@@ -45,7 +47,19 @@ namespace MultiplayerService
 
         private void CreateAccountSuccess(RegisterPlayFabUserResult result)
         {
-            OnCreateAccountSucceed?.Invoke();
+            if (_tempUserData != null)
+            {
+                var userData = new UserData
+                {
+                    Id = result.PlayFabId,
+                    UserName = _tempUserData.UserName,
+                    Password = _tempUserData.Password
+                };
+
+                OnCreateAccountSucceed?.Invoke(userData);
+
+                _tempUserData = null;
+            } 
         }
 
         public void LogIn(UserData data)

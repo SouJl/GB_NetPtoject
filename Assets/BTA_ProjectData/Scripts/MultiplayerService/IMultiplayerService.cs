@@ -8,7 +8,7 @@ namespace MultiplayerService
     public interface IMultiplayerService
     {
         public event Action<UserData> OnLogInSucceed;
-        public event Action OnCreateAccountSucceed;
+        public event Action<UserData> OnCreateAccountSucceed;
         public event Action<UserData> OnGetAccountSuccess;
         public event Action<List<CatalogItem>> OnGetCatalogItemsSuccess;
 

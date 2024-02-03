@@ -8,6 +8,7 @@ using System;
 using Tools;
 using UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainController : IDisposable
 {
@@ -154,6 +155,11 @@ public class MainController : IDisposable
 
                     break;
                 }
+            case GameState.Game:
+                {
+                    LoadGame();
+                    break;
+                }
             case GameState.Exit:
                 {
                     ExitFromGame();
@@ -167,6 +173,15 @@ public class MainController : IDisposable
         _lifeCycle.Dispose();
     }
 
+
+    private void LoadGame()
+    {
+        Dispose();
+
+        SceneManager.LoadScene(1);
+    }
+
+
     private void ExitFromGame()
     {
         Dispose();
@@ -179,7 +194,7 @@ public class MainController : IDisposable
 
     public void Dispose()
     {
-        _netManager.Disconnect();
+        //_netManager.Disconnect();
 
         DisposeControllers();
 

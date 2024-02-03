@@ -3,6 +3,7 @@ using Configs;
 using Enumerators;
 using MultiplayerService;
 using Prefs;
+using System;
 using Tools;
 using UnityEngine;
 
@@ -77,6 +78,11 @@ namespace GameLobby
                         _lobbyLifeCycle.AddController(_inRoomController);
                         break;
                     }
+                case GameLobbyState.StartGame:
+                    {
+                        StartGame();
+                        break;
+                    }
                 case GameLobbyState.Exit:
                     {
                         ExitFromLobby();
@@ -85,9 +91,15 @@ namespace GameLobby
             }
         }
 
+   
         private void DisposeControllers()
         {
             _lobbyLifeCycle?.Dispose();
+        }
+   
+        private void StartGame()
+        {
+            _gamePrefs.ChangeGameState(GameState.Game);
         }
 
         private void ExitFromLobby()

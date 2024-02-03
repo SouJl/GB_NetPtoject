@@ -7,6 +7,7 @@
         Browse      = 2,
         CreateRoom  = 3,
         InRoom      = 4,
-        Exit        = 5,
+        StartGame   = 5,
+        Exit        = 6,
     }
 }

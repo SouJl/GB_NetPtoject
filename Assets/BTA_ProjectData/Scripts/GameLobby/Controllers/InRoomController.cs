@@ -114,7 +114,7 @@ namespace GameLobby
             {
                 _view.UpdatePlayerData(player, "Ready");
 
-                Debug.Log("Start Game");
+                _lobbyPrefs.ChangeState(GameLobbyState.StartGame);
             }
         }
 

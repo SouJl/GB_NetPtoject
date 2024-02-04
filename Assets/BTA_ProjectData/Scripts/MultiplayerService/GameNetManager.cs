@@ -27,6 +27,26 @@ namespace MultiplayerService
         public event Action<Player> OnPlayerLeftFromRoom;
         public event Action<Player, Hashtable> OnPlayerPropsUpdated;
 
+
+        public bool IsRoomClose
+        {
+            get => PhotonNetwork.CurrentRoom.IsOpen;
+            set
+            {
+                PhotonNetwork.CurrentRoom.IsOpen = value;
+            }
+        }
+
+        public bool IsRoomVisiable
+        {
+            get => PhotonNetwork.CurrentRoom.IsVisible;
+            set
+            {
+                PhotonNetwork.CurrentRoom.IsVisible = value;
+            }
+        }
+
+
         public void Init(GameConfig gameConfig)
         {
             _lobby = new TypedLobby(gameConfig.PhotonLobbyName, LobbyType.Default);
@@ -67,9 +87,9 @@ namespace MultiplayerService
             PhotonNetwork.Disconnect();
         }
 
-        public void SetUserData(string nickName)
+        public void SetUserData(UserData data)
         {
-            PhotonNetwork.LocalPlayer.NickName = nickName;
+            PhotonNetwork.LocalPlayer.NickName = data.UserName;
         }
 
         public void JoinLobby()
@@ -107,11 +127,7 @@ namespace MultiplayerService
         {
             return PhotonNetwork.PlayerList;
         }
-
-        public void ChangeRoomOpenState(bool state)
-        {
-            PhotonNetwork.CurrentRoom.IsOpen = state;
-        }
+        
 
         public void CloseConnectionToClient(Player client)
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Abstraction;
+using System;
 using UnityEngine;
 
 namespace UI
@@ -24,9 +25,9 @@ namespace UI
         public event Action OnEnterTheLobby;
         public event Action OnLogOut;
 
-        public void InitView(bool userExistState, string userName)
+        public void InitView(bool userExistState, UserData data)
         {
-            SetUpUI(userExistState, userName);
+            SetUpUI(userExistState, data);
             SubscribeUI();
         }
 
@@ -81,7 +82,7 @@ namespace UI
             _noDataIntro.Show();
         }
 
-        private void SetUpUI(bool userExistState, string userName)
+        private void SetUpUI(bool userExistState, UserData data)
         {
             _defaultInroUI.Hide();
             _noDataIntro.Hide();
@@ -92,7 +93,7 @@ namespace UI
             {
                 _defaultInroUI.Show();
                 
-                _defaultInroUI.SetUserName(userName);
+                _defaultInroUI.SetUserName(data.UserName);
 
                 return;
             }

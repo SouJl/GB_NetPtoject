@@ -1,5 +1,4 @@
-﻿using Abstraction;
-using Configs;
+﻿using Configs;
 using Enumerators;
 using GameLobby;
 using MultiplayerService;
@@ -10,6 +9,10 @@ using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
+
 public class MainController : IDisposable
 {
     private readonly Transform _placeForUi;
@@ -18,7 +21,7 @@ public class MainController : IDisposable
     private readonly GameNetManager _netManager;
     private readonly StateTransition _stateTransition;
 
-    private readonly GamePrefs _gamePrefs;
+    private readonly IGamePrefs _gamePrefs;
 
     private readonly IMultiplayerService _multiplayerService;
 
@@ -40,31 +43,20 @@ public class MainController : IDisposable
         _netManager = netManager;
         _stateTransition = stateTransition;
 
+#if UNITY_EDITOR
+        if (ClonesManager.IsClone())
+        {
+            _gamePrefs = new ClonedGamePrefs();
+        }
+        else
+        {
+            _gamePrefs = new GamePrefs();
+        }
+#else
         _gamePrefs = new GamePrefs();
+#endif
         _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
         
-        _netManager.Init(gameConfig);
-
-        InitialGameLoad();
-    }
-
-    public MainController(
-        Transform placeForUi, 
-        GameConfig gameConfig,
-        LifeCycleController lifeCycle,
-        GameNetManager netManager,
-        StateTransition stateTransition,
-        UserData settedUser)
-    {
-        _placeForUi = placeForUi;
-        _gameConfig = gameConfig;
-        _lifeCycle = lifeCycle;
-        _netManager = netManager;
-        _stateTransition = stateTransition;
-
-        _gamePrefs = new GamePrefs(settedUser);
-        _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
-
         _netManager.Init(gameConfig);
 
         InitialGameLoad();

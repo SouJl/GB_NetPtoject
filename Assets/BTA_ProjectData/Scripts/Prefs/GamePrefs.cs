@@ -1,85 +1,62 @@
 ﻿using Abstraction;
 using Enumerators;
-using ParrelSync;
 using System;
 using UnityEngine;
 
 namespace Prefs
 {
-    public class GamePrefs
+    public class GamePrefs : IGamePrefs
     {
         private const string AuthUserId = "authorization_user_id";
         private const string AuthUserName = "authorization_user_name";
         private const string AuthUserPassword = "authorization_user_passw";
 
-        private readonly UserData _settedUserData;
-
         private GameState _gameState;
 
         private bool _isUserDataExist;
-        private string _userId;
-        private string _userName;
-        private string _userPassword;
-
         private bool _isSettedGameName;
+
+        private UserData _data;
         private string _settedGamName;
 
         public bool IsUserDataExist => _isUserDataExist;
-        public string UserId => _userId;
-        public string UserName => _userName;
-        public string UserPassword => _userPassword;
-
         public bool IsSettedGameName => _isSettedGameName;
+        public UserData Data => _data;
         public string SettedGamName => _settedGamName;
 
-        public string SettedGameName { get; internal set; }
-
+   
         public event Action<GameState> OnGameStateChange;
-
-        private bool _isClone;
 
         public GamePrefs()
         {
-            _isClone = ClonesManager.IsClone();
-        }
-
-        public GamePrefs(UserData settedData)
-        {
-            _isClone = ClonesManager.IsClone();
-            _settedUserData = settedData;
+            
         }
 
         public void Save()
         {
-            if (_isClone)
-            {
-                return;
-            }
-
-            PlayerPrefs.SetString(AuthUserId, _userId);
-            PlayerPrefs.SetString(AuthUserName, _userName);
-            PlayerPrefs.SetString(AuthUserPassword, _userPassword);
+            PlayerPrefs.SetString(AuthUserId, _data.Id);
+            PlayerPrefs.SetString(AuthUserName, Data.UserName);
+            PlayerPrefs.SetString(AuthUserPassword, Data.Password);
         }
 
         public bool Load()
         {
-            if (_isClone)
-            {
-                _userId = _settedUserData.Id;
-                _userName = _settedUserData.UserName;
-                _userPassword = _settedUserData.Password;
-
-                return true;
-            }
 
             _isUserDataExist = CheckDataExist();
 
             if (_isUserDataExist == false)
                 return false;
 
-            _userId = PlayerPrefs.GetString(AuthUserId);
-            _userName = PlayerPrefs.GetString(AuthUserName);
-            _userPassword = PlayerPrefs.GetString(AuthUserPassword);
+            var userId = PlayerPrefs.GetString(AuthUserId);
+            var userName = PlayerPrefs.GetString(AuthUserName);
+            var userPassword = PlayerPrefs.GetString(AuthUserPassword);
+
+            _data = new UserData
+            {
+                Id = userId,
+                UserName = userName,
+                Password = userPassword,
+            };
 
             return true;
         }
@@ -98,12 +75,9 @@ namespace Prefs
 
         public void DeleteData()
         {
-            if (_isClone)
-            {
-                return;
-            }
-
             PlayerPrefs.DeleteAll();
+            
+            _data = null;
 
             _isUserDataExist = false;
         }
@@ -117,23 +91,8 @@ namespace Prefs
 
         public void SetUserData(UserData userData)
         {
-            _userId = userData.Id;
-            _userName = userData.UserName;
-            _userPassword = userData.Password;
-
+            _data = userData;
             Save();
-        }
-
-        public UserData GetUserData()
-        {
-            var userData = new UserData
-            {
-                Id = _userId,
-                UserName = _userName,
-                Password = _userPassword
-            };
-
-            return userData;
         }
 
         public void SetGame(string gameName)

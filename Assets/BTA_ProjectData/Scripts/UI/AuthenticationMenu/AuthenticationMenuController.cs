@@ -13,21 +13,21 @@ namespace UI
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/AuthenticationMenu");
 
         private readonly AuthenticationMenuView _view;
-        private readonly GamePrefs _gamePrefs;
+        private readonly IGamePrefs _gamePrefs;
         private readonly IMultiplayerService _multiplayerService;
 
         private ProgressController _connectionProgress;
 
         public AuthenticationMenuController(
-            Transform placeForUI, 
-            GamePrefs gamePrefs,
+            Transform placeForUI,
+            IGamePrefs gamePrefs,
             IMultiplayerService multiplayerService)
         {                
             _gamePrefs = gamePrefs;
             _multiplayerService = multiplayerService;
 
             _view = LoadView(placeForUI);
-            _view.InitView(_gamePrefs.IsUserDataExist, _gamePrefs.UserName);
+            _view.InitView(_gamePrefs.IsUserDataExist, _gamePrefs.Data);
             
             _connectionProgress = new ProgressController(_view.ConnetcionProgressPlacement);
 
@@ -73,7 +73,7 @@ namespace UI
 
         private void EtnterUserInLobby()
         {
-            _multiplayerService.LogIn(_gamePrefs.GetUserData());
+            _multiplayerService.LogIn(_gamePrefs.Data);
 
             _connectionProgress.Start();
         }

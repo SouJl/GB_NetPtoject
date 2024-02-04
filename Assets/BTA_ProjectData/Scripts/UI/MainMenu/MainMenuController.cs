@@ -11,13 +11,13 @@ namespace UI
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/MainMenu");
 
-        private readonly GamePrefs _gamePrefs;
+        private readonly IGamePrefs _gamePrefs;
         private readonly GameNetManager _netManager;
         private readonly MainMenuUI _view;
         private readonly StateTransition _stateTransition;
         public MainMenuController(
             Transform placeForUI, 
-            GamePrefs gamePrefs, 
+            IGamePrefs gamePrefs, 
             GameNetManager netManager,
             StateTransition stateTransition)
         {
@@ -27,9 +27,9 @@ namespace UI
 
             _view = LoadView(placeForUI);
 
-            _view.InitUI(gamePrefs.UserName);
+            _view.InitUI(gamePrefs.Data.UserName);
 
-            _netManager.SetUserData(gamePrefs.UserName);
+            _netManager.SetUserData(gamePrefs.Data);
             
             Subscribe();
         }

@@ -114,6 +114,8 @@ namespace GameLobby
             {
                 _view.UpdatePlayerData(player, "Ready");
 
+                _netManager.IsRoomVisiable = false;
+
                 _lobbyPrefs.ChangeState(GameLobbyState.StartGame);
             }
         }
@@ -166,10 +168,7 @@ namespace GameLobby
 
             _playersInRoom.Add(player);
 
-            if (IsExceededPlayersLimit())
-            {
-                _netManager.ChangeRoomOpenState(false);
-            }
+            _netManager.IsRoomClose = IsExceededPlayersLimit();
         }
 
         private bool IsExceededPlayersLimit()
@@ -183,6 +182,8 @@ namespace GameLobby
         private void PlayerLeftedFromRoom(Player leftedPlayer)
         {
             _view.RemovePlayer(leftedPlayer);
+
+            _netManager.IsRoomClose = IsExceededPlayersLimit();
         }
 
         private void LeftedFromRoom()

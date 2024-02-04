@@ -186,8 +186,6 @@ public class MainController : IDisposable
 
     public void Dispose()
     {
-        //_netManager.Disconnect();
-
         DisposeControllers();
 
         Unsubscribe();

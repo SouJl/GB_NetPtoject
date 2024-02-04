@@ -28,7 +28,7 @@ namespace MultiplayerService
         public event Action<Player, Hashtable> OnPlayerPropsUpdated;
 
 
-        public bool IsRoomClose
+        public bool IsRoomOpen
         {
             get => PhotonNetwork.CurrentRoom.IsOpen;
             set

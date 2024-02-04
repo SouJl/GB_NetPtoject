@@ -122,10 +122,13 @@ namespace GameLobby
 
         private void ExitFromRoom()
         {
-            if (_masterPlayer != null)
+            if (_masterPlayer != null && _masterPlayer.IsMasterClient)
             {
                 for (int i = 0; i < _playersInRoom.Count; i++)
                 {
+                    if (_playersInRoom[i].IsMasterClient)
+                        continue;
+
                     _netManager.CloseConnectionToClient(_playersInRoom[i]);
                 }
             }
@@ -168,7 +171,7 @@ namespace GameLobby
 
             _playersInRoom.Add(player);
 
-            _netManager.IsRoomClose = IsExceededPlayersLimit();
+            _netManager.IsRoomOpen = !IsExceededPlayersLimit();
         }
 
         private bool IsExceededPlayersLimit()
@@ -181,9 +184,14 @@ namespace GameLobby
 
         private void PlayerLeftedFromRoom(Player leftedPlayer)
         {
-            _view.RemovePlayer(leftedPlayer);
+            var player
+                = _playersInRoom.Find(p => p.ActorNumber == leftedPlayer.ActorNumber);
 
-            _netManager.IsRoomClose = IsExceededPlayersLimit();
+            _view.RemovePlayer(player);
+
+            _playersInRoom.Remove(player);
+
+            _netManager.IsRoomOpen = !IsExceededPlayersLimit();
         }
 
         private void LeftedFromRoom()

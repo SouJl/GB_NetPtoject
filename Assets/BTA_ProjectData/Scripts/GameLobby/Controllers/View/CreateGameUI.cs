@@ -7,10 +7,12 @@ using System.Collections.Generic;
 
 namespace GameLobby
 {
-    public class CreateRoomUI : MonoBehaviour
+    public class CreateGameUI : MonoBehaviour
     {
         [SerializeField]
-        private TMP_InputField _roomName;
+        private Toggle _isGamePublic;
+        [SerializeField]
+        private TMP_InputField _gameName;
         [SerializeField]
         private TMP_Text _minPlayersValue;
         [SerializeField]
@@ -19,15 +21,13 @@ namespace GameLobby
         private TMP_Text _currentPlayersValue;
         [SerializeField]
         private Slider _playersSliderValue;
-        [SerializeField]
-        private Toggle _isRoomClosed;
 
         [Space(10)]
-        [Header("Reserve slots settings")]
+        [Header("Whitelist settings")]
         [SerializeField]
-        private Transform _reserveSlotsContainer;
+        private Transform _whitelistContainer;
         [SerializeField]
-        private GameObject _reserveSlotPrefab;
+        private GameObject _whitelistPrefab;
         [SerializeField]
         private Button _addReserveSlotButton;
         [SerializeField]
@@ -35,13 +35,13 @@ namespace GameLobby
 
         [Space(20)]
         [SerializeField]
-        private Button _createRoomButton;
+        private Button _createGameButton;
         [SerializeField]
         private Button _backButton;
 
         private string _createRoomName;
         private byte _maxPlayersInRoom;
-        private List<ReserveSlotObjectUI> _reserveSlotCollection;
+        private List<ReserveSlotObjectUI> _whitelistCollection;
 
         public event Action OnBackPressed;
         public event Action<CreationRoomData> OnCreateRoomPressed;
@@ -59,33 +59,33 @@ namespace GameLobby
 
             _currentPlayersValue.text = _playersSliderValue.value.ToString();
 
-            _isRoomClosed.isOn = false;
+            _isGamePublic.isOn = true;
 
-            _reserveSlotCollection = new();
+            _whitelistCollection = new();
         }
 
         public void SubscribeUI()
         {
-            _roomName.onValueChanged.AddListener(NameChanged);
+            _gameName.onValueChanged.AddListener(NameChanged);
             _playersSliderValue.onValueChanged.AddListener(PlayersValueChanged);
 
             _addReserveSlotButton.onClick.AddListener(AddReserveSlot);
             _removeReserveSlotButton.onClick.AddListener(RemoveReserveSlot);
 
             _backButton.onClick.AddListener(Back);
-            _createRoomButton.onClick.AddListener(CreateRoom);
+            _createGameButton.onClick.AddListener(CreateRoom);
         }
 
         public void UnsubscribeUI()
         {
-            _roomName.onValueChanged.RemoveListener(NameChanged);
+            _gameName.onValueChanged.RemoveListener(NameChanged);
             _playersSliderValue.onValueChanged.RemoveListener(PlayersValueChanged);
 
             _addReserveSlotButton.onClick.RemoveListener(AddReserveSlot);
             _removeReserveSlotButton.onClick.RemoveListener(RemoveReserveSlot);
 
             _backButton.onClick.RemoveListener(Back);
-            _createRoomButton.onClick.RemoveListener(CreateRoom);
+            _createGameButton.onClick.RemoveListener(CreateRoom);
         }
 
         private void NameChanged(string name)
@@ -102,16 +102,16 @@ namespace GameLobby
 
         private void AddReserveSlot()
         {
-            var view = CreateReserveSlotView(_reserveSlotsContainer);
+            var view = CreateReserveSlotView(_whitelistContainer);
             
             view.InitUI();
 
-            _reserveSlotCollection.Add(view);
+            _whitelistCollection.Add(view);
         }
 
         private ReserveSlotObjectUI CreateReserveSlotView(Transform placement)
         {
-            GameObject objectView = Instantiate(_reserveSlotPrefab, placement, false);
+            GameObject objectView = Instantiate(_whitelistPrefab, placement, false);
             var view = objectView.GetComponent<ReserveSlotObjectUI>();
 
             return view;
@@ -119,16 +119,16 @@ namespace GameLobby
 
         private void RemoveReserveSlot()
         {
-            if (_reserveSlotCollection.Count == 0)
+            if (_whitelistCollection.Count == 0)
                 return;
 
-            var view = _reserveSlotCollection[_reserveSlotCollection.Count];
+            var view = _whitelistCollection[_whitelistCollection.Count];
 
             view?.Dispose();
 
             Destroy(view.gameObject);
 
-            _reserveSlotCollection.Remove(view);
+            _whitelistCollection.Remove(view);
         }
 
         private void Back()
@@ -142,21 +142,21 @@ namespace GameLobby
             {
                 RoomName = _createRoomName,
                 MaxPlayers = _maxPlayersInRoom,
-                IClosed = _isRoomClosed.isOn,
-                ReserveSlots = GetReseveSlots()
+                IsPublic = _isGamePublic.isOn,
+                Whitelist = GetReseveSlots()
             });
         }
 
         private string[] GetReseveSlots()
         {
-            if (_reserveSlotCollection.Count == 0)
+            if (_whitelistCollection.Count == 0)
                 return null;
 
-            var resultArr = new string[_reserveSlotCollection.Count];
+            var resultArr = new string[_whitelistCollection.Count];
 
-            for (int i = 0; i < _reserveSlotCollection.Count; i++)
+            for (int i = 0; i < _whitelistCollection.Count; i++)
             {
-                resultArr[i] = _reserveSlotCollection[i].CurrentName;
+                resultArr[i] = _whitelistCollection[i].CurrentName;
             }
 
             return resultArr;
@@ -164,16 +164,16 @@ namespace GameLobby
 
         private void OnDestroy()
         {
-            for(int i =0;i < _reserveSlotCollection.Count; i++)
+            for(int i =0;i < _whitelistCollection.Count; i++)
             {
-                var view = _reserveSlotCollection[i];
+                var view = _whitelistCollection[i];
                 
                 view?.Dispose();
 
                 Destroy(view.gameObject);
             }
 
-            _reserveSlotCollection.Clear();
+            _whitelistCollection.Clear();
 
             UnsubscribeUI();
 

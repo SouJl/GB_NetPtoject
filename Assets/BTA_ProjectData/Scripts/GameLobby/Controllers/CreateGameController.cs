@@ -9,17 +9,17 @@ using Object = UnityEngine.Object;
 
 namespace GameLobby
 {
-    public class CreateRoomController : BaseController
+    public class CreateGameController : BaseController
     {
-        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/CreateRoomMenu");
+        private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/CreateGameMenu");
 
-        private readonly CreateRoomUI _view;
+        private readonly CreateGameUI _view;
         private readonly GameConfig _gameConfig;
         private readonly GameLobbyPrefs _lobbyPrefs;
         private readonly GameNetManager _netManager;
         private readonly StateTransition _stateTransition;
 
-        public CreateRoomController(
+        public CreateGameController(
             Transform placeForUI,
             GameConfig gameConfig,
             GameLobbyPrefs lobbyPrefs,
@@ -38,13 +38,13 @@ namespace GameLobby
             Subscribe();
         }
 
-        private CreateRoomUI LoadView(Transform placeForUI)
+        private CreateGameUI LoadView(Transform placeForUI)
         {
             var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(_viewPath), placeForUI, false);
 
             AddGameObject(objectView);
 
-            return objectView.GetComponent<CreateRoomUI>();
+            return objectView.GetComponent<CreateGameUI>();
         }
 
         private void Subscribe()

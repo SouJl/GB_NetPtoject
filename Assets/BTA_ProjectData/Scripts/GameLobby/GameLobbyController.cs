@@ -21,7 +21,7 @@ namespace GameLobby
         private readonly LifeCycleController _lobbyLifeCycle;
 
         private LobbyBrowseController _lobbyBrowseController;
-        private CreateRoomController _createRoomController;
+        private CreateGameController _createRoomController;
         private InRoomController _inRoomController;
 
         public GameLobbyController(
@@ -77,7 +77,7 @@ namespace GameLobby
                 case GameLobbyState.CreateRoom:
                     {
                         _createRoomController 
-                            = new CreateRoomController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager, _stateTransition);
+                            = new CreateGameController(_placeForUi, _gameConfig, _lobbyPrefs, _netManager, _stateTransition);
 
                         _lobbyLifeCycle.AddController(_createRoomController);
                         break;

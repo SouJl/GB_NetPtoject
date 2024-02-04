@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8445857676443544648}
   - component: {fileID: 7405552816618765954}
   m_Layer: 0
-  m_Name: ReservePlayerSlot
+  m_Name: WhitelistSlotGO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -335,8 +335,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4288791859
+  m_fontColor: {r: 0.2, g: 0.77254903, b: 0.6313726, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

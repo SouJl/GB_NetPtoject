@@ -24,7 +24,7 @@ namespace GameLobby
 
         private IRoomMenuUI _view;
 
-        private List<Player> _playersInRoom;
+        private List<BTAPlayer> _playersInRoom;
         private Room _roomData;
 
         public InRoomController(
@@ -97,9 +97,9 @@ namespace GameLobby
 
         private void StartGame()
         {
-            var player = _playersInRoom.Find(p => p.NickName == _lobbyPrefs.NickName);
+            var player = _playersInRoom.Find(p => p.PlayerData.NickName == _lobbyPrefs.NickName);
 
-            if (!player.IsMasterClient)
+            if (!player.PlayerData.IsMasterClient)
             {
                 var props = new Hashtable
                 {
@@ -110,11 +110,27 @@ namespace GameLobby
             }
             else
             {
-                _view.UpdatePlayerData(player, "Ready");
+                var isAllPlayersReady = true;
 
-                _netManager.IsRoomVisiable = false;
+                for (int i = 0; i < _playersInRoom.Count; i++) 
+                {
+                    if (_playersInRoom[i].PlayerData.IsMasterClient)
+                        continue;
 
-                _lobbyPrefs.ChangeState(GameLobbyState.StartGame);
+                    if (_playersInRoom[i].IsReady == false)
+                        isAllPlayersReady = false;
+                }
+
+                if (isAllPlayersReady)
+                {
+                    _netManager.IsRoomVisiable = false;
+
+                    _lobbyPrefs.ChangeState(GameLobbyState.StartGame);
+                }
+                else
+                {
+                    Debug.Log("Not all of players is ready!");
+                }
             }
         }
 
@@ -124,10 +140,12 @@ namespace GameLobby
             {
                 for (int i = 0; i < _playersInRoom.Count; i++)
                 {
-                    if (_playersInRoom[i].IsMasterClient)
+                    var player = _playersInRoom[i];
+
+                    if (player.PlayerData.IsMasterClient)
                         continue;
 
-                    _netManager.CloseConnectionToClient(_playersInRoom[i]);
+                    _netManager.CloseConnectionToClient(player.PlayerData);
                 }
             }
 
@@ -148,7 +166,7 @@ namespace GameLobby
 
             _view.InitUI(_roomData.Name);
 
-            _playersInRoom = new List<Player>();
+            _playersInRoom = new List<BTAPlayer>();
 
             for (int i = 0; i < playersInRoom.Length; i++)
             {
@@ -180,7 +198,7 @@ namespace GameLobby
         {
             _view.AddPlayer(player);
 
-            _playersInRoom.Add(player);
+            _playersInRoom.Add(new BTAPlayer(player));
 
             _netManager.IsRoomOpen = !IsExceededPlayersLimit();
         }
@@ -196,9 +214,9 @@ namespace GameLobby
         private void PlayerLeftedFromRoom(Player leftedPlayer)
         {
             var player
-                = _playersInRoom.Find(p => p.ActorNumber == leftedPlayer.ActorNumber);
+                = _playersInRoom.Find(p => p.PlayerData.ActorNumber == leftedPlayer.ActorNumber);
 
-            _view.RemovePlayer(player);
+            _view.RemovePlayer(player.PlayerData);
 
             _playersInRoom.Remove(player);
 
@@ -216,7 +234,7 @@ namespace GameLobby
             if (_playersInRoom.Count == 0)
                 return;
 
-            var targetPlayer = _playersInRoom.Find(p => p.ActorNumber == player.ActorNumber);
+            var targetPlayer = _playersInRoom.Find(p => p.PlayerData.ActorNumber == player.ActorNumber);
 
             if (targetPlayer != null)
             {
@@ -224,7 +242,9 @@ namespace GameLobby
 
                 if (properties.TryGetValue(BTAConst.PLAYER_READY, out playerState))
                 {
-                    _view.UpdatePlayerData(targetPlayer, (string)playerState);
+                    targetPlayer.IsReady = (string)playerState == "Ready" ? true : false;
+
+                    _view.UpdatePlayerData(targetPlayer.PlayerData, (string)playerState);
                 }
             }
         }

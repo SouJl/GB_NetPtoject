@@ -24,8 +24,6 @@ namespace GameLobby
 
         private IRoomMenuUI _view;
 
-        private Player _masterPlayer;
-
         private List<Player> _playersInRoom;
         private Room _roomData;
 
@@ -122,7 +120,7 @@ namespace GameLobby
 
         private void ExitFromRoom()
         {
-            if (_masterPlayer != null && _masterPlayer.IsMasterClient)
+            if (_netManager.CurrentPlayer.IsMasterClient)
             {
                 for (int i = 0; i < _playersInRoom.Count; i++)
                 {
@@ -139,34 +137,51 @@ namespace GameLobby
         private void JoinedInRoom(Room room)
         {
             _roomData = room;
+            
+            var playersInRoom = _netManager.GetPlayerInRoom();
+
+            if(IsAcceptedInRoom(room, playersInRoom) == false)
+            {
+                ExitFromRoom();
+                return;
+            }
 
             _view.InitUI(_roomData.Name);
 
             _playersInRoom = new List<Player>();
-
-            var playersInRoom = _netManager.GetPlayerInRoom();
-
+           
             for (int i = 0; i < playersInRoom.Length; i++)
             {
                 var player = playersInRoom[i];
                 PlayerEnterInRoom(player);
-            }
+            }            
+        }
 
-            if (room.ExpectedUsers != null) 
+        private bool IsAcceptedInRoom(Room room, Player[] players)
+        {
+            for(int i =0; i < players.Length; i++)
             {
+                if (players[i].IsMasterClient == false)
+                    continue;
 
-                for (int i = 0; i < room.ExpectedUsers.Length; i++)
-                {
-                    Debug.Log($"ExpectedUser[{i + 1}] - {room.ExpectedUsers[i]}");
-                }
+                if (players[i].NickName == _lobbyPrefs.NickName)
+                    return true;
             }
+
+            if (room.ExpectedUsers == null)
+                return true;
+
+            for (int i = 0; i < room.ExpectedUsers.Length; i++)
+            {
+                if (room.ExpectedUsers[i] == _lobbyPrefs.NickName)
+                    return true;
+            }
+
+            return false;
         }
 
         private void PlayerEnterInRoom(Player player)
         {
-            if (player.IsMasterClient)
-                _masterPlayer = player;
-
             _view.AddPlayer(player);
 
             _playersInRoom.Add(player);
@@ -223,7 +238,6 @@ namespace GameLobby
             base.OnDispose();
 
             _playersInRoom.Clear();
-            _masterPlayer = null;
 
             Unsubscribe();
         }

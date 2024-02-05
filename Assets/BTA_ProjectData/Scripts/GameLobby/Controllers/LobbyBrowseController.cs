@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace GameLobby
 {
-    public class LobbyBrowseController : BaseController, IOnUpdate
+    public class LobbyBrowseController : BaseController
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/LobbyBrowseMenu");
 
@@ -21,7 +21,6 @@ namespace GameLobby
         private readonly GameNetManager _netManager;
         private readonly StateTransition _stateTransition;
 
-        private readonly LoadingScreenController _loadingScreenController;
 
         private List<RoomInfo> _lobbyRoomsInfoCollection = new();
 
@@ -36,8 +35,6 @@ namespace GameLobby
             _lobbyPrefs = lobbyPrefs;
             _netManager = netManager;
             _stateTransition = stateTransition;
-
-            _loadingScreenController = new LoadingScreenController(placeForUI, LoadingScreenType.LobbyLoading);
 
             _view = LoadView(placeForUI);
             _view.InitUI(gameConfig);
@@ -106,9 +103,9 @@ namespace GameLobby
 
         private void JoinedInLobby()
         {
-            _loadingScreenController.Stop();
-
             _view.Show();
+
+            //_netManager.FindFriends(new string[] { $"111222333-SouJI" });
         }
 
         private void RefreshRoomData(List<RoomInfo> roomsInfo)
@@ -135,7 +132,6 @@ namespace GameLobby
         private void JoinInLobby()
         {
             _netManager.JoinLobby();
-            _loadingScreenController.Start();
         }
 
         protected override void OnDispose()
@@ -144,12 +140,6 @@ namespace GameLobby
 
             Unsubscribe();
 
-            _loadingScreenController?.Dispose();
-        }
-
-        public void ExecuteUpdate(float deltaTime)
-        {
-            _loadingScreenController.ExecuteUpdate(deltaTime);
         }
     }
 }

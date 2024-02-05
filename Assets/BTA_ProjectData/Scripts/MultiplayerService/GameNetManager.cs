@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Configs;
 using Abstraction;
 using ExitGames.Client.Photon;
+using UnityEditor;
 
 namespace MultiplayerService
 {
@@ -27,6 +28,7 @@ namespace MultiplayerService
         public event Action<Player> OnPlayerLeftFromRoom;
         public event Action<Player, Hashtable> OnPlayerPropsUpdated;
 
+        public Player CurrentPlayer => PhotonNetwork.LocalPlayer;
 
         public bool IsRoomOpen
         {
@@ -54,7 +56,7 @@ namespace MultiplayerService
             PhotonNetwork.AutomaticallySyncScene = true;
         }
 
-        public void Connect()
+        public void Connect(string userId)
         {
             if (PhotonNetwork.IsConnected)
             {
@@ -63,10 +65,15 @@ namespace MultiplayerService
                 return;
             }
 
+            PhotonNetwork.AuthValues = new AuthenticationValues
+            {
+                UserId = userId
+            };
 
-            PhotonNetwork.ConnectUsingSettings();
             PhotonNetwork.GameVersion = Application.version;
             PhotonNetwork.EnableCloseConnection = true;
+
+            PhotonNetwork.ConnectUsingSettings();
         }
 
         public void Disconnect()
@@ -78,7 +85,7 @@ namespace MultiplayerService
             {
                 PhotonNetwork.LeaveRoom();
             }
-            
+
             if (PhotonNetwork.InLobby)
             {
                 PhotonNetwork.LeaveLobby();
@@ -90,6 +97,13 @@ namespace MultiplayerService
         public void SetUserData(UserData data)
         {
             PhotonNetwork.LocalPlayer.NickName = data.UserName;
+
+            var authValue = new AuthenticationValues
+            {
+                UserId = GUID.Generate().ToString()
+            };
+
+            PhotonNetwork.AuthValues = authValue;
         }
 
         public void JoinLobby()
@@ -113,6 +127,7 @@ namespace MultiplayerService
             {
                 MaxPlayers = data.MaxPlayers,
                 IsVisible = data.IsPublic,
+                PublishUserId = data.PublishUserId
             };
 
             PhotonNetwork.JoinOrCreateRoom(data.RoomName, roomOptions, _lobby, data.Whitelist);
@@ -127,7 +142,7 @@ namespace MultiplayerService
         {
             return PhotonNetwork.PlayerList;
         }
-        
+
 
         public void CloseConnectionToClient(Player client)
         {
@@ -139,6 +154,11 @@ namespace MultiplayerService
         public void SetPlayerProperties(Hashtable props)
         {
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
+
+        public void FindFriends(string[] players)
+        {
+            PhotonNetwork.FindFriends(players);
         }
 
         #region PUN CALLBACKS
@@ -179,6 +199,11 @@ namespace MultiplayerService
             OnJoinInRoom?.Invoke(PhotonNetwork.CurrentRoom);
         }
 
+        public override void OnJoinRoomFailed(short returnCode, string message)
+        {
+            Debug.Log($"OnJoinRoomFailed: [{returnCode}] {message}");
+        }
+
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
             Debug.Log("OnRoomListUpdate");
@@ -209,6 +234,21 @@ namespace MultiplayerService
             Debug.Log("OnLeftRoom");
             OnLeftFromRoom?.Invoke();
         }
+
+       /* public override void OnFriendListUpdate(List<FriendInfo> friendList)
+        {
+            Debug.Log("OnFriendListUpdate");
+            for (int i = 0; i < friendList.Count; i++)
+            {
+                if (friendList[i].IsOnline == false)
+                    continue;
+                Debug.Log($"PlayerId: {friendList[i].UserId}");
+                if (friendList[i].IsInRoom)
+                {
+                    Debug.Log($"PlayerRoom: {friendList[i].Room}");
+                }
+            }
+        }*/
 
         #endregion
     }

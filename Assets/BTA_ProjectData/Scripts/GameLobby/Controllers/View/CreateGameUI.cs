@@ -122,7 +122,7 @@ namespace GameLobby
             if (_whitelistCollection.Count == 0)
                 return;
 
-            var view = _whitelistCollection[_whitelistCollection.Count];
+            var view = _whitelistCollection[(_whitelistCollection.Count - 1)];
 
             view?.Dispose();
 
@@ -138,12 +138,15 @@ namespace GameLobby
 
         private void CreateRoom()
         {
+            var reserveSlots = GetReseveSlots();
+            var publishUserId = reserveSlots == null ? false : true;
             OnCreateRoomPressed?.Invoke(new CreationRoomData 
             {
                 RoomName = _createRoomName,
                 MaxPlayers = _maxPlayersInRoom,
                 IsPublic = _isGamePublic.isOn,
-                Whitelist = GetReseveSlots()
+                PublishUserId = publishUserId,
+                Whitelist = reserveSlots
             });
         }
 

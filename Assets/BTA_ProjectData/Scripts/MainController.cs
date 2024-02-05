@@ -66,27 +66,6 @@ public class MainController : IDisposable
     {
         Subscribe();
 
-        _netManager.Connect();
-
-        _gamePrefs.ChangeGameState(GameState.Loading);
-    }
-
-    private void Subscribe()
-    {
-        _gamePrefs.OnGameStateChange += GameStateChanged;
-        _netManager.OnConnectedToServer += Connected;
-        _netManager.OnDisConnectedFromServer += Disconnected;
-    }
-
-    private void Unsubscribe()
-    {
-        _gamePrefs.OnGameStateChange -= GameStateChanged;
-        _netManager.OnConnectedToServer -= Connected;
-        _netManager.OnDisConnectedFromServer -= Disconnected;
-    }
-
-    private void Connected()
-    {
         var userSate = _gamePrefs.Load();
 
         if (userSate == false)
@@ -95,9 +74,20 @@ public class MainController : IDisposable
         }
         else
         {
-            _stateTransition.Invoke(
-                () => _gamePrefs.ChangeGameState(GameState.MainMenu));
-        }
+            _gamePrefs.ChangeGameState(GameState.Loading);
+        }      
+    }
+
+    private void Subscribe()
+    {
+        _gamePrefs.OnGameStateChange += GameStateChanged;
+        _netManager.OnDisConnectedFromServer += Disconnected;
+    }
+
+    private void Unsubscribe()
+    {
+        _gamePrefs.OnGameStateChange -= GameStateChanged;
+        _netManager.OnDisConnectedFromServer -= Disconnected;
     }
 
     private void Disconnected()
@@ -115,7 +105,12 @@ public class MainController : IDisposable
                 break;
             case GameState.Loading:
                 {
-                    _loadingScreenController = new LoadingScreenController(_placeForUi, LoadingScreenType.GameLoading);
+                    _loadingScreenController 
+                        = new LoadingScreenController(
+                            _placeForUi,
+                            _gamePrefs,  
+                            _netManager, 
+                            _stateTransition);
 
                     _lifeCycle.AddController(_loadingScreenController);
 

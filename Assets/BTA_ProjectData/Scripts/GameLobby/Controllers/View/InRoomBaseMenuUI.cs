@@ -9,12 +9,13 @@ namespace GameLobby
     public abstract class InRoomBaseMenuUI : MonoBehaviour, IRoomMenuUI
     {
         [SerializeField]
+        private GameObject _roomElelemts;
+        [SerializeField]
         private TMP_Text _roomName;
         [SerializeField]
         private Transform _playersInfoContainer;
         [SerializeField]
         private GameObject _playerInfoPrefab;
-
 
         protected string selectedPlayerName;
         
@@ -23,9 +24,17 @@ namespace GameLobby
         public abstract event Action OnStartGamePressed;
         public abstract event Action OnExitPressed;
 
+        private void Awake()
+        {
+            _roomElelemts.SetActive(false);
+        }
+
         public void InitUI(string roomName)
         {
             _roomName.text = roomName;
+
+            _roomElelemts.SetActive(true);
+
             SubscribeUI();
         }
 

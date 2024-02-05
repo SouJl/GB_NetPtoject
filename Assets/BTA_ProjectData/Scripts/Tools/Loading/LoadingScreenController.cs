@@ -1,4 +1,7 @@
 ﻿using Abstraction;
+using Enumerators;
+using MultiplayerService;
+using Prefs;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,18 +11,31 @@ namespace Tools
     {
         private readonly ResourcePath _viewPath = new ResourcePath("Prefabs/UI/LoadingScreen");
 
+        private readonly IGamePrefs _gamePrefs;
+        private readonly GameNetManager _netManager;
+        private readonly StateTransition _stateTransition;
+
         private readonly LoadingScreenUI _view;
 
         private ProgressController _connectionProgress;
 
         public LoadingScreenController(
-            Transform placeForUI, LoadingScreenType type)
+            Transform placeForUI, 
+            IGamePrefs gamePrefs, 
+            GameNetManager netManager,
+            StateTransition stateTransition)
         {
+            _gamePrefs = gamePrefs;
+            _netManager = netManager;
+            _stateTransition = stateTransition;
+
             _view = LoadView(placeForUI);
 
-            _view.InitUI(GetLoadingText(type));
+            _view.InitUI("CONNECT TO GAME...");
 
             _connectionProgress = new ProgressController(_view.LoaddingProgressPlace);
+           
+            _netManager.OnConnectedToServer += Connected;
         }
 
         private LoadingScreenUI LoadView(Transform placeForUI)
@@ -31,32 +47,20 @@ namespace Tools
             return objectView.GetComponent<LoadingScreenUI>();
         }
 
-        private string GetLoadingText(LoadingScreenType type)
+        private void Connected()
         {
-            switch (type)
-            {
-                default:
-                    return string.Empty;
-
-                case LoadingScreenType.GameLoading:
-                    {
-                        return "CONNECT TO GAME...";
-                    }
-                case LoadingScreenType.LobbyLoading:
-                    {
-                        return "JOIN IN LOBBY...";
-                    }
-            }
+            _stateTransition.Invoke(
+                () => _gamePrefs.ChangeGameState(GameState.MainMenu));
         }
-
         public void Start()
         {
             _connectionProgress.Start();
+
+            //_netManager.Connect($"111222333-{_gamePrefs.Data.UserName}");
         }
 
         public void Stop()
         {
-
             _connectionProgress.Stop();
         }
 
@@ -68,6 +72,8 @@ namespace Tools
         protected override void OnDispose()
         {
             base.OnDispose();
+
+            _netManager.OnConnectedToServer -= Connected;
             
             _connectionProgress?.Dispose();
         }

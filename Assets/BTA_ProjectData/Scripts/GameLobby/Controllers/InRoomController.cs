@@ -137,10 +137,10 @@ namespace GameLobby
         private void JoinedInRoom(Room room)
         {
             _roomData = room;
-            
+
             var playersInRoom = _netManager.GetPlayerInRoom();
 
-            if(IsAcceptedInRoom(room, playersInRoom) == false)
+            if (IsAcceptedInRoom(room, playersInRoom) == false)
             {
                 ExitFromRoom();
                 return;
@@ -149,31 +149,27 @@ namespace GameLobby
             _view.InitUI(_roomData.Name);
 
             _playersInRoom = new List<Player>();
-           
+
             for (int i = 0; i < playersInRoom.Length; i++)
             {
                 var player = playersInRoom[i];
                 PlayerEnterInRoom(player);
-            }            
+            }
         }
 
         private bool IsAcceptedInRoom(Room room, Player[] players)
         {
-            for(int i =0; i < players.Length; i++)
-            {
-                if (players[i].IsMasterClient == false)
-                    continue;
+            var player = _netManager.CurrentPlayer;
 
-                if (players[i].NickName == _lobbyPrefs.NickName)
-                    return true;
-            }
+            if (player.IsMasterClient)
+                return true;
 
             if (room.ExpectedUsers == null)
                 return true;
 
             for (int i = 0; i < room.ExpectedUsers.Length; i++)
             {
-                if (room.ExpectedUsers[i] == _lobbyPrefs.NickName)
+                if (room.ExpectedUsers[i] == player.UserId)
                     return true;
             }
 
@@ -237,7 +233,8 @@ namespace GameLobby
         {
             base.OnDispose();
 
-            _playersInRoom.Clear();
+            if (_playersInRoom != null)
+                _playersInRoom.Clear();
 
             Unsubscribe();
         }

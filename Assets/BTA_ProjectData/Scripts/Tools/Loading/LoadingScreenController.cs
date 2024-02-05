@@ -56,7 +56,7 @@ namespace Tools
         {
             _connectionProgress.Start();
 
-            //_netManager.Connect($"111222333-{_gamePrefs.Data.UserName}");
+            _netManager.Connect(_gamePrefs.Data.UserName);
         }
 
         public void Stop()

@@ -104,8 +104,6 @@ namespace GameLobby
         private void JoinedInLobby()
         {
             _view.Show();
-
-            //_netManager.FindFriends(new string[] { $"111222333-SouJI" });
         }
 
         private void RefreshRoomData(List<RoomInfo> roomsInfo)

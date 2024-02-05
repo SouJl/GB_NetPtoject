@@ -159,7 +159,7 @@ namespace GameLobby
 
             for (int i = 0; i < _whitelistCollection.Count; i++)
             {
-                resultArr[i] = _whitelistCollection[i].CurrentName;
+                resultArr[i] = $"BtaPlayerId_{_whitelistCollection[i].CurrentName}";
             }
 
             return resultArr;

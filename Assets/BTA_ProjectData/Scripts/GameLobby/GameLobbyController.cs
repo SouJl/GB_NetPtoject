@@ -3,7 +3,6 @@ using Configs;
 using Enumerators;
 using MultiplayerService;
 using Prefs;
-using System;
 using Tools;
 using UnityEngine;
 
@@ -41,7 +40,7 @@ namespace GameLobby
 
             _lobbyLifeCycle = new LifeCycleController();
 
-            _lobbyPrefs.OnStateChange += LobbyStateChanged;
+            Subscribe();
 
             if (gamePrefs.IsSettedGameName)
             {
@@ -56,6 +55,17 @@ namespace GameLobby
             {
                 _lobbyPrefs.ChangeState(GameLobbyState.Browse);
             }
+        }
+
+        private void Subscribe()
+        {
+            _lobbyPrefs.OnStateChange += LobbyStateChanged;
+            _netManager.OnJoinedInRoomFailed += FailedToJoinInRoom;
+        }
+        private void Unsubscribe()
+        {
+            _lobbyPrefs.OnStateChange -= LobbyStateChanged;
+            _netManager.OnJoinedInRoomFailed -= FailedToJoinInRoom;
         }
 
         private void LobbyStateChanged(GameLobbyState state)
@@ -128,13 +138,19 @@ namespace GameLobby
             _gamePrefs.ChangeGameState(GameState.MainMenu);
         }
 
+
+        private void FailedToJoinInRoom()
+        {
+            _lobbyPrefs.ChangeState(GameLobbyState.Browse);
+        }
+
         protected override void OnDispose()
         {
             base.OnDispose();
 
             DisposeControllers();
 
-            _lobbyPrefs.OnStateChange -= LobbyStateChanged;
+            Unsubscribe();
         }
 
         public void ExecuteUpdate(float deltaTime)

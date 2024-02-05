@@ -27,7 +27,7 @@ namespace MultiplayerService
         public event Action<Player> OnPlayerEnterInRoom;
         public event Action<Player> OnPlayerLeftFromRoom;
         public event Action<Player, Hashtable> OnPlayerPropsUpdated;
-
+        public event Action OnJoinedInRoomFailed;
         public Player CurrentPlayer => PhotonNetwork.LocalPlayer;
 
         public bool IsRoomOpen
@@ -67,7 +67,7 @@ namespace MultiplayerService
 
             PhotonNetwork.AuthValues = new AuthenticationValues
             {
-                UserId = userId
+                UserId = $"BtaPlayerId_{userId}"
             };
 
             PhotonNetwork.GameVersion = Application.version;
@@ -108,6 +108,12 @@ namespace MultiplayerService
 
         public void JoinLobby()
         {
+            if (PhotonNetwork.InLobby)
+            {
+                OnJoinInLobby?.Invoke();
+                return;
+            }
+
             PhotonNetwork.JoinLobby(_lobby);
         }
 
@@ -202,6 +208,7 @@ namespace MultiplayerService
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
             Debug.Log($"OnJoinRoomFailed: [{returnCode}] {message}");
+            OnJoinedInRoomFailed?.Invoke();
         }
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)

@@ -187,7 +187,7 @@ namespace GameLobby
 
         private bool IsExceededPlayersLimit()
         {
-            if (_playersInRoom.Count >= _roomData.MaxPlayers)
+            if (_netManager.IsCurrentRoomFull)
                 return true;
 
             return false;

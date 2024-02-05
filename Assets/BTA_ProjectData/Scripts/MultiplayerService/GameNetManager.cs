@@ -48,6 +48,13 @@ namespace MultiplayerService
             }
         }
 
+        public bool IsCurrentRoomFull
+        {
+            get
+            {
+                return PhotonNetwork.CurrentRoom.PlayerCount >= PhotonNetwork.CurrentRoom.MaxPlayers;
+            }
+        }
 
         public void Init(GameConfig gameConfig)
         {
@@ -97,13 +104,6 @@ namespace MultiplayerService
         public void SetUserData(UserData data)
         {
             PhotonNetwork.LocalPlayer.NickName = data.UserName;
-
-            var authValue = new AuthenticationValues
-            {
-                UserId = GUID.Generate().ToString()
-            };
-
-            PhotonNetwork.AuthValues = authValue;
         }
 
         public void JoinLobby()

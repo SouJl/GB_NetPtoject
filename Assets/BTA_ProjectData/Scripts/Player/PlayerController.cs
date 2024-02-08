@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using Tools;
+using UnityEngine;
 
 namespace BTAPlayer
 {
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         [Header("Movement")]
         [SerializeField]
@@ -28,6 +30,8 @@ namespace BTAPlayer
         
         [Space(10), SerializeField]
         private Transform _orientation;
+        [SerializeField]
+        private PlayerUI _playerUI;
 
         private bool readyToJump;
         private bool _isGrounded;
@@ -38,17 +42,51 @@ namespace BTAPlayer
         private Vector3 _moveDirection;
 
         private Rigidbody _rb;
+        private FirstPersonCamera _camera;
 
-        private void Start()
+        public static GameObject LocalPlayerInstance;
+        private Camera _mainCamera;
+
+
+        private void Awake()
         {
+            if (photonView.IsMine)
+            {
+                LocalPlayerInstance = gameObject;   
+            }
+            
             _rb = GetComponent<Rigidbody>();
             _rb.freezeRotation = true;
 
+            _mainCamera = Camera.main;
+        }
+
+        private void Start()
+        {
             readyToJump = true;
+
+            var followedCamera = GetComponent<FirstPersonCamera>();
+
+            if (followedCamera != null)
+            {
+                if (photonView.IsMine)
+                {
+                    followedCamera.Init(_mainCamera);
+                }
+            }
+            else
+            {
+                Debug.LogError("<Color=Red><b>Missing</b></Color> CameraWork Component on player Prefab.", this);
+            }
+
+            _playerUI.Init(_mainCamera, photonView.Owner.NickName);
         }
 
         private void Update()
         {
+            if (photonView.IsMine == false)
+                return;
+
             _isGrounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.3f, _whatIsGround);
 
             MyInput();
@@ -61,6 +99,9 @@ namespace BTAPlayer
 
         private void FixedUpdate()
         {
+            if (photonView.IsMine == false)
+                return;
+
             MovePlayer();
         }
 
@@ -111,6 +152,11 @@ namespace BTAPlayer
         private void ResetJump()
         {
             readyToJump = true;
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            
         }
     }
 }

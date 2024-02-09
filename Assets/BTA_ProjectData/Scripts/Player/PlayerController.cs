@@ -6,6 +6,10 @@ namespace BTAPlayer
 {
     public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
+        [Header("Base Info")]
+        [SerializeField]
+        private float _maxHealth = 100f;
+
         [Header("Movement")]
         [SerializeField]
         private float _moveSpeed;
@@ -48,6 +52,20 @@ namespace BTAPlayer
         private Camera _mainCamera;
 
 
+        private float _currentHealth;
+        public float CurrentHealth
+        {
+            get => _currentHealth;
+            private set
+            {
+                if(_currentHealth != value)
+                {
+                    _currentHealth = value;
+                    _playerUI.ChangeHealth(value);
+                }
+            }
+        }
+
         private void Awake()
         {
             if (photonView.IsMine)
@@ -79,7 +97,14 @@ namespace BTAPlayer
                 Debug.LogError("<Color=Red><b>Missing</b></Color> CameraWork Component on player Prefab.", this);
             }
 
-            _playerUI.Init(_mainCamera, photonView.Owner.NickName);
+            _currentHealth = _maxHealth;
+
+            _playerUI.Init(_mainCamera, photonView.Owner.NickName, _maxHealth);
+
+            if (photonView.IsMine)
+            {
+                _playerUI.Hide();
+            }
         }
 
         private void Update()
@@ -156,7 +181,14 @@ namespace BTAPlayer
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            
+            if (stream.IsWriting)
+            {
+                stream.SendNext(CurrentHealth);
+            }
+            else
+            {
+                CurrentHealth = (float)stream.ReceiveNext();
+            }
         }
     }
 }

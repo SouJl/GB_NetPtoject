@@ -1,5 +1,8 @@
 ﻿using Photon.Pun;
+using Photon.Realtime;
+using System;
 using Tools;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace BTAPlayer
@@ -9,6 +12,14 @@ namespace BTAPlayer
         [Header("Base Info")]
         [SerializeField]
         private float _maxHealth = 100f;
+        [SerializeField]
+        private float _damageValue = 10f;
+        [SerializeField]
+        private float _damageDistance = 100f;
+        [SerializeField]
+        private Transform _firePoint;
+        [SerializeField]
+        private LayerMask _playermask;
 
         [Header("Movement")]
         [SerializeField]
@@ -21,7 +32,7 @@ namespace BTAPlayer
         private float _jumpCooldown;
         [SerializeField]
         private float _airMultiplier;
- 
+
         [Header("Keybinds")]
         [SerializeField]
         private KeyCode _jumpKey = KeyCode.Space;
@@ -31,7 +42,7 @@ namespace BTAPlayer
         private float _playerHeight;
         [SerializeField]
         private LayerMask _whatIsGround;
-        
+
         [Space(10), SerializeField]
         private Transform _orientation;
         [SerializeField]
@@ -58,7 +69,7 @@ namespace BTAPlayer
             get => _currentHealth;
             private set
             {
-                if(_currentHealth != value)
+                if (_currentHealth != value)
                 {
                     _currentHealth = value;
                     _playerUI.ChangeHealth(value);
@@ -70,9 +81,9 @@ namespace BTAPlayer
         {
             if (photonView.IsMine)
             {
-                LocalPlayerInstance = gameObject;   
+                LocalPlayerInstance = gameObject;
             }
-            
+
             _rb = GetComponent<Rigidbody>();
             _rb.freezeRotation = true;
 
@@ -143,6 +154,25 @@ namespace BTAPlayer
 
                 Invoke(nameof(ResetJump), _jumpCooldown);
             }
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                Shoot();
+            }
+        }
+
+        private void Shoot()
+        {
+            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out var hit, _damageDistance))
+            {
+                Debug.Log($"Hit Name: {hit.transform.name}");
+
+                var target = hit.collider.gameObject.GetComponentInParent<PlayerController>();
+                if (target != null)
+                {
+                    target.TakeDamage(_damageValue);
+                }
+            }
         }
 
         private void MovePlayer()
@@ -177,6 +207,14 @@ namespace BTAPlayer
         private void ResetJump()
         {
             readyToJump = true;
+        }
+
+        public void TakeDamage(float damageValue)
+        {
+            if (_currentHealth > 0)
+            {
+                CurrentHealth -= damageValue;
+            }
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

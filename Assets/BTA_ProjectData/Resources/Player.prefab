@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4292069641703267509}
   - component: {fileID: 4292069641703267506}
   - component: {fileID: 8248561506443322361}
+  - component: {fileID: 4570510943154014857}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -68,6 +69,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d64886b6157498f4695fb57f88ac9a85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxHealth: 100
+  _damageValue: 10
+  _damageDistance: 100
+  _fireRate: 2000
+  _firePoint: {fileID: 0}
+  _playermask:
+    serializedVersion: 2
+    m_Bits: 128
   _moveSpeed: 7
   _groundDrag: 5
   _jumpForce: 12
@@ -138,6 +147,20 @@ MonoBehaviour:
   _orientationPoint: {fileID: 4292069642171563835}
   _syncInEditor: 0
   _camera: {fileID: 0}
+--- !u!136 &4570510943154014857
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4292069641703267503}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.4
+  m_Height: 1.4
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.69, z: 0}
 --- !u!1 &4292069641724418276
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,7 +170,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4292069641724418279}
-  - component: {fileID: 4292069641724418278}
   m_Layer: 7
   m_Name: PlayerObj
   m_TagString: Untagged
@@ -172,20 +194,6 @@ Transform:
   m_Father: {fileID: 4292069641703267502}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &4292069641724418278
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4292069641724418276}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.4
-  m_Height: 1.4
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.69, z: 0}
 --- !u!1 &4292069641803327534
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,7 +203,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4292069641803327537}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CamerPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,7 +236,7 @@ GameObject:
   - component: {fileID: 4292069642151708060}
   - component: {fileID: 4292069642151708001}
   - component: {fileID: 4292069642151708062}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -309,7 +317,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4292069642171563835}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Orientation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -342,7 +350,7 @@ GameObject:
   - component: {fileID: 4292069642179607051}
   - component: {fileID: 4292069642179607052}
   - component: {fileID: 4292069642179607053}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,8 +1,6 @@
 ﻿using Photon.Pun;
-using Photon.Realtime;
-using System;
 using Tools;
-using UnityEditor.PackageManager;
+using UI;
 using UnityEngine;
 
 namespace BTAPlayer
@@ -48,6 +46,9 @@ namespace BTAPlayer
         [SerializeField]
         private PlayerUI _playerUI;
 
+
+        private GameSceneUI _gameSceneUI;
+
         private bool readyToJump;
         private bool _isGrounded;
 
@@ -60,6 +61,7 @@ namespace BTAPlayer
         private FirstPersonCamera _camera;
 
         public static GameObject LocalPlayerInstance;
+
         private Camera _mainCamera;
 
 
@@ -73,6 +75,11 @@ namespace BTAPlayer
                 {
                     _currentHealth = value;
                     _playerUI.ChangeHealth(value);
+                    
+                    if (_gameSceneUI)
+                        _gameSceneUI.ChangeHealth(value);
+
+                    Debug.Log($"Health : {value}");
                 }
             }
         }
@@ -215,6 +222,12 @@ namespace BTAPlayer
             {
                 CurrentHealth -= damageValue;
             }
+        }
+
+        public void SetGameUI(GameSceneUI gameSceneUI)
+        {
+            _gameSceneUI = gameSceneUI;
+            _gameSceneUI.InitUI(photonView.Owner.NickName, _maxHealth);
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

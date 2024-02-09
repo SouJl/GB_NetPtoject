@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/BTA_ProjectData/Scenes/MainScene.unity
     guid: c66e567b38b86d34d82b740fb7b00ad9
   - enabled: 1

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
+using UI;
 
 namespace BTAPlayer
 {
@@ -13,14 +13,9 @@ namespace BTAPlayer
         [SerializeField]
         private TMP_Text _name;
         [SerializeField]
-        private Image _healthBarSprite;
-        [SerializeField]
-        private float _reduceHealthSpeed = 2f;
+        private HealthBarUI _healthBar;
 
         private Camera _camera;
-        private float _maxHealth;
-        
-        private float _targetHealthValue;
 
         public void Init(Camera camera, string name, float maxHealth)
         {
@@ -30,8 +25,7 @@ namespace BTAPlayer
 
             SetName(name);
 
-            _maxHealth = maxHealth;
-            ChangeHealth(_maxHealth);
+            _healthBar.InitUI(maxHealth);
         }
 
         public void Show()
@@ -51,13 +45,7 @@ namespace BTAPlayer
 
         public void ChangeHealth(float value)
         {
-            _targetHealthValue = value / _maxHealth;
-        }
-
-        private void Update()
-        {
-            _healthBarSprite.fillAmount
-              = Mathf.MoveTowards(_healthBarSprite.fillAmount, _targetHealthValue, _reduceHealthSpeed);
+            _healthBar.ChangeHealth(value);
         }
 
         private void LateUpdate()

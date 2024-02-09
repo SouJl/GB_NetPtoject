@@ -8,7 +8,7 @@ namespace Tools
         private float _sensX = 100f;
         [SerializeField]
         private float _sensY = 100f;
-        
+
         [SerializeField]
         private Transform _target;
         [SerializeField]

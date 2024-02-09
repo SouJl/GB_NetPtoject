@@ -1,6 +1,7 @@
 ﻿using BTAPlayer;
 using Photon.Pun;
 using Photon.Realtime;
+using UI;
 using UnityEngine;
 
 public class InGameNetManager : MonoBehaviourPunCallbacks
@@ -13,6 +14,8 @@ public class InGameNetManager : MonoBehaviourPunCallbacks
     private Transform _spawnPoint;
     [SerializeField]
     private float _spawnRadius;
+    [SerializeField]
+    private GameSceneUI _gameSceneUI;
 
     private void Start()
     {
@@ -37,6 +40,8 @@ public class InGameNetManager : MonoBehaviourPunCallbacks
         Debug.Log($"OnJoinedRoom");
 
         SpawnPlayer();
+
+        PlayerController.LocalPlayerInstance.GetComponent<PlayerController>().SetGameUI(_gameSceneUI);
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -52,7 +57,6 @@ public class InGameNetManager : MonoBehaviourPunCallbacks
 
         if (_playerPrefab == null)
         { 
-
             Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'InGameNetManager'", this);
         }
         else

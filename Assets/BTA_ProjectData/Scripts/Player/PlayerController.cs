@@ -80,6 +80,18 @@ namespace BTAPlayer
             }
         }
 
+        private int _playerLevel;
+        public int PlayerLevel
+        {
+            get => _playerLevel;
+            private set
+            {
+                _playerLevel = value;
+
+                _playerUI.ChangeLevel(value);
+            }
+        }
+
         private void Awake()
         {
             if (photonView.IsMine)
@@ -166,10 +178,8 @@ namespace BTAPlayer
 
         private void Shoot()
         {
-            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out var hit, _damageDistance))
+            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out var hit, _damageDistance, _playermask))
             {
-                Debug.Log($"Hit Name: {hit.transform.name}");
-
                 var target = hit.collider.gameObject.GetComponentInParent<PlayerController>();
                 if (target != null)
                 {
@@ -238,6 +248,9 @@ namespace BTAPlayer
 
         public void SetGameUI(GameSceneUI gameSceneUI)
         {
+            if (!photonView.IsMine)
+                return;
+
             _gameSceneUI = gameSceneUI;
             _gameSceneUI.InitUI(photonView.Owner.NickName, _maxHealth);
         }
@@ -247,10 +260,12 @@ namespace BTAPlayer
             if (stream.IsWriting)
             {
                 stream.SendNext(CurrentHealth);
+                stream.SendNext(PlayerLevel);
             }
             else
             {
                 CurrentHealth = (float)stream.ReceiveNext();
+                PlayerLevel = (int)stream.ReceiveNext();
             }
         }
     }

@@ -14,6 +14,8 @@ namespace BTAPlayer
         private TMP_Text _name;
         [SerializeField]
         private HealthBarUI _healthBar;
+        [SerializeField]
+        private TMP_Text _level;
 
         private Camera _camera;
 
@@ -26,6 +28,8 @@ namespace BTAPlayer
             SetName(name);
 
             _healthBar.InitUI(maxHealth);
+
+            ChangeLevel(0);
         }
 
         public void Show()
@@ -46,6 +50,11 @@ namespace BTAPlayer
         public void ChangeHealth(float value)
         {
             _healthBar.ChangeHealth(value);
+        }
+
+        public void ChangeLevel(int level)
+        {
+            _level.text = $"Lvl {level}";
         }
 
         private void LateUpdate()

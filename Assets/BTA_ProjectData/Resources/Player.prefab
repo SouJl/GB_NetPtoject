@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4292069641703267502}
   - component: {fileID: 4292069641703267504}
   - component: {fileID: 4292069641703267506}
-  - component: {fileID: 4292069641703267507}
+  - component: {fileID: 1246243642587642468}
   - component: {fileID: 4292069641703267509}
   - component: {fileID: 8248561506443322361}
   - component: {fileID: 4570510943154014857}
@@ -76,12 +76,12 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 4292069641703267507}
+  - {fileID: 1246243642587642468}
   - {fileID: 4292069641703267509}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &4292069641703267507
+--- !u!114 &1246243642587642468
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -90,26 +90,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4292069641703267503}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d64886b6157498f4695fb57f88ac9a85, type: 3}
+  m_Script: {fileID: 11500000, guid: 98dec5eb9e63dd54b804956eea8fa539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 100
-  _damageValue: 10
-  _damageDistance: 100
-  _firePoint: {fileID: 0}
-  _playermask:
-    serializedVersion: 2
-    m_Bits: 128
-  _moveSpeed: 7
-  _groundDrag: 5
-  _jumpForce: 12
-  _jumpCooldown: 0.25
-  _airMultiplier: 0.4
-  _jumpKey: 32
-  _playerHeight: 2
-  _whatIsGround:
-    serializedVersion: 2
-    m_Bits: 64
+  _selfTransform: {fileID: 4292069641703267502}
   _orientation: {fileID: 4292069642171563835}
   _playerUI: {fileID: 4148490894650735686}
 --- !u!114 &4292069641703267509

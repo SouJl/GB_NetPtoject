@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Configs;
 using Abstraction;
 using ExitGames.Client.Photon;
-using UnityEditor;
+using BTAPlayer;
 
 namespace MultiplayerService
 {
@@ -29,6 +29,9 @@ namespace MultiplayerService
         public event Action<Player, Hashtable> OnPlayerPropsUpdated;
         public event Action OnJoinedInRoomFailed;
         public Player CurrentPlayer => PhotonNetwork.LocalPlayer;
+        public Room CurrentRoom => PhotonNetwork.CurrentRoom;
+
+        public bool IsConnected => PhotonNetwork.IsConnected;
 
         public bool IsRoomOpen
         {
@@ -54,6 +57,12 @@ namespace MultiplayerService
             {
                 return PhotonNetwork.CurrentRoom.PlayerCount >= PhotonNetwork.CurrentRoom.MaxPlayers;
             }
+        }
+
+
+        private void Awake()
+        {
+            DontDestroyOnLoad(transform.gameObject);
         }
 
         public void Init(GameConfig gameConfig)
@@ -165,6 +174,12 @@ namespace MultiplayerService
         public void FindFriends(string[] players)
         {
             PhotonNetwork.FindFriends(players);
+        }
+
+
+        public GameObject CreatePlayer(GameObject playerObject, Vector3 position)
+        {
+            return PhotonNetwork.Instantiate(playerObject.name, position, Quaternion.identity);
         }
 
         #region PUN CALLBACKS

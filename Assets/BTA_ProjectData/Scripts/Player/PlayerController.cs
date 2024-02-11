@@ -1,81 +1,40 @@
-﻿using Photon.Pun;
-using Tools;
+﻿using Abstraction;
+using Photon.Pun;
 using UI;
 using UnityEngine;
 
 namespace BTAPlayer
 {
-    public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
+    public class PlayerController : IOnUpdate
     {
-        [Header("Base Info")]
-        [SerializeField]
-        private float _maxHealth = 100f;
-        [SerializeField]
-        private float _damageValue = 10f;
-        [SerializeField]
-        private float _damageDistance = 100f;
-        [SerializeField]
-        private Transform _firePoint;
-        [SerializeField]
-        private LayerMask _playermask;
-
-        [Header("Movement")]
-        [SerializeField]
-        private float _moveSpeed;
-        [SerializeField]
-        private float _groundDrag;
-        [SerializeField]
-        private float _jumpForce;
-        [SerializeField]
-        private float _jumpCooldown;
-        [SerializeField]
-        private float _airMultiplier;
-
-        [Header("Keybinds")]
-        [SerializeField]
-        private KeyCode _jumpKey = KeyCode.Space;
-
-        [Header("Ground Check")]
-        [SerializeField]
-        private float _playerHeight;
-        [SerializeField]
-        private LayerMask _whatIsGround;
-
-        [Space(10), SerializeField]
-        private Transform _orientation;
-        [SerializeField]
-        private PlayerUI _playerUI;
+        private readonly PlayerConfig _data;
+        private readonly PlayerView _view;
+        private readonly GameSceneUI _gameSceneUI;
 
 
-        private GameSceneUI _gameSceneUI;
-
-        private bool readyToJump;
+        private bool _readyToJump;
         private bool _isGrounded;
+        private bool _isResetJump;
 
         private float _horizontalInput;
         private float _verticalInput;
 
         private Vector3 _moveDirection;
 
-        private Rigidbody _rb;
-        private FirstPersonCamera _camera;
-
-        public static GameObject LocalPlayerInstance;
-
-        private Camera _mainCamera;
+        private float _resetJumpCount;
 
 
         private float _currentHealth;
         public float CurrentHealth
         {
             get => _currentHealth;
-            private set
+            set
             {
                 if (_currentHealth != value)
                 {
                     _currentHealth = value;
 
-                    _playerUI.ChangeHealth(value);
+                    _view.PlayerUI.ChangeHealth(value);
                 }
             }
         }
@@ -84,73 +43,71 @@ namespace BTAPlayer
         public int PlayerLevel
         {
             get => _playerLevel;
-            private set
+            set
             {
                 _playerLevel = value;
 
-                _playerUI.ChangeLevel(value);
+                _view.PlayerUI.ChangeLevel(value);
             }
         }
 
-        private void Awake()
+
+        public PlayerController(
+            PlayerConfig data,
+            PlayerView view,
+            GameSceneUI gameSceneUI,
+            Camera camera)
         {
-            if (photonView.IsMine)
-            {
-                LocalPlayerInstance = gameObject;
-            }
+            _data = data;
+            _view = view;
+            _gameSceneUI = gameSceneUI;
 
-            _rb = GetComponent<Rigidbody>();
-            _rb.freezeRotation = true;
+            _currentHealth = data.MaxHealth;
 
-            _mainCamera = Camera.main;
+            _view.Init(this, camera);
+            _gameSceneUI.InitUI(_view.photonView.Owner.NickName, data.MaxHealth);
+
+            _readyToJump = true;
+            _isResetJump = false;
         }
 
-        private void Start()
+
+        public void ExecuteUpdate(float deltaTime)
         {
-            readyToJump = true;
-
-            var followedCamera = GetComponent<FirstPersonCamera>();
-
-            if (followedCamera != null)
-            {
-                if (photonView.IsMine)
-                {
-                    followedCamera.Init(_mainCamera);
-                }
-            }
-            else
-            {
-                Debug.LogError("<Color=Red><b>Missing</b></Color> CameraWork Component on player Prefab.", this);
-            }
-
-            _currentHealth = _maxHealth;
-
-            _playerUI.Init(_mainCamera, photonView.Owner.NickName, _maxHealth);
-
-            if (photonView.IsMine)
-            {
-                _playerUI.Hide();
-            }
-        }
-
-        private void Update()
-        {
-            if (photonView.IsMine == false)
+            if (_view.photonView.IsMine == false)
                 return;
 
-            _isGrounded = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.3f, _whatIsGround);
+            _isGrounded = Physics.Raycast(_view.SelfTransform.position, Vector3.down, _data.PlayerHeight * 0.5f + 0.3f, _data.WhatIsGround);
 
             MyInput();
             SpeedControl();
+
             if (_isGrounded)
-                _rb.drag = _groundDrag;
+            {
+                _view.PlayerRb.drag = _data.GroundDrag;
+            }
             else
-                _rb.drag = 0;
+            {
+                _view.PlayerRb.drag = 0;
+            }
+
+            if (_isResetJump)
+            {
+                _resetJumpCount += deltaTime;
+
+                if (_resetJumpCount >= _data.JumpCooldown)
+                {
+                    ResetJump();
+                    _resetJumpCount = 0;
+                    _isResetJump = false;
+                }
+            }
         }
 
-        private void FixedUpdate()
+
+        public void ExecuteFixedUpdate(float fixedDeltaTime)
         {
-            if (photonView.IsMine == false)
+            if (_view.photonView.IsMine == false)
                 return;
 
             MovePlayer();
@@ -161,13 +118,12 @@ namespace BTAPlayer
             _horizontalInput = Input.GetAxisRaw("Horizontal");
             _verticalInput = Input.GetAxisRaw("Vertical");
 
-            if (Input.GetKey(_jumpKey) && readyToJump && _isGrounded)
+            if (Input.GetKey(_data.JumpKey) && _readyToJump && _isGrounded)
             {
-                readyToJump = false;
-
+                _readyToJump = false;
+                _isResetJump = true;
+   
                 Jump();
-
-                Invoke(nameof(ResetJump), _jumpCooldown);
             }
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -178,48 +134,53 @@ namespace BTAPlayer
 
         private void Shoot()
         {
-            if (Physics.Raycast(_mainCamera.transform.position, _mainCamera.transform.forward, out var hit, _damageDistance, _playermask))
+            if (Physics.Raycast(_view.MainCamera.transform.position, _view.MainCamera.transform.forward, out var hit, _data.DamageDistance, _data.TargetsMask))
             {
                 var target = hit.collider.gameObject.GetComponentInParent<PlayerController>();
                 if (target != null)
                 {
-                    target.TakeDamage(_damageValue);
+                    target.TakeDamage(_data.DamageValue);
                 }
             }
         }
 
         private void MovePlayer()
         {
-            _moveDirection = _orientation.forward * _verticalInput + _orientation.right * _horizontalInput;
+            _moveDirection
+                = _view.Orientation.forward * _verticalInput + _view.Orientation.right * _horizontalInput;
 
             if (_isGrounded)
-                _rb.AddForce(_moveDirection.normalized * _moveSpeed * 10f, ForceMode.Force);
-
+            {
+                _view.PlayerRb.AddForce(_moveDirection.normalized * _data.MoveSpeed * 10f, ForceMode.Force);
+            }
             else if (!_isGrounded)
-                _rb.AddForce(_moveDirection.normalized * _moveSpeed * 10f * _airMultiplier, ForceMode.Force);
+            {
+                _view.PlayerRb.AddForce(_moveDirection.normalized * _data.MoveSpeed * 10f * _data.AirMultiplier, ForceMode.Force);
+            }
         }
 
         private void SpeedControl()
         {
-            Vector3 flatVel = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
+            var flatVel
+                = new Vector3(_view.PlayerRb.velocity.x, 0f, _view.PlayerRb.velocity.z);
 
-            if (flatVel.magnitude > _moveSpeed)
+            if (flatVel.magnitude > _data.MoveSpeed)
             {
-                Vector3 limitedVel = flatVel.normalized * _moveSpeed;
-                _rb.velocity = new Vector3(limitedVel.x, _rb.velocity.y, limitedVel.z);
+                Vector3 limitedVel = flatVel.normalized * _data.MoveSpeed;
+                _view.PlayerRb.velocity = new Vector3(limitedVel.x, _view.PlayerRb.velocity.y, limitedVel.z);
             }
         }
 
         private void Jump()
         {
-            _rb.velocity = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
+            _view.PlayerRb.velocity = new Vector3(_view.PlayerRb.velocity.x, 0f, _view.PlayerRb.velocity.z);
 
-            _rb.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
+            _view.PlayerRb.AddForce(_view.SelfTransform.up * _data.JumpForce, ForceMode.Impulse);
         }
 
         private void ResetJump()
         {
-            readyToJump = true;
+            _readyToJump = true;
         }
 
         public void TakeDamage(float damageValue)
@@ -228,45 +189,22 @@ namespace BTAPlayer
             {
                 CurrentHealth -= damageValue;
 
-                photonView.RPC("UpdateSelfHealth", RpcTarget.Others, new object[] { photonView.ViewID, CurrentHealth });
+                _view.photonView.RPC("UpdateSelfHealth", RpcTarget.Others, new object[] { _view.photonView.ViewID, CurrentHealth });
             }
         }
 
 
         [PunRPC]
-        void UpdateSelfHealth(int id, float value)
+        private void UpdateSelfHealth(int id, float value)
         {
-            if (photonView.ViewID != id)
+            if (_view.photonView.ViewID != id)
                 return;
 
             Debug.Log($"Health : {value}");
 
             _gameSceneUI.ChangeHealth(value);
-            
+
             CurrentHealth = value;
-        }
-
-        public void SetGameUI(GameSceneUI gameSceneUI)
-        {
-            if (!photonView.IsMine)
-                return;
-
-            _gameSceneUI = gameSceneUI;
-            _gameSceneUI.InitUI(photonView.Owner.NickName, _maxHealth);
-        }
-
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        {
-            if (stream.IsWriting)
-            {
-                stream.SendNext(CurrentHealth);
-                stream.SendNext(PlayerLevel);
-            }
-            else
-            {
-                CurrentHealth = (float)stream.ReceiveNext();
-                PlayerLevel = (int)stream.ReceiveNext();
-            }
         }
     }
 }

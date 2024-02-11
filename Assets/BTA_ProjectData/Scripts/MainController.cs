@@ -8,6 +8,7 @@ using Tools;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
 
 #if UNITY_EDITOR
 using ParrelSync;
@@ -165,7 +166,7 @@ public class MainController : IDisposable
     {
         Dispose();
 
-        SceneManager.LoadScene(1);
+        PhotonNetwork.LoadLevel(1);
     }
 
 

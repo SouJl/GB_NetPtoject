@@ -74,12 +74,8 @@ namespace BTAPlayer
                 if (_currentHealth != value)
                 {
                     _currentHealth = value;
-                    _playerUI.ChangeHealth(value);
-                    
-                    if (_gameSceneUI)
-                        _gameSceneUI.ChangeHealth(value);
 
-                    Debug.Log($"Health : {value}");
+                    _playerUI.ChangeHealth(value);
                 }
             }
         }
@@ -220,8 +216,26 @@ namespace BTAPlayer
         {
             if (_currentHealth > 0)
             {
-                CurrentHealth -= damageValue;
+                var resultHealt = CurrentHealth - damageValue;
+
+                _playerUI.ChangeHealth(resultHealt);
+
+                photonView.RPC("ChangeSelfHealth", RpcTarget.Others, new object[] { photonView.ViewID, resultHealt });
             }
+        }
+
+
+        [PunRPC]
+        void ChangeSelfHealth(int id, float value)
+        {
+            if (photonView.ViewID != id)
+                return;
+
+            Debug.Log($"Health : {value}");
+
+            _gameSceneUI.ChangeHealth(value);
+            
+            CurrentHealth = value;
         }
 
         public void SetGameUI(GameSceneUI gameSceneUI)

@@ -41,7 +41,6 @@ public class InGameNetManager : MonoBehaviourPunCallbacks
 
         SpawnPlayer();
 
-        PlayerController.LocalPlayerInstance.GetComponent<PlayerController>().SetGameUI(_gameSceneUI);
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -64,6 +63,8 @@ public class InGameNetManager : MonoBehaviourPunCallbacks
             if (PlayerController.LocalPlayerInstance == null)
             {
                 PhotonNetwork.Instantiate(_playerPrefab.name, _spawnPoint.position, Quaternion.identity, 0);
+
+                PlayerController.LocalPlayerInstance.GetComponent<PlayerController>().SetGameUI(_gameSceneUI);
             }
         }
     }

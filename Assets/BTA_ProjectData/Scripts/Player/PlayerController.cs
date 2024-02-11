@@ -216,17 +216,15 @@ namespace BTAPlayer
         {
             if (_currentHealth > 0)
             {
-                var resultHealt = CurrentHealth - damageValue;
+                CurrentHealth -= damageValue;
 
-                _playerUI.ChangeHealth(resultHealt);
-
-                photonView.RPC("ChangeSelfHealth", RpcTarget.Others, new object[] { photonView.ViewID, resultHealt });
+                photonView.RPC("UpdateSelfHealth", RpcTarget.Others, new object[] { photonView.ViewID, CurrentHealth });
             }
         }
 
 
         [PunRPC]
-        void ChangeSelfHealth(int id, float value)
+        void UpdateSelfHealth(int id, float value)
         {
             if (photonView.ViewID != id)
                 return;

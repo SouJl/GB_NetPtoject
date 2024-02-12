@@ -9,6 +9,7 @@ using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
+using Abstraction;
 
 #if UNITY_EDITOR
 using ParrelSync;
@@ -75,6 +76,7 @@ public class MainController : IDisposable
         }
         else
         {
+            _multiplayerService.LogIn(_gamePrefs.Data);
             _gamePrefs.ChangeGameState(GameState.Loading);
         }      
     }
@@ -83,18 +85,18 @@ public class MainController : IDisposable
     {
         _gamePrefs.OnGameStateChange += GameStateChanged;
         _netManager.OnDisConnectedFromServer += Disconnected;
+
+        _multiplayerService.OnLogInSucceed += UserLogIn;
     }
 
     private void Unsubscribe()
     {
         _gamePrefs.OnGameStateChange -= GameStateChanged;
         _netManager.OnDisConnectedFromServer -= Disconnected;
+
+        _multiplayerService.OnLogInSucceed -= UserLogIn;
     }
 
-    private void Disconnected()
-    {
-        _gamePrefs.ChangeGameState(GameState.Exit);
-    }
 
     private void GameStateChanged(GameState state)
     {
@@ -179,6 +181,17 @@ public class MainController : IDisposable
 #endif
         Application.Quit();
     }
+
+    private void Disconnected()
+    {
+        _gamePrefs.ChangeGameState(GameState.Exit);
+    }
+
+    private void UserLogIn(UserData obj)
+    {
+        _multiplayerService.GetUserData(_gamePrefs.Data.Id);
+    }
+
 
     public void Dispose()
     {

@@ -2,6 +2,7 @@
 using Enumerators;
 using MultiplayerService;
 using Prefs;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -22,13 +23,13 @@ namespace UI
             Transform placeForUI,
             IGamePrefs gamePrefs,
             IMultiplayerService multiplayerService)
-        {                
+        {
             _gamePrefs = gamePrefs;
             _multiplayerService = multiplayerService;
 
             _view = LoadView(placeForUI);
             _view.InitView(_gamePrefs.IsUserDataExist, _gamePrefs.Data);
-            
+
             _connectionProgress = new ProgressController(_view.ConnetcionProgressPlacement);
 
             Subscribe();
@@ -37,7 +38,7 @@ namespace UI
         private AuthenticationMenuView LoadView(Transform placeForUI)
         {
             var objectView = Object.Instantiate(ResourceLoader.LoadPrefab(_viewPath), placeForUI, false);
-            
+
             AddGameObject(objectView);
 
             return objectView.GetComponent<AuthenticationMenuView>();
@@ -66,7 +67,7 @@ namespace UI
             _multiplayerService.OnLogInSucceed -= LogInProccessEndOnSucceed;
             _multiplayerService.OnError -= LogInProccessEndError;
 
-            _view.CreateAccountUI.OnProceed -= CreateAcountInMultiplayerService;    
+            _view.CreateAccountUI.OnProceed -= CreateAcountInMultiplayerService;
             _multiplayerService.OnCreateAccountSucceed -= CrateAccountEndOnSucceed;
             _multiplayerService.OnError -= CrateAccountEndError;
         }
@@ -99,6 +100,14 @@ namespace UI
             _connectionProgress.Stop();
 
             _gamePrefs.SetUserData(data);
+
+            var userData = new Dictionary<string, string>()
+            {
+                {"PlayerName",$"{data.UserName}"},
+                {"PlayerLevel",$"{1}"},
+            };
+
+            _multiplayerService.SetUserData(userData);
 
             _gamePrefs.ChangeGameState(GameState.MainMenu);
         }

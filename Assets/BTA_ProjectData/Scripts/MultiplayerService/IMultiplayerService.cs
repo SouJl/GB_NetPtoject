@@ -1,4 +1,5 @@
 ﻿using Abstraction;
+using Configs;
 using PlayFab.ClientModels;
 using System;
 using System.Collections.Generic;
@@ -21,5 +22,9 @@ namespace MultiplayerService
         public void GetAccountInfo(string userId);
 
         public void GetCatalogItems(string catalogId);
+
+        public void SetUserData(Dictionary<string, string> data);
+
+        public void GetUserData(string userId);
     }
 }

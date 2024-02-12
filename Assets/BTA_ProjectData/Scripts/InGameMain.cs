@@ -2,8 +2,12 @@
 using MultiplayerService;
 using Photon.Pun;
 using Photon.Realtime;
+using PlayFab;
+using PlayFab.ClientModels;
+using Prefs;
 using System.Collections.Generic;
 using UI;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InGameMain : MonoBehaviourPun
@@ -35,11 +39,34 @@ public class InGameMain : MonoBehaviourPun
         if (_netManager.IsConnected)
         {
             SpawnPlayer();
+
+            var gamePrefs = new GamePrefs();
+            gamePrefs.Load();
+
+            PlayFabClientAPI.GetUserData(new GetUserDataRequest { PlayFabId = gamePrefs.Data.Id }, GetDataSuccess, OnGetError);
+
             return;
         }
         else
         {
             PhotonNetwork.LoadLevel(0);
+        }
+    }
+
+    private void OnGetError(PlayFabError error)
+    {
+        var errorMessage = error.GenerateErrorReport();
+        Debug.Log(errorMessage);
+    }
+
+    private void GetDataSuccess(GetUserDataResult result)
+    {
+        if (result.Data == null)
+            return;
+
+        foreach (var data in result.Data)
+        {
+            Debug.Log($"{data.Key} - {data.Value.Value}");
         }
     }
 

@@ -10,7 +10,7 @@ namespace MultiplayerService
 {
     public class PlayFabMultiplayerService : IMultiplayerService
     {
-        private readonly string _titleId;
+        private string _titleId;
 
         public event Action<UserData> OnLogInSucceed;
         public event Action<UserData> OnCreateAccountSucceed;
@@ -20,6 +20,7 @@ namespace MultiplayerService
         public event Action<string> OnError;
 
         private UserData _tempUserData;
+        private UserData _loginedUser;
 
         public PlayFabMultiplayerService(GameConfig gameConfig)
         {
@@ -85,11 +86,18 @@ namespace MultiplayerService
                     UserName = _tempUserData.UserName,
                     Password = _tempUserData.Password
                 };
+                
+                SetLoginedUser(userData);
 
                 OnLogInSucceed?.Invoke(userData);
 
-                _tempUserData = null;
+                _tempUserData = null; 
             } 
+        }
+
+        private void SetLoginedUser(UserData data)
+        {
+            _loginedUser = data;
         }
 
         public void GetAccountInfo(string userId)
@@ -140,6 +148,45 @@ namespace MultiplayerService
             OnGetCatalogItemsSuccess?.Invoke(catalogItems);
         }
 
+        public void SetUserData(Dictionary<string, string> data)
+        {
+            if (PlayFabClientAPI.IsClientLoggedIn() == false)
+                return;
+
+            var request = new UpdateUserDataRequest
+            {
+                Data = data
+            };
+
+            PlayFabClientAPI.UpdateUserData(request, SetUserDataSuccess, OnGetError);
+        }
+
+
+        private void SetUserDataSuccess(UpdateUserDataResult result)
+        {
+            Debug.Log($"SetUserDataSuccess!");
+        }
+
+        public void GetUserData(string userId)
+        {
+            var request = new GetUserDataRequest
+            {
+                PlayFabId = userId
+            };
+
+            PlayFabClientAPI.GetUserData(request, GetUserDataSuccess, OnGetError);
+        }
+
+        private void GetUserDataSuccess(GetUserDataResult result)
+        {
+            if (result.Data == null)
+                return;
+
+            foreach(var data in result.Data)
+            {
+                Debug.Log($"{data.Key} - {data.Value.Value}");
+            }
+        }
 
         private void OnGetError(PlayFabError error)
         {
@@ -148,6 +195,5 @@ namespace MultiplayerService
             var errorMessage = error.GenerateErrorReport();
             OnError?.Invoke(errorMessage);
         }
-
     }
 }

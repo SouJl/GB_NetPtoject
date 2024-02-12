@@ -5,10 +5,11 @@ using PlayFab.ClientModels;
 using Configs;
 using System.Collections.Generic;
 using UnityEngine;
+using Tools;
 
 namespace MultiplayerService
 {
-    public class PlayFabMultiplayerService : IMultiplayerService
+    public class DataServerService 
     {
         private string _titleId;
 
@@ -16,13 +17,19 @@ namespace MultiplayerService
         public event Action<UserData> OnCreateAccountSucceed;
         public event Action<UserData> OnGetAccountSuccess;
         public event Action<List<CatalogItem>> OnGetCatalogItemsSuccess;
+        
+        public event Action<PlayfabUserData> OnGetUserData;
 
         public event Action<string> OnError;
 
         private UserData _tempUserData;
-        private UserData _loginedUser;
 
-        public PlayFabMultiplayerService(GameConfig gameConfig)
+        public DataServerService()
+        {
+
+        }
+
+        public DataServerService(GameConfig gameConfig)
         {
             _titleId = gameConfig.PlayFabTitleId;
 
@@ -86,18 +93,11 @@ namespace MultiplayerService
                     UserName = _tempUserData.UserName,
                     Password = _tempUserData.Password
                 };
-                
-                SetLoginedUser(userData);
 
                 OnLogInSucceed?.Invoke(userData);
 
                 _tempUserData = null; 
             } 
-        }
-
-        private void SetLoginedUser(UserData data)
-        {
-            _loginedUser = data;
         }
 
         public void GetAccountInfo(string userId)
@@ -182,10 +182,16 @@ namespace MultiplayerService
             if (result.Data == null)
                 return;
 
-            foreach(var data in result.Data)
+            var userNickName = result.Data[BTAConst.USER_NICKNAME].Value;
+            var userlevel = int.Parse(result.Data[BTAConst.USER_GAME_LVL].Value);
+            var userlevelProgress = float.Parse(result.Data[BTAConst.USER_LVL_PROGRESS].Value);
+
+            OnGetUserData?.Invoke(new PlayfabUserData
             {
-                Debug.Log($"{data.Key} - {data.Value.Value}");
-            }
+                Nickname = userNickName,
+                Level = userlevel,
+                LevelProgress = userlevelProgress
+            });
         }
 
         private void OnGetError(PlayFabError error)

@@ -13,6 +13,7 @@ namespace Tools
 
         private readonly IGamePrefs _gamePrefs;
         private readonly GameNetManager _netManager;
+        private readonly DataServerService _serverService;
         private readonly StateTransition _stateTransition;
 
         private readonly LoadingScreenUI _view;
@@ -23,10 +24,13 @@ namespace Tools
             Transform placeForUI, 
             IGamePrefs gamePrefs, 
             GameNetManager netManager,
+            DataServerService serverService,
             StateTransition stateTransition)
         {
             _gamePrefs = gamePrefs;
             _netManager = netManager;
+            _serverService = serverService;
+
             _stateTransition = stateTransition;
 
             _view = LoadView(placeForUI);
@@ -34,8 +38,8 @@ namespace Tools
             _view.InitUI("CONNECT TO GAME...");
 
             _connectionProgress = new ProgressController(_view.LoaddingProgressPlace);
-           
-            _netManager.OnConnectedToServer += Connected;
+
+            Subscribe();
         }
 
         private LoadingScreenUI LoadView(Transform placeForUI)
@@ -47,16 +51,45 @@ namespace Tools
             return objectView.GetComponent<LoadingScreenUI>();
         }
 
+        private void Subscribe()
+        {
+            _serverService.OnLogInSucceed += LoginnedInGame;
+            _serverService.OnGetUserData += LoadedUserDataFromServer;
+            _netManager.OnConnectedToServer += Connected;
+        }
+
+        private void Unsubscribe()
+        {
+            _serverService.OnLogInSucceed -= LoginnedInGame;
+            _serverService.OnGetUserData -= LoadedUserDataFromServer;
+            _netManager.OnConnectedToServer -= Connected;
+        }
+
+        private void LoginnedInGame(UserData data)
+        {
+            _serverService.GetUserData(data.Id);
+        }
+
+        private void LoadedUserDataFromServer(PlayfabUserData userData)
+        {
+            Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.Level}] with progress {userData.LevelProgress}");
+
+            _gamePrefs.SetUserProgression(userData.Level, userData.LevelProgress);
+
+            _netManager.Connect(userData.Nickname);
+        }
+
         private void Connected()
         {
             _stateTransition.Invoke(
                 () => _gamePrefs.ChangeGameState(GameState.MainMenu));
         }
+
         public void Start()
         {
             _connectionProgress.Start();
 
-            _netManager.Connect(_gamePrefs.Data.UserName);
+            _serverService.LogIn(_gamePrefs.Data);
         }
 
         public void Stop()
@@ -73,7 +106,7 @@ namespace Tools
         {
             base.OnDispose();
 
-            _netManager.OnConnectedToServer -= Connected;
+            Unsubscribe();
             
             _connectionProgress?.Dispose();
         }

@@ -8,6 +8,8 @@ namespace UI
         [SerializeField]
         private TMP_Text _playerName;
         [SerializeField]
+        private TMP_Text _playerLevel;
+        [SerializeField]
         private HealthBarUI _healthBar;
 
         private void Awake()
@@ -18,6 +20,8 @@ namespace UI
         public void InitUI(string name, float maxHealth)
         {
             _playerName.text = name;
+            
+            _playerLevel.text = "";
 
             _healthBar.InitUI(maxHealth);
 
@@ -27,6 +31,11 @@ namespace UI
         public void ChangeHealth(float value)
         {
             _healthBar.ChangeHealth(value);
+        }
+
+        public void ChangePlayerLevel(int value)
+        {
+            _playerLevel.text = $"Current level: {value}";
         }
     }
 }

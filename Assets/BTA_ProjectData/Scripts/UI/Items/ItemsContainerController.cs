@@ -12,7 +12,7 @@ namespace UI
     {
         private readonly ItemsInfoConfig _itemsInfoConfig;
         private readonly ItemsContainerUI _containerView;
-        private readonly IMultiplayerService _multiplayerService;
+        private readonly DataServerService _dataServerService;
 
         private ProgressController _loadCatalogItemsProgress;
 
@@ -22,11 +22,11 @@ namespace UI
             ItemsInfoConfig itemsInfoConfig,
             ItemsContainerUI containerView,
             Transform loadCatalogItemsProgressPos,
-            IMultiplayerService multiplayerService)
+            DataServerService dataServerService)
         {
             _itemsInfoConfig = itemsInfoConfig;
             _containerView = containerView;
-            _multiplayerService = multiplayerService;
+            _dataServerService = dataServerService;
 
             _loadCatalogItemsProgress
                 = new ProgressController(loadCatalogItemsProgressPos);
@@ -40,14 +40,14 @@ namespace UI
 
         private void Subscribe()
         {
-            _multiplayerService.OnGetCatalogItemsSuccess += GetCatalogItems;
-            _multiplayerService.OnError += GetDataFailed;
+            _dataServerService.OnGetCatalogItemsSuccess += GetCatalogItems;
+            _dataServerService.OnError += GetDataFailed;
         }
 
         private void Unsubscribe()
         {
-            _multiplayerService.OnGetCatalogItemsSuccess -= GetCatalogItems;
-            _multiplayerService.OnError -= GetDataFailed;
+            _dataServerService.OnGetCatalogItemsSuccess -= GetCatalogItems;
+            _dataServerService.OnError -= GetDataFailed;
         }
 
         private void GetCatalogItems(List<CatalogItem> resultItems)
@@ -101,7 +101,7 @@ namespace UI
 
         private void LodaCatalogItems(string catalogVersion)
         {
-            _multiplayerService.GetCatalogItems(catalogVersion);
+            _dataServerService.GetCatalogItems(catalogVersion);
 
             _loadCatalogItemsProgress.Start();
         }

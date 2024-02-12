@@ -59,5 +59,11 @@ namespace Prefs
             _isSettedGameName = true;
             _settedGamName = gameName;
         }
+
+        public void SetUserProgression(int level, float progress)
+        {
+            _data.CurrentLevel = level;
+            _data.CurrLevelProgress = progress;
+        }
     }
 }

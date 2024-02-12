@@ -24,5 +24,7 @@ namespace Prefs
         public void SetUserData(UserData userData);
 
         public void SetGame(string gameName);
+
+        public void SetUserProgression(int level, float progress);
     }
 }

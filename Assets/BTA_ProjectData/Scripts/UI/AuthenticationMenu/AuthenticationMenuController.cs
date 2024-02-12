@@ -15,17 +15,17 @@ namespace UI
 
         private readonly AuthenticationMenuView _view;
         private readonly IGamePrefs _gamePrefs;
-        private readonly IMultiplayerService _multiplayerService;
+        private readonly DataServerService _dataServerService;
 
         private ProgressController _connectionProgress;
 
         public AuthenticationMenuController(
             Transform placeForUI,
             IGamePrefs gamePrefs,
-            IMultiplayerService multiplayerService)
+            DataServerService dataServerService)
         {
             _gamePrefs = gamePrefs;
-            _multiplayerService = multiplayerService;
+            _dataServerService = dataServerService;
 
             _view = LoadView(placeForUI);
             _view.InitView(_gamePrefs.IsUserDataExist, _gamePrefs.Data);
@@ -50,12 +50,12 @@ namespace UI
             _view.OnLogOut += LogOutUser;
 
             _view.SignInUI.OnProceed += LogInToMultiplayerService;
-            _multiplayerService.OnLogInSucceed += LogInProccessEndOnSucceed;
-            _multiplayerService.OnError += LogInProccessEndError;
+            _dataServerService.OnLogInSucceed += LogInProccessEndOnSucceed;
+            _dataServerService.OnError += LogInProccessEndError;
 
             _view.CreateAccountUI.OnProceed += CreateAcountInMultiplayerService;
-            _multiplayerService.OnCreateAccountSucceed += CrateAccountEndOnSucceed;
-            _multiplayerService.OnError += CrateAccountEndError;
+            _dataServerService.OnCreateAccountSucceed += CrateAccountEndOnSucceed;
+            _dataServerService.OnError += CrateAccountEndError;
         }
 
         private void Unsubscribe()
@@ -64,17 +64,17 @@ namespace UI
             _view.OnLogOut -= LogOutUser;
 
             _view.SignInUI.OnProceed -= LogInToMultiplayerService;
-            _multiplayerService.OnLogInSucceed -= LogInProccessEndOnSucceed;
-            _multiplayerService.OnError -= LogInProccessEndError;
+            _dataServerService.OnLogInSucceed -= LogInProccessEndOnSucceed;
+            _dataServerService.OnError -= LogInProccessEndError;
 
             _view.CreateAccountUI.OnProceed -= CreateAcountInMultiplayerService;
-            _multiplayerService.OnCreateAccountSucceed -= CrateAccountEndOnSucceed;
-            _multiplayerService.OnError -= CrateAccountEndError;
+            _dataServerService.OnCreateAccountSucceed -= CrateAccountEndOnSucceed;
+            _dataServerService.OnError -= CrateAccountEndError;
         }
 
         private void EtnterUserInLobby()
         {
-            _multiplayerService.LogIn(_gamePrefs.Data);
+            _dataServerService.LogIn(_gamePrefs.Data);
 
             _connectionProgress.Start();
         }
@@ -92,7 +92,7 @@ namespace UI
         {
             _connectionProgress.Start();
 
-            _multiplayerService.LogIn(data);
+            _dataServerService.LogIn(data);
         }
 
         private void LogInProccessEndOnSucceed(UserData data)
@@ -103,11 +103,12 @@ namespace UI
 
             var userData = new Dictionary<string, string>()
             {
-                {"PlayerName",$"{data.UserName}"},
-                {"PlayerLevel",$"{1}"},
+                {BTAConst.USER_NICKNAME, $"{data.UserName}"},
+                {BTAConst.USER_GAME_LVL, $"{1}"},
+                {BTAConst.USER_LVL_PROGRESS, $"{0}"},
             };
 
-            _multiplayerService.SetUserData(userData);
+            _dataServerService.SetUserData(userData);
 
             _gamePrefs.ChangeGameState(GameState.MainMenu);
         }
@@ -127,7 +128,7 @@ namespace UI
         {
             _connectionProgress.Start();
 
-            _multiplayerService.CreateAccount(data);
+            _dataServerService.CreateAccount(data);
         }
 
         private void CrateAccountEndOnSucceed(UserData data)

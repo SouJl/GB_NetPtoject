@@ -11,6 +11,9 @@ namespace Prefs
         private const string AuthUserName = "authorization_user_name";
         private const string AuthUserPassword = "authorization_user_passw";
 
+        private const string UserCurrentLevel = "user_current_lvl";
+        private const string UserCurrLevelProgress = "user_currlvl_progress";
+
         private GameState _gameState;
 
         private bool _isUserDataExist;
@@ -37,6 +40,8 @@ namespace Prefs
             PlayerPrefs.SetString(AuthUserId, _data.Id);
             PlayerPrefs.SetString(AuthUserName, Data.UserName);
             PlayerPrefs.SetString(AuthUserPassword, Data.Password);
+            PlayerPrefs.SetInt(UserCurrentLevel, Data.CurrentLevel);
+            PlayerPrefs.SetFloat(UserCurrLevelProgress, Data.CurrLevelProgress);
         }
 
         public bool Load()
@@ -50,12 +55,16 @@ namespace Prefs
             var userId = PlayerPrefs.GetString(AuthUserId);
             var userName = PlayerPrefs.GetString(AuthUserName);
             var userPassword = PlayerPrefs.GetString(AuthUserPassword);
+            var userLevel = PlayerPrefs.GetInt(UserCurrentLevel);
+            var userLevelProgress = PlayerPrefs.GetFloat(UserCurrLevelProgress);
 
             _data = new UserData
             {
                 Id = userId,
                 UserName = userName,
                 Password = userPassword,
+                CurrentLevel = userLevel,
+                CurrLevelProgress = userLevelProgress
             };
 
             return true;
@@ -69,7 +78,10 @@ namespace Prefs
                 return false;
             if (PlayerPrefs.HasKey(AuthUserPassword) == false)
                 return false;
-
+            if (PlayerPrefs.HasKey(UserCurrentLevel) == false)
+                return false;
+            if (PlayerPrefs.HasKey(UserCurrLevelProgress) == false)
+                return false;
             return true;
         }
 
@@ -99,6 +111,12 @@ namespace Prefs
         {
             _isSettedGameName = true;
             _settedGamName = gameName;
+        }
+
+        public void SetUserProgression(int level, float progress)
+        {
+            _data.CurrentLevel = level;
+            _data.CurrLevelProgress = progress;
         }
     }
 }

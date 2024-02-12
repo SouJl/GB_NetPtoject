@@ -1,4 +1,5 @@
-﻿using BTAPlayer;
+﻿using Abstraction;
+using BTAPlayer;
 using MultiplayerService;
 using Photon.Pun;
 using Photon.Realtime;
@@ -28,22 +29,28 @@ public class InGameMain : MonoBehaviourPun
     private Camera _mainCamera;
     private List<IPlayerController> _playerControllers = new List<IPlayerController>();
 
+    private DataServerService _dataServerService;
+
     private void Start()
     {
         Random.InitState(_randomSeed);
 
         _mainCamera = Camera.main;
 
+        _dataServerService = new DataServerService();
+
         _netManager.OnPlayerLeftFromRoom += PlayerLeftedGame;
 
         if (_netManager.IsConnected)
         {
+            Subscribe();
+
             SpawnPlayer();
 
             var gamePrefs = new GamePrefs();
             gamePrefs.Load();
 
-            PlayFabClientAPI.GetUserData(new GetUserDataRequest { PlayFabId = gamePrefs.Data.Id }, GetDataSuccess, OnGetError);
+            _dataServerService.GetUserData(gamePrefs.Data.Id);
 
             return;
         }
@@ -53,40 +60,43 @@ public class InGameMain : MonoBehaviourPun
         }
     }
 
-    private void OnGetError(PlayFabError error)
+    private void Subscribe()
     {
-        var errorMessage = error.GenerateErrorReport();
-        Debug.Log(errorMessage);
+        _netManager.OnPlayerLeftFromRoom += PlayerLeftedGame;
+        _dataServerService.OnGetUserData += UserDataLoaded;
     }
 
-    private void GetDataSuccess(GetUserDataResult result)
-    {
-        if (result.Data == null)
-            return;
 
-        foreach (var data in result.Data)
-        {
-            Debug.Log($"{data.Key} - {data.Value.Value}");
-        }
+    private void Unsubscribe()
+    {
+        _netManager.OnPlayerLeftFromRoom -= PlayerLeftedGame;
+        _dataServerService.OnGetUserData -= UserDataLoaded;
     }
 
     private void PlayerLeftedGame(Player player)
     {
         var playerController = _playerControllers.Find(p => p.PlayerId == player.UserId);
-        if(playerController != null)
+        if (playerController != null)
         {
             playerController?.Dispose();
             _playerControllers.Remove(playerController);
         }
     }
 
+    private void UserDataLoaded(PlayfabUserData userData)
+    {
+        Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.Level}] with progress {userData.LevelProgress}");
+        
+        _gameSceneUI.ChangePlayerLevel(userData.Level);
+    }
+
+
     private void SpawnPlayer()
     {
         if (_netManager.IsConnected == false)
             return;
-
         if (_playerPrefab == null)
-        { 
+        {
             Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'InGameMain'", this);
         }
         else
@@ -95,7 +105,7 @@ public class InGameMain : MonoBehaviourPun
 
             Vector3 spawnPosition = _spawnPoints[0].position;
 
-            if(playerNum > 0)
+            if (playerNum > 0)
             {
                 spawnPosition = _spawnPoints[playerNum].position;
             }
@@ -112,21 +122,21 @@ public class InGameMain : MonoBehaviourPun
             _playerControllers.Add(
                 new PlayerMasterController(
                     _netManager.CurrentPlayer.UserId,
-                    _playerConfig, 
-                    playerView, 
-                    _gameSceneUI, 
+                    _playerConfig,
+                    playerView,
+                    _gameSceneUI,
                     _mainCamera));
 
             photonView.RPC(
-                nameof(InstantiatePlayer), 
+                nameof(InstantiatePlayer),
                 RpcTarget.Others,
                 playerPhoton.ViewID,
-                _netManager.CurrentPlayer, 
-                spawnPosition, 
+                _netManager.CurrentPlayer,
+                spawnPosition,
                 Quaternion.identity);
         }
     }
-    
+
     [PunRPC]
     private void InstantiatePlayer(int viewId, Player player, Vector3 position, Quaternion rotation)
     {
@@ -151,7 +161,7 @@ public class InGameMain : MonoBehaviourPun
         if (_playerControllers == null && _playerControllers.Count == 0)
             return;
 
-        for(int i =0; i < _playerControllers.Count; i++)
+        for (int i = 0; i < _playerControllers.Count; i++)
         {
             _playerControllers[i].ExecuteUpdate(Time.deltaTime);
         }
@@ -161,7 +171,7 @@ public class InGameMain : MonoBehaviourPun
     {
         if (_playerControllers == null && _playerControllers.Count == 0)
             return;
-        
+
         for (int i = 0; i < _playerControllers.Count; i++)
         {
             _playerControllers[i].ExecuteFixedUpdate(Time.fixedDeltaTime);
@@ -171,6 +181,6 @@ public class InGameMain : MonoBehaviourPun
 
     private void OnDestroy()
     {
-        _netManager.OnPlayerLeftFromRoom -= PlayerLeftedGame;
+        Unsubscribe();
     }
 }

@@ -25,7 +25,7 @@ public class MainController : IDisposable
 
     private readonly IGamePrefs _gamePrefs;
 
-    private readonly IMultiplayerService _multiplayerService;
+    private readonly DataServerService _dataServerService;
 
     private LoadingScreenController _loadingScreenController;
     private MainMenuController _mainMenuController;
@@ -57,7 +57,7 @@ public class MainController : IDisposable
 #else
         _gamePrefs = new GamePrefs();
 #endif
-        _multiplayerService = new PlayFabMultiplayerService(_gameConfig);
+        _dataServerService = new DataServerService(_gameConfig);
         
         _netManager.Init(gameConfig);
 
@@ -76,7 +76,6 @@ public class MainController : IDisposable
         }
         else
         {
-            _multiplayerService.LogIn(_gamePrefs.Data);
             _gamePrefs.ChangeGameState(GameState.Loading);
         }      
     }
@@ -85,16 +84,12 @@ public class MainController : IDisposable
     {
         _gamePrefs.OnGameStateChange += GameStateChanged;
         _netManager.OnDisConnectedFromServer += Disconnected;
-
-        _multiplayerService.OnLogInSucceed += UserLogIn;
     }
 
     private void Unsubscribe()
     {
         _gamePrefs.OnGameStateChange -= GameStateChanged;
         _netManager.OnDisConnectedFromServer -= Disconnected;
-
-        _multiplayerService.OnLogInSucceed -= UserLogIn;
     }
 
 
@@ -113,6 +108,7 @@ public class MainController : IDisposable
                             _placeForUi,
                             _gamePrefs,  
                             _netManager, 
+                            _dataServerService,
                             _stateTransition);
 
                     _lifeCycle.AddController(_loadingScreenController);
@@ -131,7 +127,7 @@ public class MainController : IDisposable
                 }
             case GameState.Authentication:
                 {
-                    _authenticationController = new AuthenticationMenuController(_placeForUi, _gamePrefs, _multiplayerService);
+                    _authenticationController = new AuthenticationMenuController(_placeForUi, _gamePrefs, _dataServerService);
                     
                     _lifeCycle.AddController(_authenticationController);
 
@@ -187,9 +183,9 @@ public class MainController : IDisposable
         _gamePrefs.ChangeGameState(GameState.Exit);
     }
 
-    private void UserLogIn(UserData obj)
+    private void UserLogIn(UserData user)
     {
-        _multiplayerService.GetUserData(_gamePrefs.Data.Id);
+        _dataServerService.GetUserData(_gamePrefs.Data.Id);
     }
 
 

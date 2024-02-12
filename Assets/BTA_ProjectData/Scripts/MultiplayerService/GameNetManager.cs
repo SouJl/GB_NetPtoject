@@ -59,12 +59,6 @@ namespace MultiplayerService
             }
         }
 
-
-        private void Awake()
-        {
-            DontDestroyOnLoad(transform.gameObject);
-        }
-
         public void Init(GameConfig gameConfig)
         {
             _lobby = new TypedLobby(gameConfig.PhotonLobbyName, LobbyType.Default);
@@ -76,7 +70,6 @@ namespace MultiplayerService
         {
             if (PhotonNetwork.IsConnected)
             {
-
                 Debug.LogWarning("Can't execute connect while still connected to Photon");
                 return;
             }

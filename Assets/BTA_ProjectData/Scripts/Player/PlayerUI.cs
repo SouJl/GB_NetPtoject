@@ -19,6 +19,8 @@ namespace BTAPlayer
 
         private Camera _camera;
 
+        private bool _isInitialize;
+
         public void Init(Camera camera, string name, float maxHealth)
         {
             _camera = camera;
@@ -30,6 +32,8 @@ namespace BTAPlayer
             _healthBar.InitUI(maxHealth);
 
             ChangeLevel(0);
+
+            _isInitialize = true;
         }
 
         public void Show()
@@ -59,6 +63,9 @@ namespace BTAPlayer
 
         private void LateUpdate()
         {
+            if (_isInitialize == false)
+                return;
+
             var lookPos = transform.position - _camera.transform.position;
             transform.rotation = Quaternion.LookRotation(lookPos);
         }

@@ -1,11 +1,9 @@
-﻿using Abstraction;
-using Photon.Pun;
-using UI;
+﻿using UI;
 using UnityEngine;
 
 namespace BTAPlayer
 {
-    public class PlayerController : IOnUpdate
+    public class PlayerMasterController : IPlayerController
     {
         private readonly PlayerConfig _data;
         private readonly PlayerView _view;
@@ -23,6 +21,7 @@ namespace BTAPlayer
 
         private float _resetJumpCount;
 
+        public string PlayerId { get; private set; }
 
         private float _currentHealth;
         public float CurrentHealth
@@ -51,26 +50,36 @@ namespace BTAPlayer
             }
         }
 
-
-        public PlayerController(
+        public PlayerMasterController(
+            string playerId,
             PlayerConfig data,
             PlayerView view,
             GameSceneUI gameSceneUI,
             Camera camera)
         {
+            PlayerId = playerId;
+
             _data = data;
             _view = view;
+
             _gameSceneUI = gameSceneUI;
 
             _currentHealth = data.MaxHealth;
 
             _view.Init(this, camera);
+
             _gameSceneUI.InitUI(_view.photonView.Owner.NickName, data.MaxHealth);
 
             _readyToJump = true;
             _isResetJump = false;
         }
 
+        public void ChangeHealthValue(float value)
+        {
+            _gameSceneUI.ChangeHealth(value);
+
+            CurrentHealth = value;
+        }
 
         public void ExecuteUpdate(float deltaTime)
         {
@@ -104,7 +113,6 @@ namespace BTAPlayer
             }
         }
 
-
         public void ExecuteFixedUpdate(float fixedDeltaTime)
         {
             if (_view.photonView.IsMine == false)
@@ -122,7 +130,7 @@ namespace BTAPlayer
             {
                 _readyToJump = false;
                 _isResetJump = true;
-   
+
                 Jump();
             }
 
@@ -136,7 +144,7 @@ namespace BTAPlayer
         {
             if (Physics.Raycast(_view.MainCamera.transform.position, _view.MainCamera.transform.forward, out var hit, _data.DamageDistance, _data.TargetsMask))
             {
-                var target = hit.collider.gameObject.GetComponentInParent<PlayerController>();
+                var target = hit.collider.gameObject.GetComponentInParent<PlayerView>();
                 if (target != null)
                 {
                     target.TakeDamage(_data.DamageValue);
@@ -183,28 +191,20 @@ namespace BTAPlayer
             _readyToJump = true;
         }
 
-        public void TakeDamage(float damageValue)
+        #region IDisposable
+
+        private bool _isDisposed = false;
+
+        public void Dispose()
         {
-            if (_currentHealth > 0)
-            {
-                CurrentHealth -= damageValue;
-
-                _view.photonView.RPC("UpdateSelfHealth", RpcTarget.Others, new object[] { _view.photonView.ViewID, CurrentHealth });
-            }
-        }
-
-
-        [PunRPC]
-        private void UpdateSelfHealth(int id, float value)
-        {
-            if (_view.photonView.ViewID != id)
+            if (_isDisposed)
                 return;
 
-            Debug.Log($"Health : {value}");
+            _isDisposed = true;
 
-            _gameSceneUI.ChangeHealth(value);
-
-            CurrentHealth = value;
+            Object.Destroy(_view.gameObject);
         }
+
+        #endregion
     }
 }

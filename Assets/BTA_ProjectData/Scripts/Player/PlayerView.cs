@@ -6,7 +6,6 @@ namespace BTAPlayer
 {
     public class PlayerView : MonoBehaviourPunCallbacks, IPunObservable
     {
-
         [SerializeField]
         private Transform _selfTransform;
         [SerializeField]
@@ -32,9 +31,9 @@ namespace BTAPlayer
             _playerRb.freezeRotation = true;
         }
 
-        private PlayerController _player;
+        private IPlayerController _player;
 
-        internal void Init(PlayerController player, Camera camera)
+        internal void Init(IPlayerController player, Camera camera)
         {
             _player = player;
 
@@ -74,6 +73,28 @@ namespace BTAPlayer
                 _player.CurrentHealth = (float)stream.ReceiveNext();
                 _player.PlayerLevel = (int)stream.ReceiveNext();
             }
+        }
+
+        public void TakeDamage(float damageValue)
+        {
+            if (_player.CurrentHealth > 0)
+            {
+                _player.CurrentHealth -= damageValue;
+
+                photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.Others, new object[] { photonView.ViewID, _player.CurrentHealth });
+            }
+        }
+
+
+        [PunRPC]
+        private void UpdateSelfHealth(int id, float value)
+        {
+            if (photonView.ViewID != id)
+                return;
+
+            Debug.Log($"Health : {value}");
+
+            _player.ChangeHealthValue(value);
         }
     }
 }

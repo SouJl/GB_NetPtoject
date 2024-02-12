@@ -1,11 +1,12 @@
 ﻿using BTAPlayer;
 using MultiplayerService;
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections.Generic;
 using UI;
 using UnityEngine;
 
-public class InGameMain : MonoBehaviour
+public class InGameMain : MonoBehaviourPun
 {
     [SerializeField]
     private int _randomSeed = 1111;
@@ -21,13 +22,15 @@ public class InGameMain : MonoBehaviour
     private GameNetManager _netManager;
 
     private Camera _mainCamera;
-    private List<PlayerController> _playerControllers = new List<PlayerController>();
+    private List<IPlayerController> _playerControllers = new List<IPlayerController>();
 
     private void Start()
     {
         Random.InitState(_randomSeed);
 
         _mainCamera = Camera.main;
+
+        _netManager.OnPlayerLeftFromRoom += PlayerLeftedGame;
 
         if (_netManager.IsConnected)
         {
@@ -37,6 +40,16 @@ public class InGameMain : MonoBehaviour
         else
         {
             PhotonNetwork.LoadLevel(0);
+        }
+    }
+
+    private void PlayerLeftedGame(Player player)
+    {
+        var playerController = _playerControllers.Find(p => p.PlayerId == player.UserId);
+        if(playerController != null)
+        {
+            playerController?.Dispose();
+            _playerControllers.Remove(playerController);
         }
     }
 
@@ -60,11 +73,49 @@ public class InGameMain : MonoBehaviour
                 spawnPosition = _spawnPoints[playerNum].position;
             }
 
-            var playerObject = _netManager.CreatePlayer(_playerPrefab, spawnPosition);
+            var playerObject = Instantiate(_playerPrefab, spawnPosition, Quaternion.identity);
+
+            var playerPhoton = playerObject.GetComponent<PhotonView>();
+
+            PhotonNetwork.AllocateViewID(playerPhoton);
+            PhotonNetwork.RegisterPhotonView(playerPhoton);
 
             var playerView = playerObject.GetComponent<PlayerView>();
 
-            _playerControllers.Add(new PlayerController(_playerConfig, playerView, _gameSceneUI, _mainCamera));
+            _playerControllers.Add(
+                new PlayerMasterController(
+                    _netManager.CurrentPlayer.UserId,
+                    _playerConfig, 
+                    playerView, 
+                    _gameSceneUI, 
+                    _mainCamera));
+
+            photonView.RPC(
+                nameof(InstantiatePlayer), 
+                RpcTarget.Others,
+                playerPhoton.ViewID,
+                _netManager.CurrentPlayer, 
+                spawnPosition, 
+                Quaternion.identity);
+        }
+    }
+    
+    [PunRPC]
+    private void InstantiatePlayer(int viewId, Player player, Vector3 position, Quaternion rotation)
+    {
+        var playerObject = Instantiate(_playerPrefab, position, rotation);
+
+        var playerPhoton = playerObject.GetComponent<PhotonView>();
+
+        playerPhoton.ViewID = viewId;
+
+        playerPhoton.TransferOwnership(player);
+
+        var playerView = playerObject.GetComponent<PlayerView>();
+
+        if (_playerControllers != null)
+        {
+            _playerControllers.Add(new PlayerClientController(player.UserId, _playerConfig, playerView, _mainCamera));
         }
     }
 
@@ -88,5 +139,11 @@ public class InGameMain : MonoBehaviour
         {
             _playerControllers[i].ExecuteFixedUpdate(Time.fixedDeltaTime);
         }
+    }
+
+
+    private void OnDestroy()
+    {
+        _netManager.OnPlayerLeftFromRoom -= PlayerLeftedGame;
     }
 }

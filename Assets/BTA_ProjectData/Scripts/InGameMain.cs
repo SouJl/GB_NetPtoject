@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using BTAPlayer;
 using MultiplayerService;
+using ParrelSync;
 using Photon.Pun;
 using Photon.Realtime;
 using PlayFab;
@@ -31,6 +32,8 @@ public class InGameMain : MonoBehaviourPun
 
     private DataServerService _dataServerService;
 
+    private IGamePrefs _gamePrefs;
+
     private void Start()
     {
         Random.InitState(_randomSeed);
@@ -43,14 +46,23 @@ public class InGameMain : MonoBehaviourPun
 
         if (_netManager.IsConnected)
         {
+#if UNITY_EDITOR
+            if (ClonesManager.IsClone())
+            {
+                _gamePrefs = new ClonedGamePrefs();
+            }
+            else
+            {
+                _gamePrefs = new GamePrefs();
+            }
+#else
+            _gamePrefs = new GamePrefs();
+#endif
+            _gamePrefs.Load();
+
             Subscribe();
 
             SpawnPlayer();
-
-            var gamePrefs = new GamePrefs();
-            gamePrefs.Load();
-
-            _dataServerService.GetUserData(gamePrefs.Data.Id);
 
             return;
         }
@@ -86,8 +98,10 @@ public class InGameMain : MonoBehaviourPun
     private void UserDataLoaded(PlayfabUserData userData)
     {
         Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.Level}] with progress {userData.LevelProgress}");
-        
+
         _gameSceneUI.ChangePlayerLevel(userData.Level);
+
+        _playerControllers[0].PlayerLevel = userData.Level;
     }
 
 
@@ -126,6 +140,8 @@ public class InGameMain : MonoBehaviourPun
                     playerView,
                     _gameSceneUI,
                     _mainCamera));
+
+            _dataServerService.GetUserData(_gamePrefs.Data.Id);
 
             photonView.RPC(
                 nameof(InstantiatePlayer),

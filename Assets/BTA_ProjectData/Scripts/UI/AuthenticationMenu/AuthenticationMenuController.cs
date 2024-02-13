@@ -48,29 +48,28 @@ namespace UI
         {
             _view.OnEnterTheLobby += EtnterUserInLobby;
             _view.OnLogOut += LogOutUser;
-
             _view.SignInUI.OnProceed += LogInToMultiplayerService;
-            _dataServerService.OnLogInSucceed += LogInProccessEndOnSucceed;
-            _dataServerService.OnError += LogInProccessEndError;
 
             _view.CreateAccountUI.OnProceed += CreateAcountInMultiplayerService;
+
             _dataServerService.OnCreateAccountSucceed += CrateAccountEndOnSucceed;
-            _dataServerService.OnError += CrateAccountEndError;
+            _dataServerService.OnSetDataSucceed += UserDataSetted;
+            _dataServerService.OnError += AuthEndByError;
         }
 
         private void Unsubscribe()
         {
             _view.OnEnterTheLobby -= EtnterUserInLobby;
             _view.OnLogOut -= LogOutUser;
-
             _view.SignInUI.OnProceed -= LogInToMultiplayerService;
-            _dataServerService.OnLogInSucceed -= LogInProccessEndOnSucceed;
-            _dataServerService.OnError -= LogInProccessEndError;
 
             _view.CreateAccountUI.OnProceed -= CreateAcountInMultiplayerService;
+
             _dataServerService.OnCreateAccountSucceed -= CrateAccountEndOnSucceed;
-            _dataServerService.OnError -= CrateAccountEndError;
+            _dataServerService.OnSetDataSucceed -= UserDataSetted;
+            _dataServerService.OnError -= AuthEndByError;
         }
+
 
         private void EtnterUserInLobby()
         {
@@ -86,44 +85,16 @@ namespace UI
             _gamePrefs.ChangeGameState(GameState.Authentication);
         }
 
-        #region LogIn
+  
 
         private void LogInToMultiplayerService(UserData data)
         {
-            _connectionProgress.Start();
-
-            _dataServerService.LogIn(data);
-        }
-
-        private void LogInProccessEndOnSucceed(UserData data)
-        {
-            _connectionProgress.Stop();
-
             _gamePrefs.SetUserData(data);
 
-            var userData = new Dictionary<string, string>()
-            {
-                {BTAConst.USER_NICKNAME, $"{data.UserName}"},
-                {BTAConst.USER_GAME_LVL, $"{1}"},
-                {BTAConst.USER_LVL_PROGRESS, $"{0}"},
-            };
-
-            _dataServerService.SetUserData(userData);
-
-            _gamePrefs.ChangeGameState(GameState.MainMenu);
+            _gamePrefs.ChangeGameState(GameState.Loading);
         }
 
-        private void LogInProccessEndError(string errorMessage)
-        {
-            _connectionProgress.Stop();
-
-            Debug.LogError($"Get error in LogIn proccess: {errorMessage}");
-        }
-
-        #endregion
-
-        #region Create Account
-
+    
         private void CreateAcountInMultiplayerService(UserData data)
         {
             _connectionProgress.Start();
@@ -137,18 +108,31 @@ namespace UI
 
             _gamePrefs.SetUserData(data);
 
-            _gamePrefs.ChangeGameState(GameState.MainMenu);
+            var userData = new Dictionary<string, string>()
+            {
+                {BTAConst.USER_NICKNAME, $"{data.UserName}"},
+                {BTAConst.USER_GAME_LVL, $"{1}"},
+                {BTAConst.USER_LVL_PROGRESS, $"{0}"},
+            };
+
+            _dataServerService.SetUserData(userData);
         }
 
-        private void CrateAccountEndError(string errorMessage)
+        private void UserDataSetted()
+        {
+            _gamePrefs.ChangeGameState(GameState.Loading);
+        }
+
+        private void AuthEndByError(string errorMessage)
         {
             _connectionProgress.Stop();
 
-            Debug.LogError($"Get error on account creation: {errorMessage}");
+            Debug.LogError($"Get error in authentication proccess: {errorMessage}");
+
+            _gamePrefs.ChangeGameState(GameState.Authentication);
         }
 
-        #endregion
-
+ 
         public void ExecuteUpdate(float deltaTime)
         {
             _connectionProgress.ExecuteUpdate(deltaTime);

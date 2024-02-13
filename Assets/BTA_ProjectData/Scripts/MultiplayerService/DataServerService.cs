@@ -17,7 +17,8 @@ namespace MultiplayerService
         public event Action<UserData> OnCreateAccountSucceed;
         public event Action<UserData> OnGetAccountSuccess;
         public event Action<List<CatalogItem>> OnGetCatalogItemsSuccess;
-        
+
+        public event Action OnSetDataSucceed;
         public event Action<PlayfabUserData> OnGetUserData;
 
         public event Action<string> OnError;
@@ -165,6 +166,8 @@ namespace MultiplayerService
         private void SetUserDataSuccess(UpdateUserDataResult result)
         {
             Debug.Log($"SetUserDataSuccess!");
+
+            OnSetDataSucceed?.Invoke();
         }
 
         public void GetUserData(string userId)

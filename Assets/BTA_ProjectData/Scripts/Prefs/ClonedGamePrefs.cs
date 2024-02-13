@@ -6,9 +6,9 @@ namespace Prefs
 {
     public class ClonedGamePrefs : IGamePrefs
     {
-        private const string clonedUserId = "28B6E54FE89BE10E";
-        private const string clonedUserName = "UserTest";
-        private const string clonedUserPassword = "qwe123";
+        private const string clonedUserId = "476DB455EF4F838A";
+        private const string clonedUserName = "ClonedTester";
+        private const string clonedUserPassword = "000000";
 
         private GameState _gameState;
 

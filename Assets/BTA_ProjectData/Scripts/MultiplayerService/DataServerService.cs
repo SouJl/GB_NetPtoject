@@ -6,6 +6,7 @@ using Configs;
 using System.Collections.Generic;
 using UnityEngine;
 using Tools;
+using Prefs;
 
 namespace MultiplayerService
 {
@@ -69,6 +70,17 @@ namespace MultiplayerService
 
                 _tempUserData = null;
             } 
+        }
+
+        public void LogIn(IGameUser user)
+        {
+            var request = new LoginWithPlayFabRequest
+            {
+                Username = user.Name,
+                Password = user.Password
+            };
+
+            PlayFabClientAPI.LoginWithPlayFab(request, LogInSuccess, OnGetError);
         }
 
         public void LogIn(UserData data)

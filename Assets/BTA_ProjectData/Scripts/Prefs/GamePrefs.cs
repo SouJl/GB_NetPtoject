@@ -16,6 +16,8 @@ namespace Prefs
 
         private GameState _gameState;
 
+        private UserPrefs _userPrefs;
+
         private bool _isUserDataExist;
         private bool _isSettedGameName;
 
@@ -32,7 +34,7 @@ namespace Prefs
 
         public GamePrefs()
         {
-            
+            _userPrefs = new UserPrefs();
         }
 
         public void Save()
@@ -68,6 +70,16 @@ namespace Prefs
             };
 
             return true;
+        }
+
+        public void LoadUser()
+        {
+            _isUserDataExist = _userPrefs.Load();
+        }
+
+        public IGameUser GetUser()
+        {
+            return _userPrefs;
         }
 
         private bool CheckDataExist()

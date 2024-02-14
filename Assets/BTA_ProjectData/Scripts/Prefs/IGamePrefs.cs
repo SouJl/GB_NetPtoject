@@ -26,5 +26,9 @@ namespace Prefs
         public void SetGame(string gameName);
 
         public void SetUserProgression(int level, float progress);
+
+        public void LoadUser();
+
+        public IGameUser GetUser();
     }
 }

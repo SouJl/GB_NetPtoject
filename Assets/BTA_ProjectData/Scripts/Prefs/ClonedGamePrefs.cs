@@ -15,6 +15,7 @@ namespace Prefs
         private bool _isSettedGameName;
 
         private UserData _data;
+        private UserPrefs _userPrefs;
         private string _settedGamName;
 
         public bool IsUserDataExist => true;
@@ -39,6 +40,17 @@ namespace Prefs
             return true;
         }
         
+        public void LoadUser()
+        {
+
+        }
+
+        public IGameUser GetUser()
+        {
+            return _userPrefs;
+        }
+
+
         public void DeleteData() { }
 
         public void ChangeGameState(GameState gameState)

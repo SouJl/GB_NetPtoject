@@ -103,9 +103,9 @@ namespace MultiplayerService
             PhotonNetwork.Disconnect();
         }
 
-        public void SetUserData(UserData data)
+        public void SetUserData(IGameUser user)
         {
-            PhotonNetwork.LocalPlayer.NickName = data.UserName;
+            PhotonNetwork.LocalPlayer.NickName = user.Name;
         }
 
         public void JoinLobby()

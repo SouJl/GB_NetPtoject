@@ -14,17 +14,15 @@ namespace MultiplayerService
     {
         private string _titleId;
 
-        public event Action<UserData> OnLogInSucceed;
-        public event Action<UserData> OnCreateAccountSucceed;
+        public event Action<string> OnLogInSucceed;
+        public event Action<string> OnCreateAccountSucceed;
         public event Action<UserData> OnGetAccountSuccess;
         public event Action<List<CatalogItem>> OnGetCatalogItemsSuccess;
 
         public event Action OnSetDataSucceed;
-        public event Action<PlayfabUserData> OnGetUserData;
+        public event Action<PlayfabPlayerData> OnGetUserData;
 
         public event Action<string> OnError;
-
-        private UserData _tempUserData;
 
         public DataServerService()
         {
@@ -43,8 +41,6 @@ namespace MultiplayerService
 
         public void CreateAccount(UserData data)
         {
-            _tempUserData = data;
-
             var request = new RegisterPlayFabUserRequest
             {
                 Username = data.UserName,
@@ -57,19 +53,7 @@ namespace MultiplayerService
 
         private void CreateAccountSuccess(RegisterPlayFabUserResult result)
         {
-            if (_tempUserData != null)
-            {
-                var userData = new UserData
-                {
-                    Id = result.PlayFabId,
-                    UserName = _tempUserData.UserName,
-                    Password = _tempUserData.Password
-                };
-
-                OnCreateAccountSucceed?.Invoke(userData);
-
-                _tempUserData = null;
-            } 
+            OnCreateAccountSucceed?.Invoke(result.PlayFabId);
         }
 
         public void LogIn(IGameUser user)
@@ -85,8 +69,6 @@ namespace MultiplayerService
 
         public void LogIn(UserData data)
         {
-            _tempUserData = data;
-
             var request = new LoginWithPlayFabRequest
             {
                 Username = data.UserName,
@@ -98,19 +80,7 @@ namespace MultiplayerService
 
         private void LogInSuccess(LoginResult result)
         {
-            if(_tempUserData != null)
-            {
-                var userData = new UserData
-                {
-                    Id = result.PlayFabId,
-                    UserName = _tempUserData.UserName,
-                    Password = _tempUserData.Password
-                };
-
-                OnLogInSucceed?.Invoke(userData);
-
-                _tempUserData = null; 
-            } 
+            OnLogInSucceed?.Invoke(result.PlayFabId);
         }
 
         public void GetAccountInfo(string userId)
@@ -201,18 +171,16 @@ namespace MultiplayerService
             var userlevel = int.Parse(result.Data[BTAConst.USER_GAME_LVL].Value);
             var userlevelProgress = float.Parse(result.Data[BTAConst.USER_LVL_PROGRESS].Value);
 
-            OnGetUserData?.Invoke(new PlayfabUserData
+            OnGetUserData?.Invoke(new PlayfabPlayerData
             {
                 Nickname = userNickName,
-                Level = userlevel,
-                LevelProgress = userlevelProgress
+                CurrentLevel = userlevel,
+                CurrentLevelProgress = userlevelProgress
             });
         }
 
         private void OnGetError(PlayFabError error)
         {
-            _tempUserData = null;
-
             var errorMessage = error.GenerateErrorReport();
             OnError?.Invoke(errorMessage);
         }

@@ -1,12 +1,8 @@
-﻿using UnityEngine;
+﻿using Abstraction;
+using UnityEngine;
 
 namespace Prefs
 {
-    public interface IGameUser
-    {
-        public string Name { get; }
-        public string Password { get; }
-    }
 
     public class UserPrefs : IGameUser
     {

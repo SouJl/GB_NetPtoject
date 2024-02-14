@@ -25,9 +25,9 @@ namespace UI
         public event Action OnEnterTheLobby;
         public event Action OnLogOut;
 
-        public void InitView(bool userExistState, UserData data)
+        public void InitView(bool userExistState, IGameUser user)
         {
-            SetUpUI(userExistState, data);
+            SetUpUI(userExistState, user);
             SubscribeUI();
         }
 
@@ -82,7 +82,7 @@ namespace UI
             _noDataIntro.Show();
         }
 
-        private void SetUpUI(bool userExistState, UserData data)
+        private void SetUpUI(bool userExistState, IGameUser user)
         {
             _defaultInroUI.Hide();
             _noDataIntro.Hide();
@@ -93,7 +93,7 @@ namespace UI
             {
                 _defaultInroUI.Show();
                 
-                _defaultInroUI.SetUserName(data.UserName);
+                _defaultInroUI.SetUserName(user.Name);
 
                 return;
             }

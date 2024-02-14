@@ -95,13 +95,13 @@ public class InGameMain : MonoBehaviourPun
         }
     }
 
-    private void UserDataLoaded(PlayfabUserData userData)
+    private void UserDataLoaded(PlayfabPlayerData userData)
     {
-        Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.Level}] with progress {userData.LevelProgress}");
+        Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.CurrentLevel}] with progress {userData.CurrentLevelProgress}");
 
-        _gameSceneUI.ChangePlayerLevel(userData.Level);
+        _gameSceneUI.ChangePlayerLevel(userData.CurrentLevel);
 
-        _playerControllers[0].PlayerLevel = userData.Level;
+        _playerControllers[0].PlayerLevel = userData.CurrentLevel;
     }
 
 
@@ -141,7 +141,8 @@ public class InGameMain : MonoBehaviourPun
                     _gameSceneUI,
                     _mainCamera));
 
-            _dataServerService.GetUserData(_gamePrefs.Data.Id);
+
+            _dataServerService.GetUserData(_gamePrefs.PlayFabId);
 
             photonView.RPC(
                 nameof(InstantiatePlayer),

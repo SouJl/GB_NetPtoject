@@ -28,7 +28,7 @@ namespace UI
             _dataServerService = dataServerService;
 
             _view = LoadView(placeForUI);
-            _view.InitView(_gamePrefs.IsUserDataExist, _gamePrefs.Data);
+            _view.InitView(_gamePrefs.IsUserDataExist, _gamePrefs.GetUser());
 
             _connectionProgress = new ProgressController(_view.ConnetcionProgressPlacement);
 
@@ -73,7 +73,7 @@ namespace UI
 
         private void EtnterUserInLobby()
         {
-            _dataServerService.LogIn(_gamePrefs.Data);
+            _dataServerService.LogIn(_gamePrefs.GetUser());
 
             _connectionProgress.Start();
         }
@@ -102,15 +102,17 @@ namespace UI
             _dataServerService.CreateAccount(data);
         }
 
-        private void CrateAccountEndOnSucceed(UserData data)
+        private void CrateAccountEndOnSucceed(string userId)
         {
             _connectionProgress.Stop();
 
-            _gamePrefs.SetUserData(data);
+            // _gamePrefs.SetUserData(data);
+
+            var user = _gamePrefs.GetUser();
 
             var userData = new Dictionary<string, string>()
             {
-                {BTAConst.USER_NICKNAME, $"{data.UserName}"},
+                {BTAConst.USER_NICKNAME, $"{user.Name}"},
                 {BTAConst.USER_GAME_LVL, $"{1}"},
                 {BTAConst.USER_LVL_PROGRESS, $"{0}"},
             };

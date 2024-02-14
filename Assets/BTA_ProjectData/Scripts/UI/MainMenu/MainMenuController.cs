@@ -27,9 +27,11 @@ namespace UI
 
             _view = LoadView(placeForUI);
 
-            _view.InitUI(gamePrefs.Data.UserName);
+            var user = gamePrefs.GetUser();
 
-            _netManager.SetUserData(gamePrefs.Data);
+            _view.InitUI(user.Name);
+
+            _netManager.SetUserData(user);
             
             Subscribe();
         }

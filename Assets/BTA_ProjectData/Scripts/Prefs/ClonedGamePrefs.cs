@@ -13,16 +13,19 @@ namespace Prefs
         private GameState _gameState;
 
         private bool _isSettedGameName;
-
+        private bool _isPlayerDataExist;
         private UserData _data;
         private UserPrefs _userPrefs;
         private string _settedGamName;
 
+        public string PlayFabId { get; set; }
+        
         public bool IsUserDataExist => true;
+        public bool IsPlayerDataExist => true;
+
         public bool IsSettedGameName => _isSettedGameName;
         public UserData Data => _data;
-        public string SettedGamName => _settedGamName;
-
+        public string SettedGamName => _settedGamName; 
 
         public event Action<GameState> OnGameStateChange;
 
@@ -50,6 +53,10 @@ namespace Prefs
             return _userPrefs;
         }
 
+        public IGamePlayer GetPlayer()
+        {
+            return null;
+        }
 
         public void DeleteData() { }
 
@@ -76,6 +83,11 @@ namespace Prefs
         {
             _data.CurrentLevel = level;
             _data.CurrLevelProgress = progress;
+        }
+
+        public void LoadPlayer()
+        {
+            throw new NotImplementedException();
         }
     }
 }

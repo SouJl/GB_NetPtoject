@@ -183,11 +183,6 @@ public class MainController : IDisposable
         _gamePrefs.ChangeGameState(GameState.Exit);
     }
 
-    private void UserLogIn(UserData user)
-    {
-        _dataServerService.GetUserData(_gamePrefs.Data.Id);
-    }
-
 
     public void Dispose()
     {

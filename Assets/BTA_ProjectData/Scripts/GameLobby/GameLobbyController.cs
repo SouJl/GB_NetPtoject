@@ -36,7 +36,9 @@ namespace GameLobby
             _netManager = netManager;
             _stateTransition = stateTransition;
 
-            _lobbyPrefs = new GameLobbyPrefs(gamePrefs.Data.UserName);
+            var user = gamePrefs.GetUser();
+
+            _lobbyPrefs = new GameLobbyPrefs(user.Name);
 
             _lobbyLifeCycle = new LifeCycleController();
 

@@ -65,16 +65,16 @@ namespace Tools
             _netManager.OnConnectedToServer -= Connected;
         }
 
-        private void LoginnedInGame(UserData data)
+        private void LoginnedInGame(string userId)
         {
-            _serverService.GetUserData(data.Id);
+            _serverService.GetUserData(userId);
         }
 
-        private void LoadedUserDataFromServer(PlayfabUserData userData)
+        private void LoadedUserDataFromServer(PlayfabPlayerData userData)
         {
-            Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.Level}] with progress {userData.LevelProgress}");
+            Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.CurrentLevel}] with progress {userData.CurrentLevelProgress}");
 
-            _gamePrefs.SetUserProgression(userData.Level, userData.LevelProgress);
+            _gamePrefs.SetUserProgression(userData.CurrentLevel, userData.CurrentLevelProgress);
 
             _netManager.Connect(userData.Nickname);
         }
@@ -89,7 +89,7 @@ namespace Tools
         {
             _connectionProgress.Start();
 
-            _serverService.LogIn(_gamePrefs.Data);
+            _serverService.LogIn(_gamePrefs.GetUser());
         }
 
         public void Stop()

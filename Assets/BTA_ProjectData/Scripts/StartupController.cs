@@ -1,7 +1,6 @@
 ﻿using Abstraction;
 using MultiplayerService;
 using Prefs;
-using System;
 
 public class StartupController : BaseController
 {
@@ -17,6 +16,8 @@ public class StartupController : BaseController
         _gamePrefs = gamePrefs;
         _serverService = serverService;
         _netManager = netManager;
+
+        Subscribe();
 
         LoadAuthenticationData(_gamePrefs);
     }
@@ -50,13 +51,20 @@ public class StartupController : BaseController
         _serverService.LogIn(user);
     }
 
-    private void UserPassAuthentication(UserData user)
+    private void UserPassAuthentication(string userId)
     {
-        _serverService.GetUserData(user.Id);
+        _serverService.GetUserData(userId);
     }
 
-    private void GettedUserData(PlayfabUserData obj)
+    private void GettedUserData(PlayfabPlayerData userData)
     {
-        throw new NotImplementedException();
+       
+    }
+
+    protected override void OnDispose()
+    {
+        base.OnDispose();
+
+        Unsubscribe();
     }
 }

@@ -44,13 +44,13 @@ namespace Prefs
         }
 
 
-        public void Save(string name, string password)
+        public void Save(IGameUser user)
         {
-            _name = name;
-            _password = password;
+            _name = user.Name;
+            _password = user.Password;
 
-            PlayerPrefs.SetString(_authUserName, _name);
-            PlayerPrefs.SetString(_authUserPassword, _password);
+            PlayerPrefs.SetString(_authUserName, user.Name);
+            PlayerPrefs.SetString(_authUserPassword, user.Password);
         }
     }
 }

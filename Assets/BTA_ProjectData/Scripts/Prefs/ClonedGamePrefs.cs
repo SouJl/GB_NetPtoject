@@ -13,8 +13,6 @@ namespace Prefs
         private GameState _gameState;
 
         private bool _isSettedGameName;
-        private bool _isPlayerDataExist;
-        private UserData _data;
         private UserPrefs _userPrefs;
         private string _settedGamName;
 
@@ -22,28 +20,36 @@ namespace Prefs
         
         public bool IsUserDataExist => true;
         public bool IsPlayerDataExist => true;
-
         public bool IsSettedGameName => _isSettedGameName;
-        public UserData Data => _data;
+        
         public string SettedGamName => _settedGamName; 
 
         public event Action<GameState> OnGameStateChange;
 
-        public void Save() { }
-
-        public bool Load()
+        public void ChangeGameState(GameState gameState)
         {
-            _data = new UserData
-            {
-                Id = clonedUserId,
-                UserName = clonedUserName,
-                Password = clonedUserPassword,
-            };
+            _gameState = gameState;
 
-            return true;
+            OnGameStateChange?.Invoke(_gameState);
+        }
+
+        public void SetGame(string gameName)
+        {
+            _isSettedGameName = true;
+            _settedGamName = gameName;
         }
         
+        public void LoadData()
+        {
+            LoadUser();
+            LoadPlayer();
+        }
+
         public void LoadUser()
+        {
+
+        }
+        public void SetUser(IGameUser user)
         {
 
         }
@@ -53,41 +59,22 @@ namespace Prefs
             return _userPrefs;
         }
 
+        public void LoadPlayer()
+        {
+            
+        }
+
+        public void SetPlayer(IGamePlayer player)
+        {
+
+        }
+
         public IGamePlayer GetPlayer()
         {
             return null;
         }
 
-        public void DeleteData() { }
 
-        public void ChangeGameState(GameState gameState)
-        {
-            _gameState = gameState;
-
-            OnGameStateChange?.Invoke(_gameState);
-        }
-
-        public void SetUserData(UserData userData)
-        {
-            _data = userData;
-            Save();
-        }
-
-        public void SetGame(string gameName)
-        {
-            _isSettedGameName = true;
-            _settedGamName = gameName;
-        }
-
-        public void SetUserProgression(int level, float progress)
-        {
-            _data.CurrentLevel = level;
-            _data.CurrLevelProgress = progress;
-        }
-
-        public void LoadPlayer()
-        {
-            throw new NotImplementedException();
-        }
+        public void DeleteData() { } 
     }
 }

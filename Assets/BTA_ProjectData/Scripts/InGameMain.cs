@@ -58,7 +58,7 @@ public class InGameMain : MonoBehaviourPun
 #else
             _gamePrefs = new GamePrefs();
 #endif
-            _gamePrefs.Load();
+            _gamePrefs.LoadUser();
 
             Subscribe();
 
@@ -142,7 +142,7 @@ public class InGameMain : MonoBehaviourPun
                     _mainCamera));
 
 
-            _dataServerService.GetUserData(_gamePrefs.PlayFabId);
+            _dataServerService.GetPlayerData(_gamePrefs.PlayFabId);
 
             photonView.RPC(
                 nameof(InstantiatePlayer),

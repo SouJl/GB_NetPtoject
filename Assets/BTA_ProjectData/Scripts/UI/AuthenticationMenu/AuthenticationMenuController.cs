@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using Enumerators;
 using MultiplayerService;
+using PlayFab;
 using Prefs;
 using System.Collections.Generic;
 using Tools;
@@ -87,15 +88,15 @@ namespace UI
 
   
 
-        private void LogInToMultiplayerService(UserData data)
+        private void LogInToMultiplayerService(UserAccountData data)
         {
-            _gamePrefs.SetUserData(data);
+            //_gamePrefs.SetUserData(data);
 
             _gamePrefs.ChangeGameState(GameState.Loading);
         }
 
     
-        private void CreateAcountInMultiplayerService(UserData data)
+        private void CreateAcountInMultiplayerService(UserAccountData data)
         {
             _connectionProgress.Start();
 
@@ -105,8 +106,6 @@ namespace UI
         private void CrateAccountEndOnSucceed(string userId)
         {
             _connectionProgress.Stop();
-
-            // _gamePrefs.SetUserData(data);
 
             var user = _gamePrefs.GetUser();
 
@@ -125,7 +124,7 @@ namespace UI
             _gamePrefs.ChangeGameState(GameState.Loading);
         }
 
-        private void AuthEndByError(string errorMessage)
+        private void AuthEndByError(PlayFabErrorCode errorCode, string errorMessage)
         {
             _connectionProgress.Stop();
 

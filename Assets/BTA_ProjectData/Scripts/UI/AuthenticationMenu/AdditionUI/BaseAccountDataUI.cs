@@ -20,7 +20,7 @@ namespace UI
         protected string _username;
         protected string _password;
 
-        public event Action<UserData> OnProceed;
+        public event Action<UserAccountData> OnProceed;
         public event Action<BaseAccountDataUI> OnReturn;
 
         private void Start()
@@ -51,7 +51,7 @@ namespace UI
             OnProceed?.Invoke(userData);
         }
 
-        protected abstract UserData GetUserData();
+        protected abstract UserAccountData GetUserData();
 
         private void Return()
         {

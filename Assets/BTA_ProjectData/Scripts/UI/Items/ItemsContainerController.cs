@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using Configs;
 using MultiplayerService;
+using PlayFab;
 using PlayFab.ClientModels;
 using System.Collections.Generic;
 using Tools;
@@ -92,7 +93,7 @@ namespace UI
             _containerView.Show();
         }
 
-        private void GetDataFailed(string errorMessage)
+        private void GetDataFailed(PlayFabErrorCode errorCode, string errorMessage)
         {
             Debug.LogError($"Something went wrong: {errorMessage}");
 

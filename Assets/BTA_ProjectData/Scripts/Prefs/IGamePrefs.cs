@@ -6,7 +6,7 @@ namespace Prefs
 {
     public interface IGamePrefs
     {
-        public string PlayFabId { get; set; }
+        public string PlayFabId { get;}
 
         public bool IsUserDataExist { get; }
         public bool IsPlayerDataExist { get; }
@@ -16,24 +16,19 @@ namespace Prefs
 
         public event Action<GameState> OnGameStateChange;
 
-        public void Save();
-
-        public bool Load();
-
-        public void DeleteData();
-
         public void ChangeGameState(GameState gameState);
 
-        public void SetUserData(UserData userData);
-
         public void SetGame(string gameName);
-
-        public void SetUserProgression(int level, float progress);
+        public void LoadData();
 
         public void LoadUser();
-        public void LoadPlayer();
+        public void SetUser(IGameUser user);
         public IGameUser GetUser();
 
+        public void LoadPlayer();
+        public void SetPlayer(IGamePlayer player);
         public IGamePlayer GetPlayer();
+
+        public void DeleteData();
     }
 }

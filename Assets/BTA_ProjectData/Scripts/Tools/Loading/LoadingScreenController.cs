@@ -67,16 +67,16 @@ namespace Tools
 
         private void LoginnedInGame(string userId)
         {
-            _serverService.GetUserData(userId);
+            _serverService.GetPlayerData(userId);
         }
 
-        private void LoadedUserDataFromServer(PlayfabPlayerData userData)
+        private void LoadedUserDataFromServer(PlayfabPlayerData player)
         {
-            Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.CurrentLevel}] with progress {userData.CurrentLevelProgress}");
+            Debug.Log($"Getted User : {player.Nickname} Lvl[{player.CurrentLevel}] with progress {player.CurrentLevelProgress}");
 
-            _gamePrefs.SetUserProgression(userData.CurrentLevel, userData.CurrentLevelProgress);
+            _gamePrefs.SetPlayer(player);
 
-            _netManager.Connect(userData.Nickname);
+            _netManager.Connect(player.Nickname);
         }
 
         private void Connected()

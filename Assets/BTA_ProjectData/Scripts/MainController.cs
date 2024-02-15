@@ -68,9 +68,9 @@ public class MainController : IDisposable
     {
         Subscribe();
 
-        var userSate = _gamePrefs.Load();
+        _gamePrefs.LoadUser();
 
-        if (userSate == false)
+        if (_gamePrefs.IsUserDataExist == false)
         {
             _gamePrefs.ChangeGameState(GameState.Authentication);
         }

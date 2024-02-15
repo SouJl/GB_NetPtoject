@@ -66,7 +66,7 @@ namespace MultiplayerService
             PhotonNetwork.AutomaticallySyncScene = true;
         }
 
-        public void Connect(string userId)
+        public void Connect(string playerNickname)
         {
             if (PhotonNetwork.IsConnected)
             {
@@ -76,7 +76,7 @@ namespace MultiplayerService
 
             PhotonNetwork.AuthValues = new AuthenticationValues
             {
-                UserId = $"BtaPlayerId_{userId}"
+                UserId = $"BtaPlayerId_{playerNickname}"
             };
 
             PhotonNetwork.GameVersion = Application.version;

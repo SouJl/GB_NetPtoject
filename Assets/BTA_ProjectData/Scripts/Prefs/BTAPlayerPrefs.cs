@@ -54,6 +54,10 @@ namespace Prefs
 
         public void Save(IGamePlayer player)
         {
+            _nickname = player.Nickname;
+            _currentLevel = player.CurrentLevel;
+            _currentLevelProgress = player.CurrentLevelProgress;
+
             PlayerPrefs.SetString(playerNicknameKey, player.Nickname);
             PlayerPrefs.SetInt(currentLevelKey, player.CurrentLevel);
             PlayerPrefs.SetFloat(currLevelProgressKey, player.CurrentLevelProgress);

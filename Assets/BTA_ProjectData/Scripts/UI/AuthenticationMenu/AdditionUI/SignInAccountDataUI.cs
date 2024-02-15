@@ -15,7 +15,7 @@ namespace UI
             base.UnsubscribeUI();
         }
 
-        protected override UserData GetUserData()
+        protected override UserAccountData GetUserData()
         {
             if (_username == null || _username == "")
             {
@@ -28,9 +28,9 @@ namespace UI
                 return null;
             }
 
-            return new UserData
+            return new UserAccountData
             {
-                UserName = _username,
+                Name = _username,
                 Password = _password
             };
         }

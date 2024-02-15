@@ -16,13 +16,16 @@ namespace MultiplayerService
 
         public event Action<string> OnLogInSucceed;
         public event Action<string> OnCreateAccountSucceed;
-        public event Action<UserData> OnGetAccountSuccess;
+        public event Action<UserAccountData> OnGetAccountSuccess;
         public event Action<List<CatalogItem>> OnGetCatalogItemsSuccess;
 
         public event Action OnSetDataSucceed;
         public event Action<PlayfabPlayerData> OnGetUserData;
 
-        public event Action<string> OnError;
+        public event Action<PlayFabErrorCode, string> OnError;
+
+        public bool IsLogIn 
+            => PlayFabClientAPI.IsClientLoggedIn();
 
         public DataServerService()
         {
@@ -39,13 +42,13 @@ namespace MultiplayerService
             }
         }
 
-        public void CreateAccount(UserData data)
+        public void CreateAccount(UserAccountData data)
         {
             var request = new RegisterPlayFabUserRequest
             {
-                Username = data.UserName,
+                Username = data.Name,
                 Password = data.Password,
-                Email = data.UserEmail,
+                Email = data.Email,
             };
 
             PlayFabClientAPI.RegisterPlayFabUser(request, CreateAccountSuccess, OnGetError);
@@ -67,11 +70,11 @@ namespace MultiplayerService
             PlayFabClientAPI.LoginWithPlayFab(request, LogInSuccess, OnGetError);
         }
 
-        public void LogIn(UserData data)
+        public void LogIn(UserAccountData data)
         {
             var request = new LoginWithPlayFabRequest
             {
-                Username = data.UserName,
+                Username = data.Name,
                 Password = data.Password
             };
 
@@ -83,7 +86,7 @@ namespace MultiplayerService
             OnLogInSucceed?.Invoke(result.PlayFabId);
         }
 
-        public void GetAccountInfo(string userId)
+        public void GetAccountData(string userId)
         {
             var request = new GetAccountInfoRequest
             {
@@ -96,10 +99,10 @@ namespace MultiplayerService
 
         private void GetAccountSuccess(GetAccountInfoResult result)
         {
-            var userData = new UserData
+            var userData = new UserAccountData
             {
                 Id = result.AccountInfo.PlayFabId,
-                UserName = result.AccountInfo.Username,
+                Name = result.AccountInfo.Username,
                 CreatedTime = result.AccountInfo.Created
             };
 
@@ -152,7 +155,7 @@ namespace MultiplayerService
             OnSetDataSucceed?.Invoke();
         }
 
-        public void GetUserData(string userId)
+        public void GetPlayerData(string userId)
         {
             var request = new GetUserDataRequest
             {
@@ -182,7 +185,7 @@ namespace MultiplayerService
         private void OnGetError(PlayFabError error)
         {
             var errorMessage = error.GenerateErrorReport();
-            OnError?.Invoke(errorMessage);
+            OnError?.Invoke(error.Error, errorMessage);
         }
     }
 }

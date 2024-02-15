@@ -1,6 +1,8 @@
 ﻿using Abstraction;
 using MultiplayerService;
+using PlayFab;
 using Prefs;
+using UnityEngine;
 
 public class StartupController : BaseController
 {
@@ -17,6 +19,8 @@ public class StartupController : BaseController
         _serverService = serverService;
         _netManager = netManager;
 
+        _gamePrefs.LoadData();
+
         Subscribe();
 
         LoadAuthenticationData(_gamePrefs);
@@ -25,24 +29,31 @@ public class StartupController : BaseController
     private void Subscribe()
     {
         _serverService.OnLogInSucceed += UserPassAuthentication;
-        _serverService.OnGetUserData += GettedUserData;
+        _serverService.OnGetUserData += GettedPlayerData;
+        _serverService.OnError -= ErrorHandler;
+
+        _netManager.OnConnectedToServer += ConnectedToMainServer;
     }
-
-
 
     private void Unsubscribe()
     {
         _serverService.OnLogInSucceed -= UserPassAuthentication;
+        _serverService.OnGetUserData -= GettedPlayerData;
+        _serverService.OnError -= ErrorHandler;
 
+        _netManager.OnConnectedToServer -= ConnectedToMainServer;
     }
+
 
     private void LoadAuthenticationData(IGamePrefs gamePrefs)
     {
-        gamePrefs.LoadUser();
-
         if (gamePrefs.IsUserDataExist)
         {
             TryLogin(gamePrefs.GetUser());
+        }
+        else
+        {
+            _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication);
         }
     }
 
@@ -53,12 +64,28 @@ public class StartupController : BaseController
 
     private void UserPassAuthentication(string userId)
     {
-        _serverService.GetUserData(userId);
+        _serverService.GetPlayerData(userId);  
     }
 
-    private void GettedUserData(PlayfabPlayerData userData)
+    private void GettedPlayerData(PlayfabPlayerData playerData)
     {
-       
+        _gamePrefs.SetPlayer(playerData);
+
+        _netManager.Connect(playerData.Nickname);
+    }
+
+    private void ErrorHandler(PlayFabErrorCode errorCode, string errorMessage)
+    {
+        Debug.Log($"Get error on startup[{errorCode}]: {errorMessage}");
+    }
+
+
+    private void ConnectedToMainServer()
+    {
+        if (_serverService.IsLogIn)
+        {
+            _gamePrefs.ChangeGameState(Enumerators.GameState.MainMenu);
+        }
     }
 
     protected override void OnDispose()

@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Abstraction;
+using Authentication;
 
 #if UNITY_EDITOR
 using ParrelSync;
@@ -27,9 +28,8 @@ public class MainController : IDisposable
 
     private readonly DataServerService _dataServerService;
 
-    private LoadingScreenController _loadingScreenController;
     private MainMenuController _mainMenuController;
-    private AuthenticationMenuController _authenticationController;
+    private AuthenticationController _authenticationController;
     private GameLobbyController _gameLobbyController;
 
     public MainController(
@@ -70,26 +70,19 @@ public class MainController : IDisposable
 
         _gamePrefs.LoadUser();
 
-        if (_gamePrefs.IsUserDataExist == false)
-        {
-            _gamePrefs.ChangeGameState(GameState.Authentication);
-        }
-        else
-        {
-            _gamePrefs.ChangeGameState(GameState.Loading);
-        }      
+        _gamePrefs.ChangeGameState(GameState.Authentication);
     }
 
     private void Subscribe()
     {
         _gamePrefs.OnGameStateChange += GameStateChanged;
-        _netManager.OnDisConnectedFromServer += Disconnected;
+        _netManager.OnDisconnectedFromServer += Disconnected;
     }
 
     private void Unsubscribe()
     {
         _gamePrefs.OnGameStateChange -= GameStateChanged;
-        _netManager.OnDisConnectedFromServer -= Disconnected;
+        _netManager.OnDisconnectedFromServer -= Disconnected;
     }
 
 
@@ -101,41 +94,28 @@ public class MainController : IDisposable
         {
             default:
                 break;
-            case GameState.Loading:
+            case GameState.Authentication:
                 {
-                    _loadingScreenController 
-                        = new LoadingScreenController(
-                            _placeForUi,
-                            _gamePrefs,  
-                            _netManager, 
-                            _dataServerService,
-                            _stateTransition);
+                    _authenticationController
+                        = new AuthenticationController(_placeForUi, _gamePrefs, _dataServerService, _netManager);
 
-                    _lifeCycle.AddController(_loadingScreenController);
-
-                    _loadingScreenController.Start();
+                    _lifeCycle.AddController(_authenticationController);
 
                     break;
                 }
             case GameState.MainMenu:
                 {
-                    _mainMenuController = new MainMenuController(_placeForUi, _gamePrefs, _netManager, _stateTransition);
+                    _mainMenuController 
+                        = new MainMenuController(_placeForUi, _gamePrefs, _netManager, _stateTransition);
                     
                     _lifeCycle.AddController(_mainMenuController);
 
                     break;
                 }
-            case GameState.Authentication:
+            case GameState.Lobby:
                 {
-                    _authenticationController = new AuthenticationMenuController(_placeForUi, _gamePrefs, _dataServerService);
-                    
-                    _lifeCycle.AddController(_authenticationController);
-
-                    break;
-                }
-            case GameState.EnterLobby:
-                {
-                    _gameLobbyController = new GameLobbyController(_placeForUi, _gameConfig, _gamePrefs, _netManager, _stateTransition);
+                    _gameLobbyController 
+                        = new GameLobbyController(_placeForUi, _gameConfig, _gamePrefs, _netManager, _stateTransition);
                     
                     _lifeCycle.AddController(_gameLobbyController);
 
@@ -156,9 +136,8 @@ public class MainController : IDisposable
 
     private void DisposeControllers()
     {
-        _lifeCycle.Dispose();
+        _lifeCycle?.Dispose();
     }
-
 
     private void LoadGame()
     {
@@ -166,7 +145,6 @@ public class MainController : IDisposable
 
         PhotonNetwork.LoadLevel(1);
     }
-
 
     private void ExitFromGame()
     {
@@ -180,7 +158,8 @@ public class MainController : IDisposable
 
     private void Disconnected()
     {
-        _gamePrefs.ChangeGameState(GameState.Exit);
+        Debug.Log("Disconnected From Photon Server");
+       // _gamePrefs.ChangeGameState(GameState.Exit);
     }
 
 

@@ -3,7 +3,9 @@
     public enum AuthenticationState
     {
         None,
-        Main,
-        CreateAccount,
+        SigIn,
+        DataNotFound,
+        Register,
+        ToMainMenu
     }
 }

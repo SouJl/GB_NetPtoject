@@ -15,7 +15,7 @@ namespace MultiplayerService
         private TypedLobby _lobby;
 
         public event Action OnConnectedToServer;
-        public event Action OnDisConnectedFromServer;
+        public event Action OnDisconnectedFromServer;
 
         public event Action OnJoinInLobby;
         public event Action OnLeftFromLobby;
@@ -186,7 +186,7 @@ namespace MultiplayerService
         public override void OnDisconnected(DisconnectCause cause)
         {
             Debug.Log($"OnDisconenctedFromMaster by {cause} cause");
-            OnDisConnectedFromServer?.Invoke();
+            OnDisconnectedFromServer?.Invoke();
         }
 
         public override void OnJoinedLobby()

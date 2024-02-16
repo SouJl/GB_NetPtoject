@@ -65,20 +65,22 @@ namespace UI
         {
             _gamePrefs.DeleteData();
 
+            _netManager.Disconnect();
+
             _stateTransition.Invoke(
                 () => _gamePrefs.ChangeGameState(Enumerators.GameState.Authentication));
         }
 
         private void JoinGame()
         {
-            _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby);
+            _gamePrefs.ChangeGameState(Enumerators.GameState.Lobby);
         }
 
         private void ConnectToGame(string name)
         {
             _gamePrefs.SetGame(name);
 
-            _gamePrefs.ChangeGameState(Enumerators.GameState.EnterLobby);
+            _gamePrefs.ChangeGameState(Enumerators.GameState.Lobby);
         }
 
         private void ExitGame()

@@ -134,7 +134,7 @@ namespace MultiplayerService
             OnGetCatalogItemsSuccess?.Invoke(catalogItems);
         }
 
-        public void SetUserData(Dictionary<string, string> data)
+        public void SetPlayerData(Dictionary<string, string> data)
         {
             if (PlayFabClientAPI.IsClientLoggedIn() == false)
                 return;
@@ -144,11 +144,11 @@ namespace MultiplayerService
                 Data = data
             };
 
-            PlayFabClientAPI.UpdateUserData(request, SetUserDataSuccess, OnGetError);
+            PlayFabClientAPI.UpdateUserData(request, SetplayerDataSuccess, OnGetError);
         }
 
 
-        private void SetUserDataSuccess(UpdateUserDataResult result)
+        private void SetplayerDataSuccess(UpdateUserDataResult result)
         {
             Debug.Log($"SetUserDataSuccess!");
 

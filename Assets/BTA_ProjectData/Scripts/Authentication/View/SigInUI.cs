@@ -8,6 +8,8 @@ namespace Authentication.View
     {
         [SerializeField]
         private TMP_Text _connectionStateText;
+        [SerializeField]
+        private TMP_Text _errorText;
 
         [SerializeField]
         private Transform _connectionProgress;
@@ -16,6 +18,7 @@ namespace Authentication.View
         public void InitUI()
         {
             _connectionStateText.text = "LOADING...";
+            _errorText.text = "";
         }
 
         public void UpdateConnectionState(string message)
@@ -23,6 +26,10 @@ namespace Authentication.View
             _connectionStateText.text = $"{message}...";
         }
 
+        public void UpdateError(string error)
+        {
+            _errorText.text = error;
+        }
 
         #region IDisposable
 

@@ -7,6 +7,8 @@ using Prefs;
 using System.Collections.Generic;
 using UI;
 using UnityEngine;
+using Configs;
+using Enemy;
 
 #if UNITY_EDITOR
 using ParrelSync;
@@ -14,6 +16,9 @@ using ParrelSync;
 
 public class InGameMain : MonoBehaviourPun
 {
+    [SerializeField]
+    private bool _isTesting = false;
+
     [SerializeField]
     private int _randomSeed = 1111;
     [SerializeField]
@@ -26,6 +31,8 @@ public class InGameMain : MonoBehaviourPun
     private GameSceneUI _gameSceneUI;
     [SerializeField]
     private GameNetManager _netManager;
+    [SerializeField]
+    private EnemySpawner _enemySpawner;
 
     private Camera _mainCamera;
     private List<IPlayerController> _playerControllers = new List<IPlayerController>();
@@ -42,35 +49,103 @@ public class InGameMain : MonoBehaviourPun
 
         _dataServerService = new DataServerService();
 
-        _netManager.OnPlayerLeftFromRoom += PlayerLeftedGame;
-
-        if (_netManager.IsConnected)
+        if (_isTesting)
         {
-#if UNITY_EDITOR
-            if (ClonesManager.IsClone())
-            {
-                _gamePrefs = new ClonedGamePrefs();
-            }
-            else
-            {
-                _gamePrefs = new GamePrefs();
-            }
-#else
-            _gamePrefs = new GamePrefs();
-#endif
-            _gamePrefs.LoadUser();
-
-            Subscribe();
-
-            SpawnPlayer();
-
-            return;
+            TestStart();
         }
         else
         {
-            PhotonNetwork.LoadLevel(0);
+            if (_netManager.IsConnected)
+            {
+#if UNITY_EDITOR
+                if (ClonesManager.IsClone())
+                {
+                    _gamePrefs = new ClonedGamePrefs();
+                }
+                else
+                {
+                    _gamePrefs = new GamePrefs();
+                }
+#else
+            _gamePrefs = new GamePrefs();
+#endif
+                _gamePrefs.LoadUser();
+
+                Subscribe();
+
+                SpawnPlayer();
+
+                SpawnEmemy();
+
+                return;
+            }
+            else
+            {
+                PhotonNetwork.LoadLevel(0);
+            }
         }
     }
+
+    #region TestMode
+
+    private void TestStart()
+    {
+        _gamePrefs = new GamePrefs();
+
+        _gamePrefs.LoadUser();
+        _netManager.OnConnectedToServer += ConnectedToServer;
+        _netManager.OnJoinInLobby += JoindedInLobby;
+        _netManager.OnJoinInRoom += JoinedInRoom;
+        _netManager.Connect(_gamePrefs.GetUser().Name);
+    }
+
+    private void ConnectedToServer()
+    {
+        _netManager.JoinLobby();
+    }
+
+    private void JoindedInLobby()
+    {
+        _netManager.CreateRoom(new Abstraction.CreationRoomData
+        {
+            RoomName = "TestRoom",
+            MaxPlayers = 5
+        });
+    }
+
+    private void JoinedInRoom(Room room)
+    {
+        var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
+
+        Vector3 spawnPosition = _spawnPoints[0].position;
+
+        if (playerNum > 0)
+        {
+            spawnPosition = _spawnPoints[playerNum].position;
+        }
+
+        var playerObject = Instantiate(_playerPrefab, spawnPosition, Quaternion.identity);
+
+        var playerPhoton = playerObject.GetComponent<PhotonView>();
+
+        PhotonNetwork.AllocateViewID(playerPhoton);
+        PhotonNetwork.RegisterPhotonView(playerPhoton);
+
+        var playerView = playerObject.GetComponent<PlayerView>();
+
+        _playerControllers.Add(
+            new PlayerMasterController(
+                _netManager.CurrentPlayer.UserId,
+                _playerConfig,
+                playerView,
+                _gameSceneUI,
+                _mainCamera));
+
+
+        SpawnEmemy();
+    }
+    
+    #endregion
 
     private void Subscribe()
     {
@@ -142,7 +217,7 @@ public class InGameMain : MonoBehaviourPun
                     _mainCamera));
 
 
-            _dataServerService.GetPlayerData(_gamePrefs.PlayFabId);
+            _dataServerService.GetPlayerData();
 
             photonView.RPC(
                 nameof(InstantiatePlayer),
@@ -171,6 +246,11 @@ public class InGameMain : MonoBehaviourPun
         {
             _playerControllers.Add(new PlayerClientController(player.UserId, _playerConfig, playerView, _mainCamera));
         }
+    }
+
+    private void SpawnEmemy()
+    {
+        _enemySpawner.Spawn();
     }
 
     private void Update()

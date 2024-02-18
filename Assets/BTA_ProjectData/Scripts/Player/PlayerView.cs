@@ -2,6 +2,7 @@
 using Photon.Pun;
 using System.Collections.Generic;
 using Tools;
+using UnityEditor;
 using UnityEngine;
 
 namespace BTAPlayer
@@ -99,7 +100,7 @@ namespace BTAPlayer
         }
 
         #region IFindable
-        
+
         [Header("IFindable Settings")]
         [SerializeField]
         private List<Transform> _visiblePoints;
@@ -111,5 +112,16 @@ namespace BTAPlayer
         List<Transform> IFindable.VisiblePoints => _visiblePoints;
 
         #endregion
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (_player == null)
+                return;
+
+            Handles.DrawLine(_orientation.position, _orientation.position + _orientation.forward * _player.DamageDistance);
+        }
+#endif
+
     }
 }

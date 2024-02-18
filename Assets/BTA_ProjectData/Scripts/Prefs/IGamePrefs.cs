@@ -6,7 +6,7 @@ namespace Prefs
 {
     public interface IGamePrefs
     {
-        public string PlayFabId { get;}
+        public string PlayFabId { get; set; }
 
         public bool IsUserDataExist { get; }
         public bool IsPlayerDataExist { get; }

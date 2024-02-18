@@ -155,14 +155,12 @@ namespace MultiplayerService
             OnSetDataSucceed?.Invoke();
         }
 
-        public void GetPlayerData(string userId)
+        public void GetPlayerData()
         {
-            var request = new GetUserDataRequest
-            {
-                PlayFabId = userId
-            };
+            if (PlayFabClientAPI.IsClientLoggedIn() == false)
+                return;
 
-            PlayFabClientAPI.GetUserData(request, GetUserDataSuccess, OnGetError);
+            PlayFabClientAPI.GetUserData(new GetUserDataRequest(), GetUserDataSuccess, OnGetError);
         }
 
         private void GetUserDataSuccess(GetUserDataResult result)

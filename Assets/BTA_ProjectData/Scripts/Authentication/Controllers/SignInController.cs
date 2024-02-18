@@ -72,13 +72,13 @@ namespace Authentication
         private void TryLogin(IGameUser user)
         {
             _dataServerService.LogIn(user);
-            _view.UpdateConnectionState("CONNECT TO PLAYFAB");
+            _view.UpdateConnectionState($"CONNECT TO PLAYFAB ");
             _connectionProgress.Start();
         }
 
         private void UserPassAuthentication(string userId)
         {
-            _dataServerService.GetPlayerData(userId);
+            _dataServerService.GetPlayerData();
             _view.UpdateConnectionState("LOAD PLAYER DATA");
         }
 
@@ -102,7 +102,17 @@ namespace Authentication
 
         private void ErrorHandler(PlayFabErrorCode errorCode, string errorMessage)
         {
-            Debug.Log($"Get error on startup[{errorCode}]: {errorMessage}");
+            var resultErroMessage = $"Get error[{errorCode}]: {errorMessage}";
+
+            Debug.Log(resultErroMessage);
+
+            _view.UpdateError(resultErroMessage);
+
+            if(errorCode == PlayFabErrorCode.AccountNotFound)
+            {
+                _prefs.Clear();
+                _prefs.ChangeState(AuthenticationState.DataNotFound);
+            }
         }
 
         public void ExecuteUpdate(float deltaTime)

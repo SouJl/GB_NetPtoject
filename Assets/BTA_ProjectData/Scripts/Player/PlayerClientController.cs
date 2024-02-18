@@ -1,4 +1,5 @@
 ﻿using Abstraction;
+using Configs;
 using UnityEngine;
 
 namespace BTAPlayer
@@ -48,6 +49,7 @@ namespace BTAPlayer
             }
         }
 
+        public float DamageDistance => _data.DamageDistance;
         public PlayerClientController(
             string playerId,
             PlayerConfig data,

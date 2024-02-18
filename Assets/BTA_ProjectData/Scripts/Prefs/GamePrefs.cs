@@ -12,15 +12,13 @@ namespace Prefs
 
         private GameState _gameState;
 
-        private string _playfabId;
-
         private bool _isUserDataExist;
         private bool _isPlayerDataExist;
         private bool _isSettedGameName;
         
         private string _settedGamName;
 
-        public string PlayFabId => _playfabId;
+        public string PlayFabId { get; set; }
 
         public bool IsUserDataExist => _isUserDataExist;
         public bool IsPlayerDataExist => _isPlayerDataExist;

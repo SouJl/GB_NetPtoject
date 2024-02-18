@@ -1,4 +1,5 @@
 ﻿using Abstraction;
+using Configs;
 using UI;
 using UnityEngine;
 
@@ -50,6 +51,8 @@ namespace BTAPlayer
                 _view.PlayerUI.ChangeLevel(value);
             }
         }
+
+        public float DamageDistance => _data.DamageDistance;
 
         public PlayerMasterController(
             string playerId,

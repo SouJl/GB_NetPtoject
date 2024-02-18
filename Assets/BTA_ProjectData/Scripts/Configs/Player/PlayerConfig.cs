@@ -1,7 +1,6 @@
-﻿using Configs;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace BTAPlayer
+namespace Configs
 {
     [CreateAssetMenu(fileName = nameof(PlayerConfig), menuName = "B.T.A/" + nameof(PlayerConfig))]
     public class PlayerConfig : ScriptableObject

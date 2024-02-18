@@ -43,6 +43,13 @@ MonoBehaviour:
   - ChangeSelfHealth
   - UpdateSelfHealth
   - InstantiatePlayer
+  - ChangeHealth
+  - ChangeState
+  - Changetarget
+  - UpdateHealthOnClient
+  - UpdateStateOnClient
+  - UpdateTargetOnClient
+  - DestroyOnClient
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

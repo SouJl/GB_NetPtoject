@@ -37,5 +37,11 @@ namespace Prefs
         {
             PlayerData = playerdata;
         }
+
+        public void Clear()
+        {
+            UserData = null;
+            PlayerData = null;
+        }
     }
 }

@@ -5,6 +5,7 @@
         None,
         Idle, 
         Patrol,
-        MoveToTarget
+        MoveToTarget,
+        Dead
     }
 }

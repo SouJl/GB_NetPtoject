@@ -1,16 +1,16 @@
-﻿using Abstraction;
+﻿
 using BTAPlayer;
 using MultiplayerService;
-using ParrelSync;
 using Photon.Pun;
 using Photon.Realtime;
-using PlayFab;
-using PlayFab.ClientModels;
 using Prefs;
 using System.Collections.Generic;
 using UI;
-using UnityEditor.PackageManager;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
 
 public class InGameMain : MonoBehaviourPun
 {

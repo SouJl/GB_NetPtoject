@@ -1,10 +1,12 @@
-﻿using Photon.Pun;
+﻿using Abstraction;
+using Photon.Pun;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
 namespace BTAPlayer
 {
-    public class PlayerView : MonoBehaviourPunCallbacks, IPunObservable
+    public class PlayerView : MonoBehaviourPunCallbacks, IPunObservable, IDamageable, IFindable
     {
         [SerializeField]
         private Transform _selfTransform;
@@ -23,7 +25,6 @@ namespace BTAPlayer
         public Rigidbody PlayerRb => _playerRb;
 
         public Camera MainCamera => _mainCamera;
-
 
         private void Awake()
         {
@@ -75,11 +76,11 @@ namespace BTAPlayer
             }
         }
 
-        public void TakeDamage(float damageValue)
+        public void TakeDamage(float damage)
         {
             if (_player.CurrentHealth > 0)
             {
-                _player.CurrentHealth -= damageValue;
+                _player.CurrentHealth -= damage;
 
                 photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.Others, new object[] { photonView.ViewID, _player.CurrentHealth });
             }
@@ -96,5 +97,19 @@ namespace BTAPlayer
 
             _player.ChangeHealthValue(value);
         }
+
+        #region IFindable
+        
+        [Header("IFindable Settings")]
+        [SerializeField]
+        private List<Transform> _visiblePoints;
+
+        Transform IFindable.Transform => transform;
+
+        GameObject IFindable.GameObject => gameObject;
+
+        List<Transform> IFindable.VisiblePoints => _visiblePoints;
+
+        #endregion
     }
 }

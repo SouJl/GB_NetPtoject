@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Abstraction;
+using UnityEngine;
 
 namespace BTAPlayer
 {
@@ -134,7 +135,7 @@ namespace BTAPlayer
         {
             if (Physics.Raycast(_view.MainCamera.transform.position, _view.MainCamera.transform.forward, out var hit, _data.DamageDistance, _data.TargetsMask))
             {
-                var target = hit.collider.gameObject.GetComponentInParent<PlayerView>();
+                var target = hit.collider.gameObject.GetComponentInParent<IDamageable>();
                 if (target != null)
                 {
                     target.TakeDamage(_data.DamageValue);

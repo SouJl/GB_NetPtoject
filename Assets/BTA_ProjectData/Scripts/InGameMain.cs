@@ -250,9 +250,9 @@ public class InGameMain : MonoBehaviourPun
 
     private void SpawnEmemy()
     {
-        //_enemySpawner.Spawn();
+        _enemySpawner.Spawn();
 
-        for(int i =0; i < 10; i++)
+        for(int i =0; i < 5; i++)
         {
             _enemySpawner.SpawnSwarm();
         }

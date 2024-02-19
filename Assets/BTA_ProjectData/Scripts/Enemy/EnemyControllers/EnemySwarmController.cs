@@ -72,6 +72,9 @@ namespace Enemy
         {
             base.OnUpdate(deltaTime);
 
+            if (!photonView.IsMine)
+                return;
+
             CheckForTarget();
 
             switch (_currentState)

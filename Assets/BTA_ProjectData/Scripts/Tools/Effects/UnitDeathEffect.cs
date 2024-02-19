@@ -18,7 +18,11 @@ namespace Tools
         {
             yield return new WaitForSeconds(_destroyDelay);
 
-            PhotonNetwork.Destroy(gameObject);
+            if (photonView.IsMine)
+            {
+                PhotonNetwork.Destroy(gameObject);
+            }
+        
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Tools
 {
-    public class BaseEffect : MonoBehaviourPunCallbacks
+    public abstract class BaseEffect : MonoBehaviourPunCallbacks
     {
 
     }

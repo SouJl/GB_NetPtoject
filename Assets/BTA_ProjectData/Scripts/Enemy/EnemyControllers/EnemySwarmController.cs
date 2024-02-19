@@ -1,8 +1,11 @@
 ﻿using Abstraction;
 using Configs;
 using Photon.Pun;
+using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 namespace Enemy
 {
@@ -22,6 +25,7 @@ namespace Enemy
         private Vector3 _spawnCenter;
         private float _patrolRadius;
 
+        private Transform _currentTarget;
         private Vector3 _currentTargetPos;
 
         public float CurrentHealth
@@ -41,6 +45,9 @@ namespace Enemy
                 _currentState = value;
             }
         }
+
+        public event Action<Transform> OnSetNewTarget;
+        public event Action<EnemySwarmController> OnRemoved;
 
         protected override void OnAwake()
         {
@@ -74,6 +81,8 @@ namespace Enemy
 
             if (!photonView.IsMine)
                 return;
+
+            UpdateTargetPos();
 
             CheckForTarget();
 
@@ -113,7 +122,7 @@ namespace Enemy
                 case EnemyState.Attack:
                     {
                         var findResults = Physics.OverlapSphere(_pointOfView.position, _config.DamageDistance, _config.AttackTargetMask);
-                        
+
                         if (findResults.Length != 0)
                         {
                             for (int i = 0; i < findResults.Length; i++)
@@ -125,7 +134,7 @@ namespace Enemy
                                     target.TakeDamage(new DamageData
                                     {
                                         Value = _config.DamageValue,
-                                    }); 
+                                    });
                                 }
                             }
 
@@ -140,6 +149,7 @@ namespace Enemy
                     }
                 case EnemyState.Dead:
                     {
+                        OnRemoved?.Invoke(this);
 
                         PhotonNetwork.InstantiateRoomObject($"Effects/{_deathEffecet.name}", transform.position, transform.rotation);
 
@@ -150,10 +160,18 @@ namespace Enemy
             }
         }
 
-        private Vector3 SelectNewPatrolPos()
+        private void UpdateTargetPos()
         {
-            return _spawnCenter + Random.insideUnitSphere * _patrolRadius;
+            if (CurrentState != EnemyState.MoveToTarget)
+                return;
+            if (_currentTarget == null)
+                return;
+
+            _currentTargetPos = _currentTarget.position;
+
+            photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.Others, new object[] { photonView.ViewID, _currentTargetPos });
         }
+
 
         private void CheckForTarget()
         {
@@ -165,7 +183,6 @@ namespace Enemy
                     {
                         return;
                     }
-
             }
 
             var findResults = Physics.OverlapSphere(_pointOfView.position, _config.SearchDistance, _config.SearchMask);
@@ -177,14 +194,15 @@ namespace Enemy
                     var target = findResults[i].gameObject.GetComponentInParent<IFindable>();
                     if (target != null)
                     {
-                        _currentTargetPos = target.Transform.position;
-
-                        photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.Others, new object[] { photonView.ViewID, _currentTargetPos });
-
-                        ChangeState(EnemyState.MoveToTarget);
+                        OnSetNewTarget?.Invoke(target.Transform);
                     }
                 }
             }
+        }
+
+        private Vector3 SelectNewPatrolPos()
+        {
+            return _spawnCenter + Random.insideUnitSphere * _patrolRadius;
         }
 
         private void ChangeState(EnemyState newState)
@@ -194,11 +212,16 @@ namespace Enemy
             {
                 case EnemyState.Idle:
                     {
+                        _currentTarget = null;
                         break;
                     }
                 case EnemyState.Patrol:
                     {
+                        _currentTarget = null;
+
                         _agent.isStopped = false;
+
+                        _agent.ResetPath();
 
                         _agent.SetDestination(_currentTargetPos);
                         break;
@@ -206,7 +229,9 @@ namespace Enemy
                 case EnemyState.MoveToTarget:
                     {
                         _agent.isStopped = false;
-                        
+
+                        _agent.ResetPath();
+
                         _agent.SetDestination(_currentTargetPos);
                         break;
                     }
@@ -220,6 +245,8 @@ namespace Enemy
                     }
                 case EnemyState.Dead:
                     {
+                        _currentTarget = null;
+
                         _agent.isStopped = true;
 
                         _agent.ResetPath();
@@ -233,6 +260,22 @@ namespace Enemy
             photonView.RPC(nameof(UpdateStateOnClient), RpcTarget.Others, new object[] { photonView.ViewID, CurrentState });
         }
 
+        public void SetTarget(Transform target)
+        {
+            if (!photonView.IsMine)
+                return;
+
+            _currentTarget = target;
+
+            if (_currentTarget != null)
+            {
+                _currentTargetPos = _currentTarget.position;
+
+                photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.Others, new object[] { photonView.ViewID, _currentTargetPos });
+
+                ChangeState(EnemyState.MoveToTarget);
+            }
+        }
 
         public override void TakeDamage(DamageData damage)
         {

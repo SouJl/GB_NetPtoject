@@ -36,6 +36,8 @@ namespace Tools
         {
             _camera = camera;
 
+            _camera.transform.parent = transform;
+
             Cursor.lockState = CursorLockMode.Locked;
 
             Cursor.visible = false;
@@ -59,7 +61,8 @@ namespace Tools
 
             _yRotation += mouseX;
 
-            _camera.transform.rotation = Quaternion.Euler(_xRotation, _yRotation, 0);
+            transform.localRotation = Quaternion.Euler(_xRotation, _yRotation, 0);
+
             _orientationPoint.rotation = Quaternion.Euler(0, _yRotation, 0);
 
             _camera.transform.position = _target.position;

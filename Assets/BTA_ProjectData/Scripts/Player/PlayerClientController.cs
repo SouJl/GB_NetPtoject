@@ -123,27 +123,11 @@ namespace BTAPlayer
             {
                 _readyToJump = false;
                 _isResetJump = true;
-   
+
                 Jump();
             }
-
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                Shoot();
-            }
         }
 
-        private void Shoot()
-        {
-            if (Physics.Raycast(_view.MainCamera.transform.position, _view.MainCamera.transform.forward, out var hit, _data.DamageDistance, _data.TargetsMask))
-            {
-                var target = hit.collider.gameObject.GetComponentInParent<IDamageable>();
-                if (target != null)
-                {
-                    target.TakeDamage(_data.DamageValue);
-                }
-            }
-        }
 
         private void MovePlayer()
         {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Tools;
 using UnityEditor;
 using UnityEngine;
+using Weapon;
 
 namespace BTAPlayer
 {
@@ -14,7 +15,11 @@ namespace BTAPlayer
         [SerializeField]
         private Transform _orientation;
         [SerializeField]
+        private FirstPersonCamera _fpsCameraHolder;
+        [SerializeField]
         private PlayerUI _playerUI;
+        [SerializeField]
+        private WeaponController _weapon;
 
         private Rigidbody _playerRb;
         private Camera _mainCamera;
@@ -26,6 +31,8 @@ namespace BTAPlayer
         public Rigidbody PlayerRb => _playerRb;
 
         public Camera MainCamera => _mainCamera;
+
+        public WeaponController Weapon => _weapon;
 
         private void Awake()
         {
@@ -41,13 +48,11 @@ namespace BTAPlayer
 
             _mainCamera = camera;
 
-            var followedCamera = GetComponent<FirstPersonCamera>();
-
-            if (followedCamera != null)
+            if (_fpsCameraHolder != null)
             {
                 if (photonView.IsMine)
                 {
-                    followedCamera.Init(_mainCamera);
+                    _fpsCameraHolder.Init(_mainCamera);
                 }
             }
             else

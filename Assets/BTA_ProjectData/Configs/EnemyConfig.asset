@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHealth: 100
   _moveSpeed: 5
-  _deadDelay: 1
+  _deadDelay: 0
   _damageValue: 20
   _damageDistance: 5
   _attackTargetMask:

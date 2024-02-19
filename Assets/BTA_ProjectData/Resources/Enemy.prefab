@@ -487,6 +487,7 @@ MonoBehaviour:
   _pointOfView: {fileID: 6816850055097950340}
   _targetSearch: {fileID: 2149677907644094307}
   _unitUI: {fileID: 2059189102229079504}
+  _deathEffecet: {fileID: 3300812241387194373, guid: d896ce2e500b6b34ea825d19a2587bde, type: 3}
 --- !u!114 &2149677907644094307
 MonoBehaviour:
   m_ObjectHideFlags: 0

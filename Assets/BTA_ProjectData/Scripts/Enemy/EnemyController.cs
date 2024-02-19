@@ -22,6 +22,8 @@ namespace Enemy
         private TargetSearchComponent _targetSearch;
         [SerializeField]
         private EnemyUI _unitUI;
+        [SerializeField]
+        private ParticleSystem _deathEffecet;
   
         private Vector3 _currentTargetPos;
         private Vector3[] _patrollPoints;
@@ -179,6 +181,8 @@ namespace Enemy
                 _deadDelayProgress = 0;
 
                 PhotonNetwork.Destroy(gameObject);
+
+                Instantiate(_deathEffecet, transform.position, transform.rotation);
 
                /* photonView.RPC(nameof(DestroyOnClient), RpcTarget.Others, new object[] { photonView.ViewID });
                 

@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using BTAPlayer;
 using Configs;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -8,36 +9,56 @@ namespace Weapon
 {
     public class WeaponController : MonoBehaviour
     {
-        [SerializeField]
-        private WeaponConfig _data;
+
         [SerializeField]
         private Transform _muzzle;
         [SerializeField]
         private ParticleSystem _muzzleEffect;
 
+        private bool _isInitialize = false;
+
+        private WeaponConfig _data;
+
         private int _currentAmmo;
-
         private bool _reloading;
-
         private float _timeSinceLastShoot;
 
-        private void Start()
+        public int CurrentAmmo
         {
-            _currentAmmo = _data.MagSize;
+            get => _currentAmmo;
+            private set
+            {
+                _currentAmmo = value;
+                OnAmmoChanged?.Invoke(value);
+            }
+        }
+
+        public event Action<int> OnAmmoChanged;
+
+        public void Init(WeaponConfig data)
+        {
+            _data = data;
+
+            CurrentAmmo = _data.MagSize;
 
             PlayerInput.OnShootInput += Shoot;
             PlayerInput.OnReloadInput += StartReload;
+
+            _isInitialize = true;
         }
 
         private void Update()
         {
+            if (!_isInitialize)
+                return;
+
             _timeSinceLastShoot += Time.deltaTime;
             Debug.DrawRay(_muzzle.position, _muzzle.forward * _data.MaxDistance);
         }
 
         private void Shoot()
         {
-            if(_currentAmmo > 0)
+            if (_currentAmmo > 0)
             {
                 if (CanShoot())
                 {
@@ -47,8 +68,12 @@ namespace Weapon
                         damageable?.TakeDamage(_data.Damage);
                     }
 
-                    _currentAmmo--;
+                    CurrentAmmo--;
+
+                    OnAmmoChanged?.Invoke(_currentAmmo);
+
                     _timeSinceLastShoot = 0;
+
                     OnGunShoot();
                 }
             }
@@ -59,7 +84,7 @@ namespace Weapon
             return !_reloading && _timeSinceLastShoot > 1f / (_data.FireRate / 60f);
         }
 
-        private void OnGunShoot() 
+        private void OnGunShoot()
         {
             _muzzleEffect.Play();
         }
@@ -78,7 +103,7 @@ namespace Weapon
 
             yield return new WaitForSeconds(_data.ReloadTime);
 
-            _currentAmmo = _data.MagSize;
+            CurrentAmmo = _data.MagSize;
 
             _reloading = false;
 

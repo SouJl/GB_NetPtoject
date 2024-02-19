@@ -28,3 +28,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _jumpKey: 32
+  _weaponData: {fileID: 11400000, guid: dad2873e06a493f4fbbc85269ff77813, type: 2}

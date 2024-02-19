@@ -39,6 +39,8 @@ namespace Configs
         [SerializeField]
         private KeyCode _jumpKey = KeyCode.Space;
 
+        [SerializeField]
+        private WeaponConfig _weaponData;
 
         public float MaxHealth => _maxHealth;
         public float MoveSpeed => _moveSpeed;
@@ -52,6 +54,8 @@ namespace Configs
         public float PlayerHeight => _playerHeight;
         public LayerMask WhatIsGround => _whatIsGround;
         public KeyCode JumpKey => _jumpKey;
+
+        public WeaponConfig WeaponData => _weaponData;
     }
 
 }

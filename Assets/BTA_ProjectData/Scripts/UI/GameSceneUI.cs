@@ -12,16 +12,26 @@ namespace UI
         [SerializeField]
         private HealthBarUI _healthBar;
 
+        [Header("Weapon UI Settings")]
+        [SerializeField]
+        private TMP_Text _weaponMagSize;
+        [SerializeField]
+        private TMP_Text _weapomCurrentAmmo;
+
         private void Awake()
         {
             gameObject.SetActive(false);
         }
 
-        public void InitUI(string name, float maxHealth)
+        public void InitUI(string name, float maxHealth, int weaponMagSize)
         {
             _playerName.text = name;
             
             _playerLevel.text = "";
+
+            _weaponMagSize.text = weaponMagSize.ToString();
+
+            ChangeCurrentAmmo(weaponMagSize);
 
             _healthBar.InitUI(maxHealth);
 
@@ -36,6 +46,11 @@ namespace UI
         public void ChangePlayerLevel(int value)
         {
             _playerLevel.text = $"Current level: {value}";
+        }
+
+        public void ChangeCurrentAmmo(int value)
+        {
+            _weapomCurrentAmmo.text = value.ToString();
         }
     }
 }

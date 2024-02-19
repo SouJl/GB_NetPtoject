@@ -72,10 +72,19 @@ namespace BTAPlayer
 
             _view.Init(this, camera);
 
-            _gameSceneUI.InitUI(_view.photonView.Owner.NickName, data.MaxHealth);
+            var weaponData = data.WeaponData;
+            _view.Weapon.Init(weaponData);
+            _view.Weapon.OnAmmoChanged += WeponAmmoChanged;
+
+            _gameSceneUI.InitUI(_view.photonView.Owner.NickName, data.MaxHealth, weaponData.MagSize);
 
             _readyToJump = true;
             _isResetJump = false;
+        }
+
+        private void WeponAmmoChanged(int ammoValue)
+        {
+            _gameSceneUI.ChangeCurrentAmmo(ammoValue);
         }
 
         public void ChangeHealthValue(float value)
@@ -188,6 +197,8 @@ namespace BTAPlayer
                 return;
 
             _isDisposed = true;
+
+            _view.Weapon.OnAmmoChanged += WeponAmmoChanged;
 
             Object.Destroy(_view.gameObject);
         }

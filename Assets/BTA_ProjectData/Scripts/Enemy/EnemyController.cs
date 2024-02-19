@@ -28,6 +28,7 @@ namespace Enemy
         private int _currentPatrolIndex = 0;
 
         private Camera _mainCamera;
+        private Rigidbody _rigidBody;
 
         private float _currentHealth;
         private EnemyState _currentState;
@@ -54,6 +55,7 @@ namespace Enemy
         private void Awake()
         {
             _mainCamera = Camera.main;
+            _rigidBody = GetComponent<Rigidbody>();
         }
 
         private void Start()
@@ -147,19 +149,20 @@ namespace Enemy
 
         private void ExecutePatrolState()
         {
-            if (_agent.remainingDistance < 0.1f)
+
+            if (_agent.isActiveAndEnabled && _agent.remainingDistance < 0.1f)
             {
                 _currentPatrolIndex = (_currentPatrolIndex + 1) % _patrollPoints.Length;
 
-                var patrolPoint = _patrollPoints[_currentPatrolIndex];
+                _currentTargetPos = _patrollPoints[_currentPatrolIndex];
 
-                _agent.SetDestination(patrolPoint);
+                _agent.SetDestination(_currentTargetPos);
             }
         }
 
         private void ExecuteMoveToTargetState()
         {
-            if (_agent.remainingDistance < 0.1f)
+            if (_agent.isActiveAndEnabled && _agent.remainingDistance < 0.1f)
             {
                 Debug.Log("Reached target position");
             }
@@ -193,8 +196,8 @@ namespace Enemy
                     }
                 case EnemyState.Patrol:
                     {
-                        var startPoint = _patrollPoints[0];
-                        _agent.SetDestination(startPoint);
+                        _currentTargetPos = _patrollPoints[0];
+                        _agent.SetDestination(_currentTargetPos);
                         break;
                     }
                 case EnemyState.MoveToTarget:
@@ -219,12 +222,12 @@ namespace Enemy
         }
 
 
-        public void TakeDamage(float damageValue)
+        public void TakeDamage(DamageData damage)
         {
             if (CurrentState == EnemyState.Dead)
                 return;
 
-            CurrentHealth -= damageValue;
+            CurrentHealth -= damage.Value;
 
             if (CurrentHealth <= 0)
             {
@@ -233,6 +236,7 @@ namespace Enemy
 
             photonView.RPC(nameof(UpdateHealthOnClient), RpcTarget.Others, new object[] { photonView.ViewID, CurrentHealth });
         }
+
 
         #region PUNRPC_METHODS
 

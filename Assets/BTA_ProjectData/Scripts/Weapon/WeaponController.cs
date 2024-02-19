@@ -53,7 +53,10 @@ namespace Weapon
                 return;
 
             _timeSinceLastShoot += Time.deltaTime;
+
+#if UNITY_EDITOR
             Debug.DrawRay(_muzzle.position, _muzzle.forward * _data.MaxDistance);
+#endif
         }
 
         private void Shoot()
@@ -65,7 +68,11 @@ namespace Weapon
                     if (Physics.Raycast(_muzzle.position, _muzzle.forward, out RaycastHit hitInfo, _data.MaxDistance))
                     {
                         var damageable = hitInfo.transform.GetComponent<IDamageable>();
-                        damageable?.TakeDamage(_data.Damage);
+                        damageable?.TakeDamage(new DamageData 
+                        {
+                            Value = _data.Damage,
+                            Force = -hitInfo.normal * _data.DamageForce
+                        });
                     }
 
                     CurrentAmmo--;

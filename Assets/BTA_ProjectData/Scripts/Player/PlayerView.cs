@@ -82,11 +82,13 @@ namespace BTAPlayer
             }
         }
 
-        public void TakeDamage(float damage)
+        public void TakeDamage(DamageData damage)
         {
             if (_player.CurrentHealth > 0)
             {
-                _player.CurrentHealth -= damage;
+                _player.CurrentHealth -= damage.Value;
+
+                _playerRb.AddForce(damage.Force);
 
                 photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.Others, new object[] { photonView.ViewID, _player.CurrentHealth });
             }
@@ -117,16 +119,5 @@ namespace BTAPlayer
         List<Transform> IFindable.VisiblePoints => _visiblePoints;
 
         #endregion
-
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            if (_player == null)
-                return;
-
-            Handles.DrawLine(_orientation.position, _orientation.position + _orientation.forward * _player.DamageDistance);
-        }
-#endif
-
     }
 }

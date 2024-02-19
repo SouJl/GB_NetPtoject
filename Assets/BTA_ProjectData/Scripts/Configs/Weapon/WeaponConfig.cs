@@ -14,6 +14,8 @@ namespace Configs
         private float _damage = 10f;
         [SerializeField]
         private float _maxDistance = 100f;
+        [SerializeField]
+        private float _damageForce = 10f;
 
         [Header("Reloading")]
         [SerializeField]
@@ -27,6 +29,7 @@ namespace Configs
         public string Name => _name;
         public float Damage => _damage;
         public float MaxDistance => _maxDistance;
+        public float DamageForce => _damageForce;
         public int MagSize => _magSize;
         public float FireRate => _fireRate;
         public float ReloadTime => _reloadTime;

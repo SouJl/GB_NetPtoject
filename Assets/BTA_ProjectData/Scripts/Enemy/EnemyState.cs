@@ -6,6 +6,7 @@
         Idle, 
         Patrol,
         MoveToTarget,
+        Attack,
         Dead
     }
 }

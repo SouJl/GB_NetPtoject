@@ -21,7 +21,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   _searchAngle: 100
-  _searchDistance: 7
+  _searchDistance: 10
   _searchMask:
     serializedVersion: 2
     m_Bits: 128

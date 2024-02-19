@@ -2,7 +2,6 @@
 using Photon.Pun;
 using System.Collections.Generic;
 using Tools;
-using UnityEditor;
 using UnityEngine;
 using Weapon;
 
@@ -86,11 +85,11 @@ namespace BTAPlayer
         {
             if (_player.CurrentHealth > 0)
             {
-                _player.CurrentHealth -= damage.Value;
+                var resultHealth = _player.CurrentHealth - damage.Value;
 
                 _playerRb.AddForce(damage.Force);
 
-                photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.Others, new object[] { photonView.ViewID, _player.CurrentHealth });
+                photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.AllViaServer, new object[] { photonView.ViewID, resultHealth });
             }
         }
 

@@ -178,15 +178,11 @@ namespace Enemy
 
             if (_deadDelayProgress > _config.DeadDelay)
             {
-                _deadDelayProgress = 0;
+                _deadDelayProgress = 0; 
+
+                PhotonNetwork.InstantiateRoomObject($"Effects/{_deathEffecet.name}", transform.position, transform.rotation);
 
                 PhotonNetwork.Destroy(gameObject);
-
-                Instantiate(_deathEffecet, transform.position, transform.rotation);
-
-               /* photonView.RPC(nameof(DestroyOnClient), RpcTarget.Others, new object[] { photonView.ViewID });
-                
-                Destroy(gameObject);*/
             }
         }
 

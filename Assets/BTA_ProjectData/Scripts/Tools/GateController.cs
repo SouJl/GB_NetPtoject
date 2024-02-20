@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using Photon.Pun;
 using UnityEngine;
 
 namespace Tools
@@ -11,7 +10,7 @@ namespace Tools
         Close,
     }
 
-    public class GateController : MonoBehaviour
+    public class GateController : MonoBehaviourPunCallbacks
     {
         private readonly string StateTrigger = "IsOpen";
 
@@ -48,7 +47,7 @@ namespace Tools
 
             if (Input.GetKeyDown(KeyCode.E))
             {
-                Open();
+                photonView.RPC(nameof(Open), RpcTarget.AllViaServer);
             }
         }
 
@@ -68,12 +67,13 @@ namespace Tools
 
             if ((_whoCanInteract & 1 << collider.gameObject.layer) == 1 << collider.gameObject.layer)
             {
-                Close();
+                photonView.RPC(nameof(Close), RpcTarget.AllViaServer);
             }
 
             _isOppenerExist = false;
         }
 
+        [PunRPC]
         private void Open()
         {
             if (_state == GateState.Open)
@@ -85,6 +85,7 @@ namespace Tools
             _state = GateState.Open;
         }
 
+        [PunRPC]
         private void Close()
         {
             if (_state == GateState.Close)

@@ -70,6 +70,8 @@ namespace Tools
             {
                 Close();
             }
+
+            _isOppenerExist = false;
         }
 
         private void Open()

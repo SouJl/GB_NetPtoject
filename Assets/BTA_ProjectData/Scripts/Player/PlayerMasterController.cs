@@ -1,5 +1,4 @@
-﻿using Abstraction;
-using Configs;
+﻿using Configs;
 using UI;
 using UnityEngine;
 
@@ -152,6 +151,10 @@ namespace BTAPlayer
         {
             _moveDirection
                 = _view.Orientation.forward * _verticalInput + _view.Orientation.right * _horizontalInput;
+
+            if (_moveDirection != Vector3.zero)
+                _view.PlayerObj.forward = Vector3.Slerp(_view.PlayerObj.forward, _moveDirection.normalized, Time.deltaTime * _data.RotationSpeed);
+
 
             if (_isGrounded)
             {

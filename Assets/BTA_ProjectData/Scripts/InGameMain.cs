@@ -23,7 +23,9 @@ public class InGameMain : MonoBehaviourPun
     [SerializeField]
     private int _randomSeed = 1111;
     [SerializeField]
-    private GameObject _playerPrefab;
+    private GameObject _playerMasterPrefab;
+    [SerializeField]
+    private GameObject _playerClientPrefab;
     [SerializeField]
     private PlayerConfig _playerConfig;
     [SerializeField]
@@ -125,7 +127,7 @@ public class InGameMain : MonoBehaviourPun
             spawnPosition = _spawnPoints[playerNum].position;
         }
 
-        var playerObject = Instantiate(_playerPrefab, spawnPosition, Quaternion.identity);
+        var playerObject = Instantiate(_playerMasterPrefab, spawnPosition, Quaternion.identity);
 
         var playerPhoton = playerObject.GetComponent<PhotonView>();
 
@@ -183,7 +185,7 @@ public class InGameMain : MonoBehaviourPun
     {
         if (_netManager.IsConnected == false)
             return;
-        if (_playerPrefab == null)
+        if (_playerMasterPrefab == null)
         {
             Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'InGameMain'", this);
         }
@@ -199,7 +201,7 @@ public class InGameMain : MonoBehaviourPun
                 spawnPosition = _spawnPoints[playerNum].position;
             }
 
-            var playerObject = Instantiate(_playerPrefab, spawnPosition, rotation);
+            var playerObject = Instantiate(_playerMasterPrefab, spawnPosition, rotation);
 
             var playerPhoton = playerObject.GetComponent<PhotonView>();
 
@@ -230,7 +232,7 @@ public class InGameMain : MonoBehaviourPun
     [PunRPC]
     private void InstantiatePlayer(int viewId, Player player, Vector3 position, Quaternion rotation)
     {
-        var playerObject = Instantiate(_playerPrefab, position, rotation);
+        var playerObject = Instantiate(_playerClientPrefab, position, rotation);
 
         var playerPhoton = playerObject.GetComponent<PhotonView>();
 

@@ -20,6 +20,8 @@ namespace Configs
         private float _jumpCooldown = 0.25f;
         [SerializeField]
         private float _airMultiplier = 0.4f;
+        [SerializeField]
+        private float _rotationSpeed = 7f;
 
         [Space(10), Header("Attack")]
         [SerializeField]
@@ -48,6 +50,7 @@ namespace Configs
         public float JumpForce => _jumpForce;
         public float JumpCooldown => _jumpCooldown;
         public float AirMultiplier => _airMultiplier;
+        public float RotationSpeed => _rotationSpeed;
         public float DamageValue => _damageValue;
         public float DamageDistance => _damageDistance;
         public LayerMask TargetsMask => _targetsMask;
@@ -56,6 +59,7 @@ namespace Configs
         public KeyCode JumpKey => _jumpKey;
 
         public WeaponConfig WeaponData => _weaponData;
+
     }
 
 }

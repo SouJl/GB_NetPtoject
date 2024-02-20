@@ -14,6 +14,8 @@ namespace BTAPlayer
         [SerializeField]
         private Transform _orientation;
         [SerializeField]
+        private Transform _playerObj;
+        [SerializeField]
         private FirstPersonCamera _fpsCameraHolder;
         [SerializeField]
         private PlayerUI _playerUI;
@@ -25,6 +27,8 @@ namespace BTAPlayer
 
         public Transform SelfTransform => _selfTransform;
         public Transform Orientation => _orientation;
+        public Transform PlayerObj => _playerObj;
+
         public PlayerUI PlayerUI => _playerUI;
 
         public Rigidbody PlayerRb => _playerRb;

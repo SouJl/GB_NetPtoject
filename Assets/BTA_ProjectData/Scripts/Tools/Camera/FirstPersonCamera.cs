@@ -14,6 +14,9 @@ namespace Tools
         [SerializeField]
         private Transform _orientationPoint;
         [SerializeField]
+        private Transform _playerObj;
+
+        [SerializeField]
         private bool _syncInEditor = false;
         [SerializeField]
         private Camera _camera;

@@ -23,7 +23,7 @@ MonoBehaviour:
   _targetsMask:
     serializedVersion: 2
     m_Bits: 256
-  _playerHeight: 1.4
+  _playerHeight: 2
   _whatIsGround:
     serializedVersion: 2
     m_Bits: 64

@@ -193,13 +193,15 @@ public class InGameMain : MonoBehaviourPun
             var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
 
             Vector3 spawnPosition = _spawnPoints[0].position;
+            var rotation = _spawnPoints[0].rotation;
 
             if (playerNum > 0)
             {
                 spawnPosition = _spawnPoints[playerNum].position;
+                rotation = _spawnPoints[playerNum].rotation;
             }
 
-            var playerObject = Instantiate(_playerPrefab, spawnPosition, Quaternion.identity);
+            var playerObject = Instantiate(_playerPrefab, spawnPosition, rotation);
 
             var playerPhoton = playerObject.GetComponent<PhotonView>();
 

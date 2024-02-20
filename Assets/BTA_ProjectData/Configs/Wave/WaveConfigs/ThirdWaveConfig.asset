@@ -15,16 +15,4 @@ MonoBehaviour:
   _name: wave_0
   _wavetime: 0
   _startDelayTime: 0
-  _enemies:
-  - EnemyType: 0
-    Count: 2
-    SpawnTime: 3
-  - EnemyType: 0
-    Count: 0
-    SpawnTime: 0
-  - EnemyType: 0
-    Count: 0
-    SpawnTime: 0
-  - EnemyType: 0
-    Count: 0
-    SpawnTime: 0
+  _enemies: []

@@ -9,6 +9,7 @@ using UI;
 using UnityEngine;
 using Configs;
 using Enemy;
+using System.Collections;
 
 #if UNITY_EDITOR
 using ParrelSync;
@@ -32,7 +33,7 @@ public class InGameMain : MonoBehaviourPun
     [SerializeField]
     private GameNetManager _netManager;
     [SerializeField]
-    private EnemySpawner _enemySpawner;
+    private EnemySpawnController _enemySpawner;
 
     private Camera _mainCamera;
     private List<IPlayerController> _playerControllers = new List<IPlayerController>();
@@ -133,18 +134,16 @@ public class InGameMain : MonoBehaviourPun
 
         var playerView = playerObject.GetComponent<PlayerView>();
 
-        _playerControllers.Add(
-            new PlayerMasterController(
-                _netManager.CurrentPlayer.UserId,
-                _playerConfig,
-                playerView,
-                _gameSceneUI,
-                _mainCamera));
+        var playerController
+                 = new PlayerMasterController(_netManager.CurrentPlayer.UserId, _playerConfig, playerView, _gameSceneUI, _mainCamera);
 
+        _enemySpawner.AddPlayer(playerController);
+
+        _playerControllers.Add(playerController);
 
         SpawnEmemy();
     }
-    
+
     #endregion
 
     private void Subscribe()
@@ -193,12 +192,11 @@ public class InGameMain : MonoBehaviourPun
             var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
 
             Vector3 spawnPosition = _spawnPoints[0].position;
-            var rotation = _spawnPoints[0].rotation;
+            var rotation = Quaternion.identity;
 
             if (playerNum > 0)
             {
                 spawnPosition = _spawnPoints[playerNum].position;
-                rotation = _spawnPoints[playerNum].rotation;
             }
 
             var playerObject = Instantiate(_playerPrefab, spawnPosition, rotation);
@@ -210,24 +208,22 @@ public class InGameMain : MonoBehaviourPun
 
             var playerView = playerObject.GetComponent<PlayerView>();
 
-            _playerControllers.Add(
-                new PlayerMasterController(
-                    _netManager.CurrentPlayer.UserId,
-                    _playerConfig,
-                    playerView,
-                    _gameSceneUI,
-                    _mainCamera));
+            var playerController
+                = new PlayerMasterController(_netManager.CurrentPlayer.UserId, _playerConfig, playerView, _gameSceneUI, _mainCamera);
 
+            _enemySpawner.AddPlayer(playerController);
 
-            _dataServerService.GetPlayerData();
+            _playerControllers.Add(playerController);
 
             photonView.RPC(
-                nameof(InstantiatePlayer),
-                RpcTarget.Others,
-                playerPhoton.ViewID,
-                _netManager.CurrentPlayer,
-                spawnPosition,
-                Quaternion.identity);
+               nameof(InstantiatePlayer),
+               RpcTarget.Others,
+               playerPhoton.ViewID,
+               _netManager.CurrentPlayer,
+               spawnPosition,
+               rotation);
+
+            _dataServerService.GetPlayerData();
         }
     }
 
@@ -246,19 +242,25 @@ public class InGameMain : MonoBehaviourPun
 
         if (_playerControllers != null)
         {
-            _playerControllers.Add(new PlayerClientController(player.UserId, _playerConfig, playerView, _mainCamera));
+            var playerController
+                = new PlayerClientController(player.UserId, _playerConfig, playerView, _mainCamera);
+
+            _playerControllers.Add(playerController);
+
+            _enemySpawner.AddPlayer(playerController);
         }
     }
 
     private void SpawnEmemy()
     {
-        _enemySpawner.Spawn();
+        StartCoroutine(StartSpawnEnemies());
+    }
 
-        for(int i =0; i < 5; i++)
-        {
-            _enemySpawner.SpawnSwarm();
-        }
-        
+    private IEnumerator StartSpawnEnemies()
+    {
+        yield return new WaitForSeconds(3f);
+
+        _enemySpawner.StartEnemySpawn();
     }
 
     private void Update()

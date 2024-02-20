@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Tools
 {
-    public class UnitDeathEffect : BaseEffect
+    public class UnitSpawnEffect : BaseEffect
     {
         [SerializeField]
-        private float _destroyDelay = 3f;
+        private float _destroyDelay = 5f;
 
         protected override void OnAwake()
         {
@@ -22,7 +22,7 @@ namespace Tools
             {
                 PhotonNetwork.Destroy(gameObject);
             }
-        
+
         }
     }
 }

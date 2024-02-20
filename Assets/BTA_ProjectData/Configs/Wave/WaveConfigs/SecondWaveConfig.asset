@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 215a5bb14970f284f8e540132a181455, type: 3}
   m_Name: SecondWaveConfig
   m_EditorClassIdentifier: 
-  _name: wave_0
+  _name: wave_1
   _wavetime: 0
   _startDelayTime: 5
   _enemies:
-  - EnemyType: 2
+  - Type: 0
     Count: 2
     SpawnTime: 3
-  - EnemyType: 1
+  - Type: 0
     Count: 20
     SpawnTime: 5
-  - EnemyType: 1
+  - Type: 0
     Count: 10
     SpawnTime: 3
-  - EnemyType: 0
+  - Type: 0
     Count: 5
     SpawnTime: 3

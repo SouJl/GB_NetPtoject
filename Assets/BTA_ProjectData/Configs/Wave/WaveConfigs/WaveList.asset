@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a8a7fc9dd6fb5b4287445c7f97801c2, type: 3}
   m_Name: WaveList
   m_EditorClassIdentifier: 
-  <Waves>k__BackingField:
+  <Collection>k__BackingField:
   - {fileID: 11400000, guid: 6e0856e46b0d416499805637a40a9541, type: 2}
-  - {fileID: 11400000, guid: ba17cd125b041ce419b889ed1c1dd1a4, type: 2}

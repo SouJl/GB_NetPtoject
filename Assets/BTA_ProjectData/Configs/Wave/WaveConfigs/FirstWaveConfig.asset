@@ -14,17 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: wave_0
   _wavetime: 30
-  _startDelayTime: 5
+  _startDelayTime: 0
   _enemies:
-  - EnemyType: 0
-    Count: 3
-    SpawnTime: 3
-  - EnemyType: 0
+  - Type: 0
     Count: 5
-    SpawnTime: 0
-  - EnemyType: 1
-    Count: 10
-    SpawnTime: 5
-  - EnemyType: 1
-    Count: 10
-    SpawnTime: 5
+    SpawnTime: 3

@@ -61,23 +61,23 @@ namespace Enemy
 
             _unitUI.InitUI(_mainCamera, _config.MaxHealth);
 
-            var photonView = GetComponent<PhotonView>();
+            /*var photonView = GetComponent<PhotonView>();
 
             _patrollPoints = new Vector3[photonView.InstantiationData.Length];
 
             for (int i = 0; i < photonView.InstantiationData.Length; i++)
             {
                 _patrollPoints[i] = (Vector3)photonView.InstantiationData[i];
-            }
+            }*/
 
-            ChangeState(EnemyState.Patrol);
+            ChangeState(EnemyState.Idle);
 
         }
 
         protected override void OnUpdate(float deltaTime)
         {
             base.OnUpdate(deltaTime);
-            
+           
             if (!photonView.IsMine)
                 return;
 

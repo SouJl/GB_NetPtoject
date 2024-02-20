@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Wave
+namespace Configs
 {
     [CreateAssetMenu(fileName = nameof(WaveList), menuName = "B.T.A/" + nameof(WaveList))]
     public class WaveList : ScriptableObject
     {
-        [field: SerializeField] public List<WaveConfig> Waves { get; private set; }
+        [field: SerializeField] public List<WaveConfig> Collection { get; private set; }
     }
 }

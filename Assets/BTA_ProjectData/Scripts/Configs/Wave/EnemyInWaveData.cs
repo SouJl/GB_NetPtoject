@@ -6,7 +6,7 @@ namespace Configs
     [Serializable]
     public class EnemyInWaveData
     {
-        public EnemyType EnemyType;
+        public EnemyType Type;
         public int Count;
         public float SpawnTime;
     }

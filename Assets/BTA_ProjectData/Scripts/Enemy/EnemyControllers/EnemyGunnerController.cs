@@ -1,39 +1,31 @@
 ﻿using Abstraction;
 using Configs;
+using Enumerators;
 using Photon.Pun;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Enemy
 {
-    public class EnemyController : MonoBehaviourPunCallbacks, IDamageable
+    public class EnemyGunnerController : EnemyBaseController
     {
-        [Header("Enemy Data")]
+        [Header("Enemy Gunner Settings")]
         [SerializeField]
         private EnemyConfig _config;
-        [SerializeField]
-        private NavMeshAgent _agent;
-        [SerializeField]
-        private Transform _selfTransform;
-        [SerializeField]
-        private Transform _pointOfView;
         [SerializeField]
         private TargetSearchComponent _targetSearch;
         [SerializeField]
         private EnemyUI _unitUI;
-        [SerializeField]
-        private ParticleSystem _deathEffecet;
-  
+
         private Vector3 _currentTargetPos;
         private Vector3[] _patrollPoints;
         private int _currentPatrolIndex = 0;
 
-        private Camera _mainCamera;
-        private Rigidbody _rigidBody;
 
         private float _currentHealth;
         private EnemyState _currentState;
+
+        public override EnemyType Type => EnemyType.Gunner;
 
         public float CurrentHealth
         {
@@ -54,19 +46,20 @@ namespace Enemy
             }
         }
 
-        private void Awake()
+        protected override void OnAwake()
         {
-            _mainCamera = Camera.main;
-            _rigidBody = GetComponent<Rigidbody>();
+            base.OnAwake();
         }
 
-        private void Start()
+        protected override void OnStart()
         {
+            base.OnStart();
+
             _agent.speed = _config.MoveSpeed;
 
-            _unitUI.InitUI(_mainCamera, _config.MaxHealth);
-
             _currentHealth = _config.MaxHealth;
+
+            _unitUI.InitUI(_mainCamera, _config.MaxHealth);
 
             var photonView = GetComponent<PhotonView>();
 
@@ -78,15 +71,19 @@ namespace Enemy
             }
 
             ChangeState(EnemyState.Patrol);
+
         }
 
-        private void Update()
+        protected override void OnUpdate(float deltaTime)
         {
+            base.OnUpdate(deltaTime);
+            
             if (!photonView.IsMine)
                 return;
 
             UpdateBehavior(Time.deltaTime);
         }
+
 
         private void UpdateBehavior(float deltaTime)
         {
@@ -222,7 +219,7 @@ namespace Enemy
         }
 
 
-        public void TakeDamage(DamageData damage)
+        public override void TakeDamage(DamageData damage)
         {
             if (CurrentState == EnemyState.Dead)
                 return;

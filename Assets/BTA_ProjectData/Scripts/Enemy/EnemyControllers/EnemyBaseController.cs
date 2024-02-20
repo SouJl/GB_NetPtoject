@@ -2,6 +2,7 @@
 using Photon.Pun;
 using UnityEngine.AI;
 using UnityEngine;
+using Enumerators;
 
 namespace Enemy
 {
@@ -21,6 +22,8 @@ namespace Enemy
         protected Rigidbody _rigidBody;
 
         protected float _deltaTime;
+
+        public abstract EnemyType Type { get; }
 
         private void Awake()
         {

@@ -406,7 +406,7 @@ GameObject:
   - component: {fileID: 6514343507565712694}
   - component: {fileID: 2149677907644094305}
   m_Layer: 8
-  m_Name: Enemy
+  m_Name: EnemyGunner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -481,13 +481,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c48ab3c3ab67cf94da3a3d5e1c607eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _config: {fileID: 11400000, guid: c0d96ca0d2d5a7949835aa329e0cb524, type: 2}
-  _agent: {fileID: 2149677907644094305}
   _selfTransform: {fileID: 6816850055700316945}
   _pointOfView: {fileID: 6816850055097950340}
+  _agent: {fileID: 2149677907644094305}
+  _deathEffecet: {fileID: 3300812241387194373, guid: d896ce2e500b6b34ea825d19a2587bde, type: 3}
+  _config: {fileID: 11400000, guid: c0d96ca0d2d5a7949835aa329e0cb524, type: 2}
   _targetSearch: {fileID: 2149677907644094307}
   _unitUI: {fileID: 2059189102229079504}
-  _deathEffecet: {fileID: 3300812241387194373, guid: d896ce2e500b6b34ea825d19a2587bde, type: 3}
 --- !u!114 &2149677907644094307
 MonoBehaviour:
   m_ObjectHideFlags: 0

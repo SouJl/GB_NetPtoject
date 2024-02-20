@@ -1,10 +1,10 @@
 ﻿using Abstraction;
 using Configs;
+using Enumerators;
 using Photon.Pun;
 using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 namespace Enemy
@@ -27,6 +27,8 @@ namespace Enemy
 
         private Transform _currentTarget;
         private Vector3 _currentTargetPos;
+
+        public override EnemyType Type => EnemyType.Swarm;
 
         public float CurrentHealth
         {

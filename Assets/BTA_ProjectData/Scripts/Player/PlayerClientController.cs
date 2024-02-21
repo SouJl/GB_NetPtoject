@@ -54,7 +54,8 @@ namespace BTAPlayer
         }
 
         public float DamageDistance => _data.DamageDistance;
-        
+        public float MaxHealth => _data.MaxHealth;
+
         public PlayerClientController(
             string playerId,
             PlayerConfig data,
@@ -80,7 +81,10 @@ namespace BTAPlayer
         {
             CurrentHealth = value;
         }
-
+        public void ChangeState(PlayerState state)
+        {
+            _state = state;
+        }
         public void ExecuteUpdate(float deltaTime)
         {
             if (_view.photonView.IsMine == false)

@@ -1,9 +1,9 @@
 ﻿using Abstraction;
+using Enumerators;
 using Photon.Pun;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Weapon;
 
 namespace BTAPlayer
@@ -61,7 +61,8 @@ namespace BTAPlayer
             {
                 if (photonView.IsMine)
                 {
-                    _fpsCameraHolder.Init(_mainCamera);
+                    _fpsCameraHolder.Init();
+                    _fpsCameraHolder.SetCamera(_mainCamera);
                 }
             }
             else
@@ -105,13 +106,20 @@ namespace BTAPlayer
         {
             var grave
                 = PhotonNetwork.Instantiate(_playerGrave.name, transform.position, _orientation.rotation).GetComponent<PlayerGrave>();
-            
+
             if (photonView.IsMine)
             {
-                grave.Init(_mainCamera);
+                grave.Init(this, _mainCamera);
             }
 
             photonView.RPC(nameof(OnDeathExecute), RpcTarget.AllViaServer, new object[] { photonView.ViewID, transform.position });
+        }
+
+        public void Revive()
+        {
+            photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.AllViaServer, new object[] { photonView.ViewID, _player.MaxHealth });
+
+            photonView.RPC(nameof(OnReviveExecute), RpcTarget.AllViaServer, new object[] { photonView.ViewID});
         }
 
         [PunRPC]
@@ -132,6 +140,22 @@ namespace BTAPlayer
             Instantiate(_playerOnDeathEffect, position, Quaternion.identity);
 
             gameObject.SetActive(false);
+        }
+
+        [PunRPC]
+        private void OnReviveExecute(int id)
+        {
+            if (photonView.ViewID != id)
+                return;
+
+            gameObject.SetActive(true);
+
+            if (photonView.IsMine)
+            {
+                _fpsCameraHolder.SetCamera(_mainCamera);
+            }
+
+            _player.ChangeState(PlayerState.Alive);
         }
 
         #region IFindable

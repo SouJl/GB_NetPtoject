@@ -121,7 +121,7 @@ namespace UI
             OnExitGame?.Invoke();
         }
 
-        private void ShowPlayerUI()
+        public void ShowPlayerUI()
         {
             _playerView.Show();
 
@@ -133,7 +133,7 @@ namespace UI
             LockCursor(true);
         }
 
-        private void ShowPauseMenuUI()
+        public void ShowPauseMenuUI()
         {
             _pauseMenu.Show();
 

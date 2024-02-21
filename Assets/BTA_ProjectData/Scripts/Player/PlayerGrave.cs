@@ -1,4 +1,6 @@
 ﻿using Photon.Pun;
+using PlayFab.EconomyModels;
+using System.Collections;
 using UnityEngine;
 
 namespace BTAPlayer
@@ -14,16 +16,28 @@ namespace BTAPlayer
 
         private bool _isInitialized = false;
 
-        public void Init(Camera camera)
+        private PlayerView _view;
+
+        private Vector3 _originalPos;
+        private Quaternion _originalRotation;
+
+        public void Init(PlayerView creator, Camera camera)
         {
             if (!photonView.IsMine)
                 return;
 
+            _view = creator;
+
             _mainCamera = camera;
+
+            _originalPos = _mainCamera.transform.position;
+            _originalRotation = _mainCamera.transform.rotation;
 
             _mainCamera.transform.parent = _cameraHolder;
 
             _isInitialized = true;
+
+            StartCoroutine(WhaitToRevive());
         }
 
         private void Update()
@@ -33,19 +47,21 @@ namespace BTAPlayer
 
             _mainCamera.transform.position = Vector3.Slerp(_mainCamera.transform.position, _cameraHolder.position, Time.deltaTime * _smooth);
 
-            _mainCamera.transform.rotation = Quaternion.Slerp(_mainCamera.transform.rotation, _cameraHolder.rotation, Time.deltaTime * _smooth);
         }
 
-        private void OnTriggerStay(Collider other)
+        private IEnumerator WhaitToRevive()
         {
-            if (!photonView.IsMine)
-                return;
+            yield return new WaitForSeconds(3f);
 
-            if(other.gameObject.tag == "Player")
-            {
-                Debug.Log(other.gameObject);
-            }
+            _isInitialized = false;
+            
+            _mainCamera.transform.position = Vector3.zero;
 
+            _view.Revive();
+
+            yield return new WaitForSeconds(0.2f);
+
+            PhotonNetwork.Destroy(gameObject);
         }
     }
 }

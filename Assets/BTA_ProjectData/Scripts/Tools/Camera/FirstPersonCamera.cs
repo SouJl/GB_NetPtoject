@@ -38,13 +38,17 @@ namespace Tools
 
         }
 
-        public void Init(Camera camera)
+        public void Init()
+        {
+
+            _isFollowing = true;
+        }
+
+        public void SetCamera(Camera camera) 
         {
             _camera = camera;
 
             _camera.transform.parent = transform;
-
-            _isFollowing = true;
         }
 
         private void Update()

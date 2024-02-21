@@ -58,6 +58,8 @@ namespace BTAPlayer
 
         public float DamageDistance => _data.DamageDistance;
 
+        public float MaxHealth => _data.MaxHealth;
+
         public PlayerMasterController(
             string playerId,
             PlayerConfig data,
@@ -107,6 +109,17 @@ namespace BTAPlayer
                 
                 _view.Death();
             }
+        }
+
+
+        public void ChangeState(PlayerState state)
+        {
+            if(_state == PlayerState.Dead && state == PlayerState.Alive)
+            {
+                _gameSceneUI.ShowPlayerUI();
+            }
+
+            _state = state;
         }
 
         #region In Update Behaviour

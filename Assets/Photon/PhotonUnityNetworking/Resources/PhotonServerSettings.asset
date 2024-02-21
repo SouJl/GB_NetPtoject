@@ -55,6 +55,7 @@ MonoBehaviour:
   - DiconnectFromGame
   - DisconnectFromGame
   - OnDeathExecute
+  - OnReviveExecute
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

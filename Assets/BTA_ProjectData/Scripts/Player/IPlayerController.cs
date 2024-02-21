@@ -9,7 +9,7 @@ namespace BTAPlayer
         public string PlayerId { get; }
 
         public PlayerState State { get; }
-
+        public float MaxHealth { get; }
         public float CurrentHealth { get; set; }
         public int PlayerLevel { get; set; }
 
@@ -18,5 +18,7 @@ namespace BTAPlayer
         public void ExecuteFixedUpdate(float fixedTime);
 
         public void ChangeHealthValue(float value);
+
+        public void ChangeState(PlayerState state);
     }
 }

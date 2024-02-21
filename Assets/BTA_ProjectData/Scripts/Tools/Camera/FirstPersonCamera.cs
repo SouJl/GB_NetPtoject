@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Abstraction;
+using UnityEngine;
 
 namespace Tools
 {
-    public class FirstPersonCamera : MonoBehaviour
+    public class FirstPersonCamera : MonoBehaviour, IPaused
     {
         [SerializeField]
         private float _sensX = 100f;
@@ -41,15 +42,14 @@ namespace Tools
 
             _camera.transform.parent = transform;
 
-            Cursor.lockState = CursorLockMode.Locked;
-
-            Cursor.visible = false;
-
             _isFollowing = true;
         }
 
         private void Update()
         {
+            if (_isPaused)
+                return;
+
             if (_isFollowing == false)
                 return;
 
@@ -73,6 +73,9 @@ namespace Tools
 
         private void OnDrawGizmos()
         {
+            if (_isPaused)
+                return;
+
             if (_syncInEditor == false)
                 return;
 
@@ -81,6 +84,18 @@ namespace Tools
 
             _camera.transform.position = _target.position;
         }
+
+
+        #region IPaused
+
+        private bool _isPaused;
+
+        public void OnPause(bool state)
+        {
+            _isPaused = state;
+        }
+
+        #endregion
 
     }
 }

@@ -7,9 +7,7 @@ using System;
 using Tools;
 using UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Photon.Pun;
-using Abstraction;
 using Authentication;
 
 #if UNITY_EDITOR
@@ -33,8 +31,8 @@ public class MainController : IDisposable
     private GameLobbyController _gameLobbyController;
 
     public MainController(
-        Transform placeForUi, 
-        GameConfig gameConfig, 
+        Transform placeForUi,
+        GameConfig gameConfig,
         LifeCycleController lifeCycle,
         GameNetManager netManager,
         StateTransition stateTransition)
@@ -58,7 +56,7 @@ public class MainController : IDisposable
         _gamePrefs = new GamePrefs();
 #endif
         _dataServerService = new DataServerService(_gameConfig);
-        
+
         _netManager.Init(gameConfig);
 
         InitialGameLoad();
@@ -70,7 +68,15 @@ public class MainController : IDisposable
 
         _gamePrefs.LoadUser();
 
-        _gamePrefs.ChangeGameState(GameState.Authentication);
+        if (_netManager.IsConnected && _dataServerService.IsLogIn)
+        {
+            _gamePrefs.ChangeGameState(GameState.MainMenu);
+        }
+        else
+        {
+            _gamePrefs.ChangeGameState(GameState.Authentication);
+        }
+  
     }
 
     private void Subscribe()
@@ -89,7 +95,7 @@ public class MainController : IDisposable
     private void GameStateChanged(GameState state)
     {
         DisposeControllers();
-       
+
         switch (state)
         {
             default:
@@ -105,18 +111,18 @@ public class MainController : IDisposable
                 }
             case GameState.MainMenu:
                 {
-                    _mainMenuController 
+                    _mainMenuController
                         = new MainMenuController(_placeForUi, _gamePrefs, _netManager, _stateTransition);
-                    
+
                     _lifeCycle.AddController(_mainMenuController);
 
                     break;
                 }
             case GameState.Lobby:
                 {
-                    _gameLobbyController 
+                    _gameLobbyController
                         = new GameLobbyController(_placeForUi, _gameConfig, _gamePrefs, _netManager, _stateTransition);
-                    
+
                     _lifeCycle.AddController(_gameLobbyController);
 
                     break;
@@ -159,7 +165,7 @@ public class MainController : IDisposable
     private void Disconnected()
     {
         Debug.Log("Disconnected From Photon Server");
-       // _gamePrefs.ChangeGameState(GameState.Exit);
+        // _gamePrefs.ChangeGameState(GameState.Exit);
     }
 
 

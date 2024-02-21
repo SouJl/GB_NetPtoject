@@ -8,7 +8,7 @@ namespace BTAPlayer
     {
         private readonly PlayerConfig _data;
         private readonly PlayerView _view;
-        private readonly GameSceneUI _gameSceneUI;
+        private readonly PlayerViewUI _gameSceneUI;
 
 
         private bool _readyToJump;
@@ -57,7 +57,7 @@ namespace BTAPlayer
             string playerId,
             PlayerConfig data,
             PlayerView view,
-            GameSceneUI gameSceneUI,
+            PlayerViewUI gameSceneUI,
             Camera camera)
         {
             PlayerId = playerId;

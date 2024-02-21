@@ -1,5 +1,4 @@
-﻿
-using BTAPlayer;
+﻿using BTAPlayer;
 using MultiplayerService;
 using Photon.Pun;
 using Photon.Realtime;
@@ -10,12 +9,16 @@ using UnityEngine;
 using Configs;
 using Enemy;
 using System.Collections;
+using Abstraction;
+using System;
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 #if UNITY_EDITOR
 using ParrelSync;
 #endif
 
-public class InGameMain : MonoBehaviourPun
+public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 {
     [SerializeField]
     private bool _isTesting = false;
@@ -31,7 +34,7 @@ public class InGameMain : MonoBehaviourPun
     [SerializeField]
     private Transform[] _spawnPoints;
     [SerializeField]
-    private GameSceneUI _gameSceneUI;
+    private GameUIController _gameUI;
     [SerializeField]
     private GameNetManager _netManager;
     [SerializeField]
@@ -43,6 +46,7 @@ public class InGameMain : MonoBehaviourPun
     private DataServerService _dataServerService;
 
     private IGamePrefs _gamePrefs;
+
 
     private void Start()
     {
@@ -137,7 +141,12 @@ public class InGameMain : MonoBehaviourPun
         var playerView = playerObject.GetComponent<PlayerView>();
 
         var playerController
-                 = new PlayerMasterController(_netManager.CurrentPlayer.UserId, _playerConfig, playerView, _gameSceneUI, _mainCamera);
+                 = new PlayerMasterController(
+                     _netManager.CurrentPlayer.UserId, 
+                     _playerConfig, 
+                     playerView, 
+                     _gameUI.PlayerViewUI, 
+                     _mainCamera);
 
         _enemySpawner.AddPlayer(playerController);
 
@@ -149,16 +158,23 @@ public class InGameMain : MonoBehaviourPun
     #endregion
 
     private void Subscribe()
-    {
+    { 
         _netManager.OnPlayerLeftFromRoom += PlayerLeftedGame;
         _dataServerService.OnGetUserData += UserDataLoaded;
-    }
+        _netManager.OnDisconnectedFromServer += Disconnected;
 
+        _gameUI.OnReturnMainMenu += ReturnToMainMenu;
+        _gameUI.OnExitGame += ExitFromGame;
+    }
 
     private void Unsubscribe()
     {
         _netManager.OnPlayerLeftFromRoom -= PlayerLeftedGame;
         _dataServerService.OnGetUserData -= UserDataLoaded;
+        _netManager.OnDisconnectedFromServer -= Disconnected;
+
+        _gameUI.OnReturnMainMenu -= ReturnToMainMenu;
+        _gameUI.OnExitGame -= ExitFromGame;
     }
 
     private void PlayerLeftedGame(Player player)
@@ -175,9 +191,35 @@ public class InGameMain : MonoBehaviourPun
     {
         Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.CurrentLevel}] with progress {userData.CurrentLevelProgress}");
 
-        _gameSceneUI.ChangePlayerLevel(userData.CurrentLevel);
+        _gameUI.PlayerViewUI.ChangePlayerLevel(userData.CurrentLevel);
 
         _playerControllers[0].PlayerLevel = userData.CurrentLevel;
+    }
+
+    private void Disconnected()
+    {
+        _dataServerService.LogOut();
+
+        Dispose();
+
+        SceneManager.LoadScene(0);
+    }
+
+    private void ReturnToMainMenu()
+    {
+        Dispose();
+
+        SceneManager.LoadScene(0);
+    }
+
+    private void ExitFromGame()
+    {
+        Dispose();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        Application.Quit();
     }
 
 
@@ -211,7 +253,12 @@ public class InGameMain : MonoBehaviourPun
             var playerView = playerObject.GetComponent<PlayerView>();
 
             var playerController
-                = new PlayerMasterController(_netManager.CurrentPlayer.UserId, _playerConfig, playerView, _gameSceneUI, _mainCamera);
+                = new PlayerMasterController(
+                    _netManager.CurrentPlayer.UserId, 
+                    _playerConfig, 
+                    playerView, 
+                    _gameUI.PlayerViewUI, 
+                    _mainCamera);
 
             _enemySpawner.AddPlayer(playerController);
 
@@ -267,6 +314,9 @@ public class InGameMain : MonoBehaviourPun
 
     private void Update()
     {
+        if (_isPaused)
+            return;
+
         if (_playerControllers == null && _playerControllers.Count == 0)
             return;
 
@@ -278,6 +328,9 @@ public class InGameMain : MonoBehaviourPun
 
     private void FixedUpdate()
     {
+        if (_isPaused)
+            return;
+
         if (_playerControllers == null && _playerControllers.Count == 0)
             return;
 
@@ -287,9 +340,39 @@ public class InGameMain : MonoBehaviourPun
         }
     }
 
-
     private void OnDestroy()
     {
+        Dispose();
+    }
+
+    #region IDisposable
+
+    private bool _isDisposed = false;
+
+    public void Dispose()
+    {
+        if (_isDisposed)
+            return;
+        _isDisposed = true;
+
         Unsubscribe();
     }
+
+    #endregion
+
+    #region IPaused
+
+    private bool _isPaused;
+
+    public void OnPause(bool state)
+    {
+        _isPaused = state;
+
+        if (!photonView.IsMine)
+            return;
+
+        Time.timeScale = state ? 0 : 1;
+    }
+
+    #endregion
 }

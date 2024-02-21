@@ -3,8 +3,9 @@ using TMPro;
 
 namespace UI
 {
-    public class GameSceneUI : MonoBehaviour
+    public class PlayerViewUI : MonoBehaviour
     {
+        [Header("Player Stats Settings")]
         [SerializeField]
         private TMP_Text _playerName;
         [SerializeField]
@@ -17,11 +18,6 @@ namespace UI
         private TMP_Text _weaponMagSize;
         [SerializeField]
         private TMP_Text _weapomCurrentAmmo;
-
-        private void Awake()
-        {
-            gameObject.SetActive(false);
-        }
 
         public void InitUI(string name, float maxHealth, int weaponMagSize)
         {
@@ -51,6 +47,16 @@ namespace UI
         public void ChangeCurrentAmmo(int value)
         {
             _weapomCurrentAmmo.text = value.ToString();
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

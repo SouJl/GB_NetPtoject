@@ -59,6 +59,14 @@ namespace MultiplayerService
             OnCreateAccountSucceed?.Invoke(result.PlayFabId);
         }
 
+        public void LogOut()
+        {
+            if (!IsLogIn)
+                return;
+
+            PlayFabClientAPI.ForgetAllCredentials();
+        }
+
         public void LogIn(IGameUser user)
         {
             var request = new LoginWithPlayFabRequest

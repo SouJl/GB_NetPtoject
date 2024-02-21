@@ -1,15 +1,18 @@
 ﻿using Abstraction;
 using BTAPlayer;
 using Configs;
+using Photon.Pun;
 using System;
 using System.Collections;
+using Tools;
 using UnityEngine;
 
 namespace Weapon
 {
-    public class WeaponController : MonoBehaviour
+    public class WeaponController : MonoBehaviour , IPaused
     {
-
+        [SerializeField]
+        private Transform _cameraPos;
         [SerializeField]
         private Transform _muzzle;
         [SerializeField]
@@ -40,16 +43,32 @@ namespace Weapon
             _data = data;
 
             CurrentAmmo = _data.MagSize;
+            Subscribe();
 
+            _isInitialize = true;
+        }
+
+        private void Subscribe()
+        {
             PlayerInput.OnShootInput += Shoot;
             PlayerInput.OnReloadInput += StartReload;
 
-            _isInitialize = true;
+            GameStateManager.OnGamePaused += OnPause;
+        }
+
+        private void Unubscribe()
+        {
+            PlayerInput.OnShootInput -= Shoot;
+            PlayerInput.OnReloadInput -= StartReload;
+
+            GameStateManager.OnGamePaused -= OnPause;
         }
 
         private void Update()
         {
             if (!_isInitialize)
+                return;
+            if (_isPaused)
                 return;
 
             _timeSinceLastShoot += Time.deltaTime;
@@ -61,11 +80,14 @@ namespace Weapon
 
         private void Shoot()
         {
+            if (_isPaused)
+                return;
+
             if (_currentAmmo > 0)
             {
                 if (CanShoot())
                 {
-                    if (Physics.Raycast(_muzzle.position, _muzzle.forward, out RaycastHit hitInfo, _data.MaxDistance))
+                    if (Physics.Raycast(_cameraPos.position, _cameraPos.forward, out RaycastHit hitInfo, _data.MaxDistance))
                     {
                         var damageable = hitInfo.transform.GetComponent<IDamageable>();
                         damageable?.TakeDamage(new DamageData 
@@ -98,6 +120,9 @@ namespace Weapon
 
         private void StartReload()
         {
+            if (_isPaused)
+                return;
+
             if (!_reloading && gameObject.activeSelf)
                 StartCoroutine(Reload());
         }
@@ -119,8 +144,18 @@ namespace Weapon
 
         private void OnDestroy()
         {
-            PlayerInput.OnShootInput -= Shoot;
-            PlayerInput.OnReloadInput -= StartReload;
+            Unubscribe();
         }
+
+        #region IPaused
+
+        private bool _isPaused;
+
+        public void OnPause(bool state)
+        {
+            _isPaused = state;
+        }
+
+        #endregion
     }
 }

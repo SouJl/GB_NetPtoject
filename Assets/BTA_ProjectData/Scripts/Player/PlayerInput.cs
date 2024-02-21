@@ -7,6 +7,7 @@ namespace BTAPlayer
     {
         public static event Action OnShootInput;
         public static event Action OnReloadInput;
+        public static event Action OnPauseInput;
 
         [SerializeField]
         private KeyCode _reloadKey = KeyCode.R;
@@ -20,6 +21,10 @@ namespace BTAPlayer
             if (Input.GetKeyDown(_reloadKey))
             {
                 OnReloadInput?.Invoke();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                OnPauseInput?.Invoke();
             }
         }
     }

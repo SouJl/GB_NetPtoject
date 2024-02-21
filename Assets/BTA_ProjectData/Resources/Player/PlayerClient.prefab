@@ -577,6 +577,7 @@ GameObject:
   - component: {fileID: 5657218183350087070}
   - component: {fileID: 2816699450804215589}
   - component: {fileID: 994477885274814964}
+  - component: {fileID: 2514098466470875710}
   - component: {fileID: 662259749810892744}
   - component: {fileID: 4456786922299122663}
   m_Layer: 7
@@ -683,6 +684,18 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &2514098466470875710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 994477885274814958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d124eb71ba77b1b44b1beff8ff13caad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &662259749810892744
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1074,6 +1087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1895060d408a974f87c3b9189a729dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cameraPos: {fileID: 7323183423907583974}
   _muzzle: {fileID: 8901179819908691443}
   _muzzleEffect: {fileID: 5231587377620607558}
 --- !u!1 &5374730974390658687

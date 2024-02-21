@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
+using BTAPlayer;
+using System;
 
 namespace UI
 {
@@ -19,6 +21,15 @@ namespace UI
         [SerializeField]
         private TMP_Text _weapomCurrentAmmo;
 
+        private void Awake()
+        {
+            PlayerInput.OnNameChanged += ChangeName;
+            PlayerInput.OnHealthChanged += ChangeHealth;
+            PlayerInput.OnLevelChanged += ChangeLevel;
+            PlayerInput.OnAmmoChanged += ChangeAmmo;
+        }
+
+
         public void InitUI(string name, float maxHealth, int weaponMagSize)
         {
             _playerName.text = name;
@@ -27,11 +38,16 @@ namespace UI
 
             _weaponMagSize.text = weaponMagSize.ToString();
 
-            ChangeCurrentAmmo(weaponMagSize);
+            ChangeAmmo(weaponMagSize);
 
             _healthBar.InitUI(maxHealth);
 
             gameObject.SetActive(true);
+        }
+
+        private void ChangeName(string name)
+        {
+            _playerName.text = name;
         }
 
         public void ChangeHealth(float value)
@@ -39,12 +55,12 @@ namespace UI
             _healthBar.ChangeHealth(value);
         }
 
-        public void ChangePlayerLevel(int value)
+        public void ChangeLevel(int value)
         {
             _playerLevel.text = $"Current level: {value}";
         }
 
-        public void ChangeCurrentAmmo(int value)
+        public void ChangeAmmo(int value)
         {
             _weapomCurrentAmmo.text = value.ToString();
         }

@@ -35,7 +35,6 @@ namespace Tools
             _deltaTime = Time.deltaTime;
             _isFollowing = false;
 
-
         }
 
         public void Init(Camera camera)

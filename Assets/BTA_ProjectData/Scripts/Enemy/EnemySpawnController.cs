@@ -44,13 +44,21 @@ namespace Enemy
 
 
         private List<IPlayerController> _availablePlayers = new();
-
+        private List<Transform> _players = new();
         public void AddPlayer(IPlayerController player)
         {
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
             _availablePlayers.Add(player);
+        }
+
+        public void AddPlayer(Transform player)
+        {
+            if (!PhotonNetwork.IsMasterClient)
+                return;
+
+            _players.Add(player);
         }
 
         public void StartEnemySpawn()

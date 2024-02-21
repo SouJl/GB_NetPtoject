@@ -13,7 +13,6 @@ namespace Prefs
         private GameState _gameState;
 
         private bool _isSettedGameName;
-        private UserPrefs _userPrefs;
         private string _settedGamName;
 
         public string PlayFabId { get; set; }
@@ -45,24 +44,20 @@ namespace Prefs
             LoadPlayer();
         }
 
-        public void LoadUser()
-        {
+        public void LoadUser() { }
 
-        }
-        public void SetUser(IGameUser user)
-        {
-
-        }
+        public void SetUser(IGameUser user) { }
 
         public IGameUser GetUser()
         {
-            return _userPrefs;
+            return new BaseGameUser 
+            {
+                Name = clonedUserName,
+                Password = clonedUserPassword
+            };
         }
 
-        public void LoadPlayer()
-        {
-            
-        }
+        public void LoadPlayer() { }
 
         public void SetPlayer(IGamePlayer player)
         {

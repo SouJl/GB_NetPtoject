@@ -18,7 +18,7 @@ using Random = UnityEngine.Random;
 using ParrelSync;
 #endif
 
-public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
+public class InGameMain : MonoBehaviourPun, IDisposable
 {
     [SerializeField]
     private bool _isTesting = false;
@@ -74,17 +74,14 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
                     _gamePrefs = new GamePrefs();
                 }
 #else
-            _gamePrefs = new GamePrefs();
+                _gamePrefs = new GamePrefs();
 #endif
-                _gamePrefs.LoadUser();
 
                 Subscribe();
 
-                SpawnPlayer();
+                _gamePrefs.LoadUser();
 
-                SpawnEmemy();
-
-                return;
+                _dataServerService.GetPlayerData();
             }
             else
             {
@@ -113,7 +110,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void JoindedInLobby()
     {
-        _netManager.CreateRoom(new Abstraction.CreationRoomData
+        _netManager.CreateRoom(new CreationRoomData
         {
             RoomName = "TestRoom",
             MaxPlayers = 5
@@ -122,35 +119,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void JoinedInRoom(Room room)
     {
-        var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
-
-        Vector3 spawnPosition = _spawnPoints[0].position;
-
-        if (playerNum > 0)
-        {
-            spawnPosition = _spawnPoints[playerNum].position;
-        }
-
-        var playerObject = Instantiate(_playerMasterPrefab, spawnPosition, Quaternion.identity);
-
-        var playerPhoton = playerObject.GetComponent<PhotonView>();
-
-        PhotonNetwork.AllocateViewID(playerPhoton);
-        PhotonNetwork.RegisterPhotonView(playerPhoton);
-
-        var playerView = playerObject.GetComponent<PlayerView>();
-
-        var playerController
-                 = new PlayerMasterController(
-                     _netManager.CurrentPlayer.UserId, 
-                     _playerConfig, 
-                     playerView, 
-                     _gameUI.PlayerViewUI, 
-                     _mainCamera);
-
-        _enemySpawner.AddPlayer(playerController);
-
-        _playerControllers.Add(playerController);
+        SpawnPlayerNew("test", 0);
 
         SpawnEmemy();
     }
@@ -159,7 +128,6 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void Subscribe()
     { 
-        _netManager.OnPlayerLeftFromRoom += PlayerLeftedGame;
         _dataServerService.OnGetUserData += UserDataLoaded;
         _netManager.OnDisconnectedFromServer += Disconnected;
 
@@ -169,7 +137,6 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void Unsubscribe()
     {
-        _netManager.OnPlayerLeftFromRoom -= PlayerLeftedGame;
         _dataServerService.OnGetUserData -= UserDataLoaded;
         _netManager.OnDisconnectedFromServer -= Disconnected;
 
@@ -177,23 +144,14 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _gameUI.OnExitGame -= ExitFromGame;
     }
 
-    private void PlayerLeftedGame(Player player)
-    {
-        var playerController = _playerControllers.Find(p => p.PlayerId == player.UserId);
-        if (playerController != null)
-        {
-            playerController?.Dispose();
-            _playerControllers.Remove(playerController);
-        }
-    }
 
     private void UserDataLoaded(PlayfabPlayerData userData)
     {
         Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.CurrentLevel}] with progress {userData.CurrentLevelProgress}");
 
-        _gameUI.PlayerViewUI.ChangePlayerLevel(userData.CurrentLevel);
+        SpawnPlayerNew(userData.Nickname, userData.CurrentLevel);
 
-        _playerControllers[0].PlayerLevel = userData.CurrentLevel;
+        SpawnEmemy();
     }
 
     private void Disconnected()
@@ -227,6 +185,27 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         Application.Quit();
     }
 
+    private void SpawnPlayerNew(string name, int level)
+    {
+        var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
+
+        Vector3 spawnPosition = _spawnPoints[0].position;
+
+        if (playerNum > 0)
+        {
+            spawnPosition = _spawnPoints[playerNum].position;
+        }
+
+        var playerGo
+            = PhotonNetwork.Instantiate(
+                $"Player/{_playerMasterPrefab.name}",
+                spawnPosition, Quaternion.identity,
+                0, new object[] { name, level });
+
+        var player = playerGo.GetComponent<PlayerController>();
+
+        _enemySpawner.AddPlayer(player.SelfTransform);
+    }
 
     private void SpawnPlayer()
     {
@@ -290,7 +269,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     [PunRPC]
     private void InstantiatePlayer(int viewId, Player player, Vector3 position, Quaternion rotation)
     {
-        var playerObject = Instantiate(_playerClientPrefab, position, rotation);
+        /*var playerObject = Instantiate(_playerClientPrefab, position, rotation);
 
         var playerPhoton = playerObject.GetComponent<PhotonView>();
 
@@ -308,7 +287,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
             _playerControllers.Add(playerController);
 
             _enemySpawner.AddPlayer(playerController);
-        }
+        }*/
     }
 
     private void SpawnEmemy()
@@ -321,34 +300,6 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         yield return new WaitForSeconds(3f);
 
         _enemySpawner.StartEnemySpawn();
-    }
-
-    private void Update()
-    {
-        if (_isPaused)
-            return;
-
-        if (_playerControllers == null && _playerControllers.Count == 0)
-            return;
-
-        for (int i = 0; i < _playerControllers.Count; i++)
-        {
-            _playerControllers[i].ExecuteUpdate(Time.deltaTime);
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (_isPaused)
-            return;
-
-        if (_playerControllers == null && _playerControllers.Count == 0)
-            return;
-
-        for (int i = 0; i < _playerControllers.Count; i++)
-        {
-            _playerControllers[i].ExecuteFixedUpdate(Time.fixedDeltaTime);
-        }
     }
 
     private void OnDestroy()
@@ -371,19 +322,4 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     #endregion
 
-    #region IPaused
-
-    private bool _isPaused;
-
-    public void OnPause(bool state)
-    {
-        _isPaused = state;
-
-        if (!photonView.IsMine)
-            return;
-
-        //Time.timeScale = state ? 0 : 1;
-    }
-
-    #endregion
 }

@@ -90,7 +90,7 @@ namespace BTAPlayer
 
         private void WeponAmmoChanged(int ammoValue)
         {
-            _gameSceneUI.ChangeCurrentAmmo(ammoValue);
+            _gameSceneUI.ChangeAmmo(ammoValue);
         }
 
         public void ChangeHealthValue(float value)

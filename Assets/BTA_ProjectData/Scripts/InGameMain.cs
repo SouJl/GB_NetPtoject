@@ -13,6 +13,8 @@ using Abstraction;
 using System;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
+using GameTask;
+using Tools;
 
 #if UNITY_EDITOR
 using ParrelSync;
@@ -39,6 +41,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     private GameNetManager _netManager;
     [SerializeField]
     private EnemySpawnController _enemySpawner;
+    [SerializeField]
+    private CollisionDetector _centralRoomCollision;
 
     private Camera _mainCamera;
     private List<IPlayerController> _playerControllers = new List<IPlayerController>();
@@ -47,8 +51,9 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private IGamePrefs _gamePrefs;
 
+    private int _mainTaskId;
 
-    private void Start()
+    private void Awake()
     {
         Random.InitState(_randomSeed);
 
@@ -56,6 +61,19 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         _dataServerService = new DataServerService();
 
+        Subscribe();
+    }
+
+    private void SomoneEnterCentralRoom(Collider coollider)
+    {
+        if (coollider.gameObject.tag == "Player")
+        {
+            TaskManager.TaskCompeleted(_mainTaskId);
+        }
+    }
+
+    private void Start()
+    {
         if (_isTesting)
         {
             TestStart();
@@ -78,11 +96,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 #endif
                 _gamePrefs.LoadUser();
 
-                Subscribe();
-
-                SpawnPlayer();
-
-                SpawnEmemy();
+                _dataServerService.GetPlayerData();
 
                 return;
             }
@@ -153,6 +167,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _playerControllers.Add(playerController);
 
         SpawnEmemy();
+
+        _mainTaskId = TaskManager.AddNewTask("REACH CENTRAL ROOM");
     }
 
     #endregion
@@ -165,6 +181,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         _gameUI.OnReturnMainMenu += ReturnToMainMenu;
         _gameUI.OnExitGame += ExitFromGame;
+
+        _centralRoomCollision.OnEnter += SomoneEnterCentralRoom;
     }
 
     private void Unsubscribe()
@@ -175,6 +193,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         _gameUI.OnReturnMainMenu -= ReturnToMainMenu;
         _gameUI.OnExitGame -= ExitFromGame;
+
+        _centralRoomCollision.OnEnter -= SomoneEnterCentralRoom;
     }
 
     private void PlayerLeftedGame(Player player)
@@ -191,9 +211,15 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     {
         Debug.Log($"Getted User : {userData.Nickname} Lvl[{userData.CurrentLevel}] with progress {userData.CurrentLevelProgress}");
 
+        SpawnPlayer();
+
         _gameUI.PlayerViewUI.ChangePlayerLevel(userData.CurrentLevel);
 
         _playerControllers[0].PlayerLevel = userData.CurrentLevel;
+
+        SpawnEmemy();
+
+        _mainTaskId = TaskManager.AddNewTask("REACH CENTRAL ROOM");
     }
 
     private void Disconnected()
@@ -230,55 +256,44 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void SpawnPlayer()
     {
-        if (_netManager.IsConnected == false)
-            return;
-        if (_playerMasterPrefab == null)
+        var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
+
+        Vector3 spawnPosition = _spawnPoints[0].position;
+        var rotation = Quaternion.identity;
+
+        if (playerNum > 0)
         {
-            Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'InGameMain'", this);
+            spawnPosition = _spawnPoints[playerNum].position;
         }
-        else
-        {
-            var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
 
-            Vector3 spawnPosition = _spawnPoints[0].position;
-            var rotation = Quaternion.identity;
+        var playerObject = Instantiate(_playerMasterPrefab, spawnPosition, rotation);
 
-            if (playerNum > 0)
-            {
-                spawnPosition = _spawnPoints[playerNum].position;
-            }
+        var playerPhoton = playerObject.GetComponent<PhotonView>();
 
-            var playerObject = Instantiate(_playerMasterPrefab, spawnPosition, rotation);
+        PhotonNetwork.AllocateViewID(playerPhoton);
+        PhotonNetwork.RegisterPhotonView(playerPhoton);
 
-            var playerPhoton = playerObject.GetComponent<PhotonView>();
+        var playerView = playerObject.GetComponent<PlayerView>();
 
-            PhotonNetwork.AllocateViewID(playerPhoton);
-            PhotonNetwork.RegisterPhotonView(playerPhoton);
+        var playerController
+            = new PlayerMasterController(
+                _netManager.CurrentPlayer.UserId,
+                _playerConfig,
+                playerView,
+                _gameUI,
+                _mainCamera);
 
-            var playerView = playerObject.GetComponent<PlayerView>();
+        _enemySpawner.AddPlayer(playerController);
 
-            var playerController
-                = new PlayerMasterController(
-                    _netManager.CurrentPlayer.UserId, 
-                    _playerConfig, 
-                    playerView, 
-                    _gameUI, 
-                    _mainCamera);
+        _playerControllers.Add(playerController);
 
-            _enemySpawner.AddPlayer(playerController);
-
-            _playerControllers.Add(playerController);
-
-            photonView.RPC(
-               nameof(InstantiatePlayer),
-               RpcTarget.Others,
-               playerPhoton.ViewID,
-               _netManager.CurrentPlayer,
-               spawnPosition,
-               rotation);
-
-            _dataServerService.GetPlayerData();
-        }
+        photonView.RPC(
+           nameof(InstantiatePlayer),
+           RpcTarget.Others,
+           playerPhoton.ViewID,
+           _netManager.CurrentPlayer,
+           spawnPosition,
+           rotation);
     }
     
     [PunRPC]

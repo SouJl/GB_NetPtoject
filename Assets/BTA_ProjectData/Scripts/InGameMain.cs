@@ -145,7 +145,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
                      _netManager.CurrentPlayer.UserId, 
                      _playerConfig, 
                      playerView, 
-                     _gameUI.PlayerViewUI, 
+                     _gameUI, 
                      _mainCamera);
 
         _enemySpawner.AddPlayer(playerController);
@@ -262,7 +262,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
                     _netManager.CurrentPlayer.UserId, 
                     _playerConfig, 
                     playerView, 
-                    _gameUI.PlayerViewUI, 
+                    _gameUI, 
                     _mainCamera);
 
             _enemySpawner.AddPlayer(playerController);

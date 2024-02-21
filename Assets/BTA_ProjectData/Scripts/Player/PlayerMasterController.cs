@@ -10,7 +10,7 @@ namespace BTAPlayer
     {
         private readonly PlayerConfig _data;
         private readonly PlayerView _view;
-        private readonly PlayerViewUI _gameSceneUI;
+        private readonly GameUIController _gameSceneUI;
 
         private bool _readyToJump;
         private bool _isGrounded;
@@ -62,7 +62,7 @@ namespace BTAPlayer
             string playerId,
             PlayerConfig data,
             PlayerView view,
-            PlayerViewUI gameSceneUI,
+            GameUIController gameSceneUI,
             Camera camera)
         {
             PlayerId = playerId;
@@ -80,7 +80,7 @@ namespace BTAPlayer
             _view.Weapon.Init(weaponData);
             _view.Weapon.OnAmmoChanged += WeponAmmoChanged;
 
-            _gameSceneUI.InitUI(_view.photonView.Owner.NickName, data.MaxHealth, weaponData.MagSize);
+            _gameSceneUI.PlayerViewUI.InitUI(_view.photonView.Owner.NickName, data.MaxHealth, weaponData.MagSize);
 
             _readyToJump = true;
             _isResetJump = false;
@@ -90,12 +90,12 @@ namespace BTAPlayer
 
         private void WeponAmmoChanged(int ammoValue)
         {
-            _gameSceneUI.ChangeCurrentAmmo(ammoValue);
+            _gameSceneUI.PlayerViewUI.ChangeCurrentAmmo(ammoValue);
         }
 
         public void ChangeHealthValue(float value)
         {
-            _gameSceneUI.ChangeHealth(value);
+            _gameSceneUI.PlayerViewUI.ChangeHealth(value);
 
             CurrentHealth = value;
 
@@ -103,10 +103,9 @@ namespace BTAPlayer
             {
                 _state = PlayerState.Dead;
 
-                Object.Instantiate(_data.PlayerOnDeathEffect, _view.SelfTransform.position, _view.SelfTransform.rotation);
-                Object.Instantiate(_data.PlayerDeadPrefab, _view.SelfTransform.position, _view.SelfTransform.rotation);
-
-                _view.Weapon.gameObject.SetActive(false);
+                _gameSceneUI.ShowDeadScreen();
+                
+                _view.Death();
             }
         }
 

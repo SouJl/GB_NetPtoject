@@ -582,7 +582,7 @@ GameObject:
   - component: {fileID: 4456786922299122663}
   m_Layer: 7
   m_Name: PlayerClient
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -665,6 +665,8 @@ MonoBehaviour:
   _fpsCameraHolder: {fileID: 7002522996643855377}
   _playerUI: {fileID: 1139130031115999495}
   _weapon: {fileID: 4725748319052723904}
+  _playerGrave: {fileID: 4651787728086370554, guid: 083c1ccddd660f8409052dbb5351b045, type: 3}
+  _playerOnDeathEffect: {fileID: 3300812241387194371, guid: 87623a49078951e489e8eabb0e197ada, type: 3}
   _visiblePoints:
   - {fileID: 994477884949471050}
   - {fileID: 994477884918702301}

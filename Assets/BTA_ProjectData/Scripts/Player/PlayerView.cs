@@ -3,6 +3,7 @@ using Photon.Pun;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Weapon;
 
 namespace BTAPlayer
@@ -21,6 +22,11 @@ namespace BTAPlayer
         private PlayerUI _playerUI;
         [SerializeField]
         private WeaponController _weapon;
+
+        [SerializeField]
+        private GameObject _playerGrave;
+        [SerializeField]
+        private GameObject _playerOnDeathEffect;
 
         private Rigidbody _playerRb;
         private Camera _mainCamera;
@@ -45,7 +51,7 @@ namespace BTAPlayer
 
         private IPlayerController _player;
 
-        internal void Init(IPlayerController player, Camera camera)
+        public void Init(IPlayerController player, Camera camera)
         {
             _player = player;
 
@@ -95,6 +101,18 @@ namespace BTAPlayer
             }
         }
 
+        public void Death()
+        {
+            var grave
+                = PhotonNetwork.Instantiate(_playerGrave.name, transform.position, _orientation.rotation).GetComponent<PlayerGrave>();
+            
+            if (photonView.IsMine)
+            {
+                grave.Init(_mainCamera);
+            }
+
+            photonView.RPC(nameof(OnDeathExecute), RpcTarget.AllViaServer, new object[] { photonView.ViewID, transform.position });
+        }
 
         [PunRPC]
         private void UpdateSelfHealth(int id, float value)
@@ -102,9 +120,18 @@ namespace BTAPlayer
             if (photonView.ViewID != id)
                 return;
 
-            Debug.Log($"Health : {value}");
-
             _player.ChangeHealthValue(value);
+        }
+
+        [PunRPC]
+        private void OnDeathExecute(int id, Vector3 position)
+        {
+            if (photonView.ViewID != id)
+                return;
+
+            Instantiate(_playerOnDeathEffect, position, Quaternion.identity);
+
+            gameObject.SetActive(false);
         }
 
         #region IFindable

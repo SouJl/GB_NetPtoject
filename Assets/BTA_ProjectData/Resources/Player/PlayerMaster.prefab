@@ -798,7 +798,7 @@ GameObject:
   - component: {fileID: 2043557638993963390}
   m_Layer: 7
   m_Name: PlayerMaster
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -881,6 +881,8 @@ MonoBehaviour:
   _fpsCameraHolder: {fileID: 4659089672651044488}
   _playerUI: {fileID: 3335650502642602910}
   _weapon: {fileID: 6922217074881395801}
+  _playerGrave: {fileID: 4651787728086370554, guid: 083c1ccddd660f8409052dbb5351b045, type: 3}
+  _playerOnDeathEffect: {fileID: 3300812241387194371, guid: 87623a49078951e489e8eabb0e197ada, type: 3}
   _visiblePoints:
   - {fileID: 3190946097990112723}
   - {fileID: 3190946097970555460}

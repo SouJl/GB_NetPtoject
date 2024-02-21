@@ -40,6 +40,7 @@ namespace UI
         {
             Subscribe();
         }
+        
         private void Start()
         {
             ShowPlayerUI();
@@ -61,7 +62,7 @@ namespace UI
             _gameWonScreen.MainMenuButton.onClick.AddListener(ToMainMenu);
             _gameWonScreen.ExitGameButton.onClick.AddListener(ExitFromGame);
         }
-  
+
         private void Unsubscribe()
         {
             PlayerInput.OnPauseInput -= Pause;
@@ -89,6 +90,18 @@ namespace UI
             }
 
             IsOnPause = !IsOnPause;
+        }
+
+        public void ShowDeadScreen()
+        {
+            _playerDeadView.Show();
+
+            _pauseMenu.Hide();
+            _playerView.Hide();
+            _gameOverScreen.Hide();
+            _gameWonScreen.Hide();
+
+            LockCursor(true);
         }
 
         private void ResumeGame()

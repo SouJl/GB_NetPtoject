@@ -8,13 +8,19 @@ namespace UI
     public class GameUIController : MonoBehaviour
     {
         [SerializeField]
-        private PlayerViewUI _playerViewUI;
+        private PlayerViewUI _playerView;
         [SerializeField]
-        private PauseMenuUI _pauseMenuUI;
+        private PlayerDeadViewUI _playerDeadView;
+        [SerializeField]
+        private PauseMenuUI _pauseMenu;
+        [SerializeField]
+        private GameOverScreenUI _gameOverScreen;
+        [SerializeField]
+        private GameWonScreenUI _gameWonScreen;
 
         private bool _isOnPause;
 
-        public PlayerViewUI PlayerViewUI => _playerViewUI;
+        public PlayerViewUI PlayerViewUI => _playerView;
 
         public bool IsOnPause 
         { 
@@ -44,18 +50,31 @@ namespace UI
         private void Subscribe()
         {
             PlayerInput.OnPauseInput += Pause;
-            _pauseMenuUI.ResumeButton.onClick.AddListener(ResumeGame);
-            _pauseMenuUI.MainMenuButton.onClick.AddListener(ToMainMenu);
-            _pauseMenuUI.ExitGameButton.onClick.AddListener(ExitFromGame);
+
+            _pauseMenu.ResumeButton.onClick.AddListener(ResumeGame);
+            _pauseMenu.MainMenuButton.onClick.AddListener(ToMainMenu);
+            _pauseMenu.ExitGameButton.onClick.AddListener(ExitFromGame);
+
+            _gameOverScreen.MainMenuButton.onClick.AddListener(ToMainMenu);
+            _gameOverScreen.ExitGameButton.onClick.AddListener(ExitFromGame);
+
+            _gameWonScreen.MainMenuButton.onClick.AddListener(ToMainMenu);
+            _gameWonScreen.ExitGameButton.onClick.AddListener(ExitFromGame);
         }
   
         private void Unsubscribe()
         {
             PlayerInput.OnPauseInput -= Pause;
 
-            _pauseMenuUI.ResumeButton.onClick.RemoveListener(ResumeGame);
-            _pauseMenuUI.MainMenuButton.onClick.RemoveListener(ToMainMenu);
-            _pauseMenuUI.ExitGameButton.onClick.RemoveListener(ExitFromGame);
+            _pauseMenu.ResumeButton.onClick.RemoveListener(ResumeGame);
+            _pauseMenu.MainMenuButton.onClick.RemoveListener(ToMainMenu);
+            _pauseMenu.ExitGameButton.onClick.RemoveListener(ExitFromGame);
+
+            _gameOverScreen.MainMenuButton.onClick.RemoveListener(ToMainMenu);
+            _gameOverScreen.ExitGameButton.onClick.RemoveListener(ExitFromGame);
+
+            _gameWonScreen.MainMenuButton.onClick.RemoveListener(ToMainMenu);
+            _gameWonScreen.ExitGameButton.onClick.RemoveListener(ExitFromGame);
         }
 
         private void Pause()
@@ -91,16 +110,24 @@ namespace UI
 
         private void ShowPlayerUI()
         {
-            _playerViewUI.Show();
-            _pauseMenuUI.Hide();
+            _playerView.Show();
+
+            _playerDeadView.Hide();
+            _pauseMenu.Hide();
+            _gameOverScreen.Hide();
+            _gameWonScreen.Hide();
 
             LockCursor(true);
         }
 
         private void ShowPauseMenuUI()
         {
-            _pauseMenuUI.Show();
-            _playerViewUI.Hide();
+            _pauseMenu.Show();
+
+            _playerView.Hide();
+            _playerDeadView.Hide();
+            _gameOverScreen.Hide();
+            _gameWonScreen.Hide();
 
             LockCursor(false);
         }

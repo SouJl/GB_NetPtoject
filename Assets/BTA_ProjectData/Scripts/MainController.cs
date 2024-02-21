@@ -154,6 +154,8 @@ public class MainController : IDisposable
 
     private void ExitFromGame()
     {
+        _dataServerService.LogOut();
+
         Dispose();
 
 #if UNITY_EDITOR

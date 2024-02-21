@@ -198,21 +198,27 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void Disconnected()
     {
-        _dataServerService.LogOut();
-
         Dispose();
 
         SceneManager.LoadScene(0);
     }
 
-
     private void ReturnToMainMenu()
     {
-        _netManager.Disconnect();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC(nameof(DisconnectFromGame), RpcTarget.AllViaServer);
+        }
+        else
+        {
+            DisconnectFromGame();
+        }
     }
 
     private void ExitFromGame()
     {
+        _dataServerService.LogOut();
+
         Dispose();
 
 #if UNITY_EDITOR
@@ -273,6 +279,12 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
             _dataServerService.GetPlayerData();
         }
+    }
+    
+    [PunRPC]
+    private void DisconnectFromGame()
+    {
+        _netManager.Disconnect();
     }
 
     [PunRPC]

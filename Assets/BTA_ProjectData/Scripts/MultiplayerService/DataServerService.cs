@@ -61,9 +61,6 @@ namespace MultiplayerService
 
         public void LogOut()
         {
-            if (!IsLogIn)
-                return;
-
             PlayFabClientAPI.ForgetAllCredentials();
         }
 
@@ -72,7 +69,7 @@ namespace MultiplayerService
             var request = new LoginWithPlayFabRequest
             {
                 Username = user.Name,
-                Password = user.Password
+                Password = user.Password,
             };
 
             PlayFabClientAPI.LoginWithPlayFab(request, LogInSuccess, OnGetError);

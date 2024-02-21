@@ -205,11 +205,10 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         SceneManager.LoadScene(0);
     }
 
+
     private void ReturnToMainMenu()
     {
-        Dispose();
-
-        SceneManager.LoadScene(0);
+        _netManager.Disconnect();
     }
 
     private void ExitFromGame()
@@ -371,7 +370,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         if (!photonView.IsMine)
             return;
 
-        Time.timeScale = state ? 0 : 1;
+        //Time.timeScale = state ? 0 : 1;
     }
 
     #endregion

@@ -14284,7 +14284,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b948818238209b043b2fdc347133aa32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isTesting: 1
+  _isTesting: 0
   _randomSeed: 1111
   _playerMasterPrefab: {fileID: 3190946098352157559, guid: 91d5b525ea8417c4ab9759b44dfeaaff, type: 3}
   _playerClientPrefab: {fileID: 994477885274814958, guid: 1af4265af18bfa74fac6603c7a6e4775, type: 3}

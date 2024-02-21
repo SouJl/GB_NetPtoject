@@ -18,6 +18,7 @@ MonoBehaviour:
   _jumpForce: 12
   _jumpCooldown: 0.25
   _airMultiplier: 0.4
+  _rotationSpeed: 7
   _damageValue: 10
   _damageDistance: 15
   _targetsMask:
@@ -29,3 +30,5 @@ MonoBehaviour:
     m_Bits: 64
   _jumpKey: 32
   _weaponData: {fileID: 11400000, guid: dad2873e06a493f4fbbc85269ff77813, type: 2}
+  _playerDeadPrefab: {fileID: 4651787728086370554, guid: 083c1ccddd660f8409052dbb5351b045, type: 3}
+  _playerOnDeathEffect: {fileID: 3300812241387194371, guid: 87623a49078951e489e8eabb0e197ada, type: 3}

@@ -1,4 +1,5 @@
 ﻿using Abstraction;
+using Enumerators;
 using System;
 
 namespace BTAPlayer
@@ -6,6 +7,9 @@ namespace BTAPlayer
     public interface IPlayerController : IOnUpdate, IDisposable
     {
         public string PlayerId { get; }
+
+        public PlayerState State { get; }
+
         public float CurrentHealth { get; set; }
         public int PlayerLevel { get; set; }
 

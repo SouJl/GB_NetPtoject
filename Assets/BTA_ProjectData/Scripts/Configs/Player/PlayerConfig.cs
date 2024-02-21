@@ -43,6 +43,10 @@ namespace Configs
 
         [SerializeField]
         private WeaponConfig _weaponData;
+        [SerializeField]
+        private GameObject _playerDeadPrefab;
+        [SerializeField]
+        private GameObject _playerOnDeathEffect;
 
         public float MaxHealth => _maxHealth;
         public float MoveSpeed => _moveSpeed;
@@ -60,6 +64,8 @@ namespace Configs
 
         public WeaponConfig WeaponData => _weaponData;
 
+        public GameObject PlayerDeadPrefab => _playerDeadPrefab;
+        public GameObject PlayerOnDeathEffect => _playerOnDeathEffect;
     }
 
 }

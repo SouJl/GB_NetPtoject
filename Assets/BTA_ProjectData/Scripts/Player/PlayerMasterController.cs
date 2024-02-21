@@ -1,4 +1,6 @@
 ﻿using Configs;
+using Enumerators;
+using Photon.Pun;
 using UI;
 using UnityEngine;
 
@@ -9,7 +11,6 @@ namespace BTAPlayer
         private readonly PlayerConfig _data;
         private readonly PlayerView _view;
         private readonly PlayerViewUI _gameSceneUI;
-
 
         private bool _readyToJump;
         private bool _isGrounded;
@@ -22,7 +23,11 @@ namespace BTAPlayer
 
         private float _resetJumpCount;
 
+        private PlayerState _state;
+
         public string PlayerId { get; private set; }
+
+        public PlayerState State => _state;
 
         private float _currentHealth;
         public float CurrentHealth
@@ -79,6 +84,8 @@ namespace BTAPlayer
 
             _readyToJump = true;
             _isResetJump = false;
+
+            _state = PlayerState.Alive;
         }
 
         private void WeponAmmoChanged(int ammoValue)
@@ -91,13 +98,42 @@ namespace BTAPlayer
             _gameSceneUI.ChangeHealth(value);
 
             CurrentHealth = value;
+
+            if(CurrentHealth <= 0)
+            {
+                _state = PlayerState.Dead;
+
+                Object.Instantiate(_data.PlayerOnDeathEffect, _view.SelfTransform.position, _view.SelfTransform.rotation);
+                Object.Instantiate(_data.PlayerDeadPrefab, _view.SelfTransform.position, _view.SelfTransform.rotation);
+
+                _view.Weapon.gameObject.SetActive(false);
+            }
         }
+
+        #region In Update Behaviour
 
         public void ExecuteUpdate(float deltaTime)
         {
             if (_view.photonView.IsMine == false)
                 return;
 
+            switch (_state)
+            {
+                case PlayerState.Alive:
+                    {
+                        UpdateWhenAlive(deltaTime);
+
+                        break;
+                    }
+                case PlayerState.Dead:
+                    {
+                        break;
+                    }
+            }
+        }
+
+        private void UpdateWhenAlive(float deltaTime)
+        {
             _isGrounded = Physics.Raycast(_view.SelfTransform.position, Vector3.down, _data.PlayerHeight * 0.5f + 0.3f, _data.WhatIsGround);
 
             MyInput();
@@ -125,14 +161,6 @@ namespace BTAPlayer
             }
         }
 
-        public void ExecuteFixedUpdate(float fixedDeltaTime)
-        {
-            if (_view.photonView.IsMine == false)
-                return;
-
-            MovePlayer();
-        }
-
         private void MyInput()
         {
             _horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -144,6 +172,52 @@ namespace BTAPlayer
                 _isResetJump = true;
 
                 Jump();
+            }
+        }
+        private void Jump()
+        {
+            _view.PlayerRb.velocity = new Vector3(_view.PlayerRb.velocity.x, 0f, _view.PlayerRb.velocity.z);
+
+            _view.PlayerRb.AddForce(_view.SelfTransform.up * _data.JumpForce, ForceMode.Impulse);
+        }
+
+        private void SpeedControl()
+        {
+            var flatVel
+                = new Vector3(_view.PlayerRb.velocity.x, 0f, _view.PlayerRb.velocity.z);
+
+            if (flatVel.magnitude > _data.MoveSpeed)
+            {
+                Vector3 limitedVel = flatVel.normalized * _data.MoveSpeed;
+                _view.PlayerRb.velocity = new Vector3(limitedVel.x, _view.PlayerRb.velocity.y, limitedVel.z);
+            }
+        }
+
+        private void ResetJump()
+        {
+            _readyToJump = true;
+        }
+
+        #endregion
+
+        #region In FixedUpdate Behaviour
+
+        public void ExecuteFixedUpdate(float fixedDeltaTime)
+        {
+            if (_view.photonView.IsMine == false)
+                return;
+
+            switch (_state)
+            {
+                case PlayerState.Alive:
+                    {
+                        MovePlayer();
+                        break;
+                    }
+                case PlayerState.Dead:
+                    {
+                        break;
+                    }
             }
         }
 
@@ -166,29 +240,7 @@ namespace BTAPlayer
             }
         }
 
-        private void SpeedControl()
-        {
-            var flatVel
-                = new Vector3(_view.PlayerRb.velocity.x, 0f, _view.PlayerRb.velocity.z);
-
-            if (flatVel.magnitude > _data.MoveSpeed)
-            {
-                Vector3 limitedVel = flatVel.normalized * _data.MoveSpeed;
-                _view.PlayerRb.velocity = new Vector3(limitedVel.x, _view.PlayerRb.velocity.y, limitedVel.z);
-            }
-        }
-
-        private void Jump()
-        {
-            _view.PlayerRb.velocity = new Vector3(_view.PlayerRb.velocity.x, 0f, _view.PlayerRb.velocity.z);
-
-            _view.PlayerRb.AddForce(_view.SelfTransform.up * _data.JumpForce, ForceMode.Impulse);
-        }
-
-        private void ResetJump()
-        {
-            _readyToJump = true;
-        }
+        #endregion
 
         #region IDisposable
 

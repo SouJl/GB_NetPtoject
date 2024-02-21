@@ -1,5 +1,5 @@
-﻿using Abstraction;
-using Configs;
+﻿using Configs;
+using Enumerators;
 using UnityEngine;
 
 namespace BTAPlayer
@@ -20,7 +20,11 @@ namespace BTAPlayer
 
         private float _resetJumpCount;
 
+        private PlayerState _state;
+
         public string PlayerId { get; private set; }
+
+        public PlayerState State => _state;
 
         private float _currentHealth;
         public float CurrentHealth
@@ -50,6 +54,7 @@ namespace BTAPlayer
         }
 
         public float DamageDistance => _data.DamageDistance;
+        
         public PlayerClientController(
             string playerId,
             PlayerConfig data,
@@ -67,6 +72,8 @@ namespace BTAPlayer
 
             _readyToJump = true;
             _isResetJump = false;
+
+            _state = PlayerState.Alive;
         }
 
         public void ChangeHealthValue(float value)

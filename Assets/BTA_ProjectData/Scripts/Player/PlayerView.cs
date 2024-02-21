@@ -91,8 +91,6 @@ namespace BTAPlayer
             {
                 var resultHealth = _player.CurrentHealth - damage.Value;
 
-                _playerRb.AddForce(damage.Force);
-
                 photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.AllViaServer, new object[] { photonView.ViewID, resultHealth });
             }
         }

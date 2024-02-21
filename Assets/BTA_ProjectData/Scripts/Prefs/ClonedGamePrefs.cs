@@ -6,14 +6,12 @@ namespace Prefs
 {
     public class ClonedGamePrefs : IGamePrefs
     {
-        private const string clonedUserId = "476DB455EF4F838A";
         private const string clonedUserName = "ClonedTester";
         private const string clonedUserPassword = "000000";
 
         private GameState _gameState;
 
         private bool _isSettedGameName;
-        private UserPrefs _userPrefs;
         private string _settedGamName;
 
         public string PlayFabId { get; set; }
@@ -56,7 +54,11 @@ namespace Prefs
 
         public IGameUser GetUser()
         {
-            return _userPrefs;
+            return new BaseGameUser
+            {
+                Name = clonedUserName,
+                Password = clonedUserPassword
+            };
         }
 
         public void LoadPlayer()

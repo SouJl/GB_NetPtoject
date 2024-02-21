@@ -3,6 +3,7 @@ using Photon.Pun;
 using UnityEngine.AI;
 using UnityEngine;
 using Enumerators;
+using System;
 
 namespace Enemy
 {
@@ -24,6 +25,8 @@ namespace Enemy
         protected float _deltaTime;
 
         public abstract EnemyType Type { get; }
+
+        public abstract event Action<EnemyBaseController> OnDestroy; 
 
         private void Awake()
         {

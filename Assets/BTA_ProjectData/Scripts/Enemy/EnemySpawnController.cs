@@ -2,10 +2,12 @@
 using Configs;
 using Enumerators;
 using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Enemy
 {
@@ -42,8 +44,37 @@ namespace Enemy
         [SerializeField]
         private List<Transform> _sniperSpawnPoints;
 
+        private List<EnemyBaseController> _enemyCollection = new();
 
         private List<IPlayerController> _availablePlayers = new();
+
+        private int _maxEnemies;
+        private int _currentEnemies;
+
+        public event Action AllEnemiesDestored;
+
+        private void Awake()
+        {
+            _maxEnemies = GetMaxSpawnedEnemies();
+            _currentEnemies = _maxEnemies;
+        }
+
+        private int GetMaxSpawnedEnemies()
+        {
+            int result = 0;
+            
+            foreach(var wave in _waves.Collection)
+            {
+                foreach(var enemyWave in wave.Enemies)
+                {
+                    result += enemyWave.Count;
+                }
+            }
+
+            Debug.Log($"Max enemies = {result}");
+
+            return result;
+        }
 
         public void AddPlayer(IPlayerController player)
         {
@@ -132,8 +163,15 @@ namespace Enemy
 
         private void SpawnGunner(Transform spawnPoint)
         {
-            PhotonNetwork.Instantiate(_enemyGunnerPrefab.name, spawnPoint.position, Quaternion.identity, 0, new object[] { });
+            var go = PhotonNetwork.Instantiate(_enemyGunnerPrefab.name, spawnPoint.position, Quaternion.identity, 0, new object[] { });
+            
+            var enemy = go.GetComponent<EnemyBaseController>();
+
+            enemy.OnDestroy += EnemyDestroed;
+
+            _enemyCollection.Add(enemy);
         }
+
 
         private void SpawnSwarm(Transform spawnPoint)
         {
@@ -141,8 +179,28 @@ namespace Enemy
 
             var spawnPos = spawnPoint.position + new Vector3(randomSpawnPos.x, 0, randomSpawnPos.y);
 
-            PhotonNetwork.Instantiate(_enemySwarmPrefab.name, spawnPos, Quaternion.identity, 0, new object[] { });
+            var go  = PhotonNetwork.Instantiate(_enemySwarmPrefab.name, spawnPos, Quaternion.identity, 0, new object[] { });
+
+            var enemy = go.GetComponent<EnemyBaseController>();
+
+            enemy.OnDestroy += EnemyDestroed;
+
+            _enemyCollection.Add(enemy);
         }
+
+        private void EnemyDestroed(EnemyBaseController enemy)
+        {
+            var currentEnemies = _currentEnemies;
+
+            enemy.OnDestroy -= EnemyDestroed;
+
+            _enemyCollection.Remove(enemy);
+
+            currentEnemies--;
+
+            photonView.RPC(nameof(UpdateEnemiesCount), RpcTarget.AllViaServer, new object[] { currentEnemies });
+        }
+
 
 
 #if UNITY_EDITOR
@@ -173,6 +231,18 @@ namespace Enemy
 
 
         }
+
+        [PunRPC]
+        public void UpdateEnemiesCount(int count)
+        {
+            _currentEnemies = count;
+
+            if (_currentEnemies <= 0)
+            {
+                AllEnemiesDestored?.Invoke();
+            }
+        }
+
 #endif
     }
 }

@@ -2,6 +2,7 @@
 using Configs;
 using Enumerators;
 using Photon.Pun;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -26,6 +27,8 @@ namespace Enemy
         private EnemyState _currentState;
 
         public override EnemyType Type => EnemyType.Gunner;
+
+        public override event Action<EnemyBaseController> OnDestroy;
 
         public float CurrentHealth
         {
@@ -169,17 +172,21 @@ namespace Enemy
 
         private float _deadDelayProgress;
 
+
         private void ExecuteDeadState(float deltaTime)
         {
             _deadDelayProgress += deltaTime;
 
             if (_deadDelayProgress > _config.DeadDelay)
             {
-                _deadDelayProgress = 0; 
+                _deadDelayProgress = 0;
+
+                OnDestroy?.Invoke(this);
 
                 PhotonNetwork.InstantiateRoomObject($"Effects/{_deathEffecet.name}", transform.position, transform.rotation);
 
                 PhotonNetwork.Destroy(gameObject);
+
             }
         }
 

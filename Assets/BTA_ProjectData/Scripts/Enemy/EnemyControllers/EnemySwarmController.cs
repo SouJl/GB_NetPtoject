@@ -29,6 +29,8 @@ namespace Enemy
         private Vector3 _currentTargetPos;
 
         public override EnemyType Type => EnemyType.Swarm;
+        
+        public override event Action<EnemyBaseController> OnDestroy;
 
         public float CurrentHealth
         {

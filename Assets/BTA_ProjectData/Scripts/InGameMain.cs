@@ -43,6 +43,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     private EnemySpawnController _enemySpawner;
     [SerializeField]
     private CollisionDetector _centralRoomCollision;
+    [SerializeField]
+    private CollisionDetector _storageRoomCollision;
 
     private Camera _mainCamera;
     private List<IPlayerController> _playerControllers = new List<IPlayerController>();
@@ -52,6 +54,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     private IGamePrefs _gamePrefs;
 
     private int _mainTaskId;
+    private int _killEnemyTaskId;
 
     private void Awake()
     {
@@ -62,14 +65,6 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _dataServerService = new DataServerService();
 
         Subscribe();
-    }
-
-    private void SomoneEnterCentralRoom(Collider coollider)
-    {
-        if (coollider.gameObject.tag == "Player")
-        {
-            TaskManager.TaskCompeleted(_mainTaskId);
-        }
     }
 
     private void Start()
@@ -166,8 +161,6 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         _playerControllers.Add(playerController);
 
-        SpawnEmemy();
-
         _mainTaskId = TaskManager.AddNewTask("REACH CENTRAL ROOM");
     }
 
@@ -183,7 +176,12 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _gameUI.OnExitGame += ExitFromGame;
 
         _centralRoomCollision.OnEnter += SomoneEnterCentralRoom;
+        _storageRoomCollision.OnEnter += SomoneEnterStorageRoom;
+
+        _enemySpawner.AllEnemiesDestored += AllEnemyDead;
     }
+
+
 
     private void Unsubscribe()
     {
@@ -195,6 +193,33 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _gameUI.OnExitGame -= ExitFromGame;
 
         _centralRoomCollision.OnEnter -= SomoneEnterCentralRoom;
+        _storageRoomCollision.OnEnter -= SomoneEnterStorageRoom;
+
+        _enemySpawner.AllEnemiesDestored -= AllEnemyDead;
+    }
+
+    private void SomoneEnterCentralRoom(Collider coollider)
+    {
+        if (coollider.gameObject.tag == "Player")
+        {
+            TaskManager.TaskCompeleted(_mainTaskId);
+        }
+    }
+
+    private void SomoneEnterStorageRoom(Collider coollider)
+    {
+        if (coollider.gameObject.tag == "Player")
+        {
+            _killEnemyTaskId =  TaskManager.AddNewTask("KILL ALL ENEMIES!");
+            SpawnEmemy();
+
+            _storageRoomCollision.gameObject.SetActive(false);
+        }
+    }
+
+    private void AllEnemyDead()
+    {
+        TaskManager.TaskCompeleted(_killEnemyTaskId);
     }
 
     private void PlayerLeftedGame(Player player)
@@ -216,8 +241,6 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _gameUI.PlayerViewUI.ChangePlayerLevel(userData.CurrentLevel);
 
         _playerControllers[0].PlayerLevel = userData.CurrentLevel;
-
-        SpawnEmemy();
 
         _mainTaskId = TaskManager.AddNewTask("REACH CENTRAL ROOM");
     }

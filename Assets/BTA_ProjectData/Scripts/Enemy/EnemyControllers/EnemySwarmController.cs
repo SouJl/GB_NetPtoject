@@ -116,6 +116,8 @@ namespace Enemy
                                         Value = _config.DamageValue,
                                     });
 
+                                    OnDestroy?.Invoke(this, string.Empty);
+
                                     ChangeState(EnemyState.Dead);
 
                                     return;

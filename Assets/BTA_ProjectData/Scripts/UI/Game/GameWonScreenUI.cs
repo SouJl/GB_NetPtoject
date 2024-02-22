@@ -97,7 +97,7 @@ namespace UI
             _levelProgress.value
                     = Mathf.MoveTowards(_levelProgress.value, _progressPartition[_partIndex], Time.deltaTime * _speedProgress);
             
-            _earnedPoints = Mathf.MoveTowards(_earnedPoints, 0, Time.deltaTime * _speedProgress);
+            _earnedPoints = Mathf.MoveTowards(_earnedPoints, 0, Time.deltaTime * _speedProgress * 2);
 
             _earnerExperience.text = Mathf.Round(_earnedPoints).ToString();
 

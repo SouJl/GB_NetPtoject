@@ -3940,7 +3940,7 @@ ParticleSystem:
       properties: 0
       emitProbability: 1
   LightsModule:
-    enabled: 0
+    enabled: 1
     ratio: 0
     light: {fileID: 0}
     randomDistribution: 1
@@ -4991,7 +4991,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e618113e62d26944daaca02af66e1005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destroyDelay: 5
+  _destroyDelay: 4
 --- !u!114 &4220174475237668839
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -59,8 +59,6 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     private bool _isReady;
     private bool _isGameOver;
 
-    private int _alivePlayersCount;
-
     private void Awake()
     {
         Random.InitState(_randomSeed);
@@ -125,6 +123,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         else
         {
             TestGameStart();
+
+            _isReady = true;
         }
     }
 
@@ -151,7 +151,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void TestGameStart()
     {
-        _alivePlayersCount = _netManager.CurrentRoom.PlayerCount;
+        GameStateManager.PlayersCount = _netManager.CurrentRoom.PlayerCount;
 
         var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
 
@@ -180,7 +180,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
                      _mainCamera);
 
         playerController.OnDead += PlayerDead;
-        playerController.OnDead += PlayerRevive;
+        playerController.OnRevive += PlayerRevive;
 
         _enemySpawner.AddPlayer(playerController);
 
@@ -346,7 +346,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
                 _mainCamera);
 
         playerController.OnDead += PlayerDead;
-        playerController.OnDead += PlayerRevive;
+        playerController.OnRevive += PlayerRevive;
 
         _enemySpawner.AddPlayer(playerController);
 
@@ -374,9 +374,11 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void PlayerRevive()
     {
-        _alivePlayersCount++;
+        GameStateManager.PlayersCount++;
 
-       // photonView.RPC(nameof(UppdatePlayersCount), RpcTarget.Others, new object[] { _alivePlayersCount });
+        Debug.Log($"PlayersCount = {GameStateManager.PlayersCount}");
+
+        photonView.RPC(nameof(UpdatePlayersCount), RpcTarget.Others, new object[] { GameStateManager.PlayersCount });
     }
 
     [PunRPC]
@@ -420,7 +422,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
                 = new PlayerClientController(player.UserId, _playerConfig, playerView, _mainCamera);
 
             playerController.OnDead += PlayerDead;
-            playerController.OnDead += PlayerRevive;
+            playerController.OnRevive += PlayerRevive;
 
             _playerControllers.Add(playerController);
 

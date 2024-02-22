@@ -75,6 +75,8 @@ namespace GameLobby
 
         private void JoinRoom(string roomName)
         {
+            _lobbyPrefs.ClickSound.Play();
+
             var room = _lobbyRoomsInfoCollection.Find(r => r.Name == roomName);
 
             if (!room.IsOpen)
@@ -93,11 +95,15 @@ namespace GameLobby
 
         private void OpenHostGameMenu()
         {
+            _lobbyPrefs.ClickSound.Play();
+
             _lobbyPrefs.ChangeState(GameLobbyState.CreateRoom);
         }
 
         private void Close()
         {
+            _lobbyPrefs.ClickSound.Play();
+
             _lobbyPrefs.ChangeState(GameLobbyState.Exit);
         }
 

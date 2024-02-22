@@ -27,7 +27,8 @@ namespace Prefs
         public string SettedGamName => _settedGamName;
 
         public event Action<GameState> OnGameStateChange;
-
+        public AudioSource BacgroundMusic { get; set; }
+        public AudioSource ClickSound { get; set; }
         public GamePrefs()
         {
             _userPrefs = new UserPrefs();

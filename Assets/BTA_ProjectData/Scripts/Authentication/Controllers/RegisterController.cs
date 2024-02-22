@@ -59,6 +59,8 @@ namespace Authentication
 
         private void RegisterAccount(UserAccountData data)
         {
+            _prefs.ClickSound.Play();
+
             _prefs.SetUserdata(new BaseGameUser
             {
                 Name = data.Name,
@@ -70,6 +72,8 @@ namespace Authentication
 
         private void ReturnBack()
         {
+            _prefs.ClickSound.Play();
+
             _prefs.ChangeState(AuthenticationState.DataNotFound);
         }
 

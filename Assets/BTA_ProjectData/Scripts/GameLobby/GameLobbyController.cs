@@ -40,6 +40,8 @@ namespace GameLobby
 
             _lobbyPrefs = new GameLobbyPrefs(user.Name);
 
+            _lobbyPrefs.ClickSound = _gamePrefs.ClickSound;
+
             _lobbyLifeCycle = new LifeCycleController();
 
             Subscribe();

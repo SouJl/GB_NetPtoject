@@ -47,6 +47,8 @@ namespace Authentication
 
         private void SigIn()
         {
+            _prefs.ClickSound.Play();
+
             _prefs.SetUserdata(new BaseGameUser
             {
                 Name = _view.Name,
@@ -58,6 +60,8 @@ namespace Authentication
 
         private void Register()
         {
+            _prefs.ClickSound.Play();
+
             _prefs.ChangeState(Enumerators.AuthenticationState.Register);
         }
 

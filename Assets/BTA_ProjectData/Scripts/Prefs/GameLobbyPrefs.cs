@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using Enumerators;
 using System;
+using UnityEngine;
 
 namespace Prefs
 {
@@ -17,7 +18,8 @@ namespace Prefs
         public CreationRoomData CreationData => _creationData;
 
         public event Action<GameLobbyState> OnStateChange;
-        
+        public AudioSource ClickSound { get; set; }
+
         public GameLobbyPrefs(string userNickName)
         {
             _nickName = userNickName;

@@ -44,6 +44,9 @@ namespace Enemy
         [SerializeField]
         private List<Transform> _sniperSpawnPoints;
 
+        [SerializeField]
+        private AudioSource _fightMusic;
+
         private List<EnemyBaseController> _enemyCollection = new();
 
         private List<IPlayerController> _availablePlayers = new();
@@ -89,7 +92,16 @@ namespace Enemy
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
+            StartCoroutine(StartFightMusicDealy());
+
             StartCoroutine(SpawnWaves());
+        }
+
+        private IEnumerator StartFightMusicDealy()
+        {
+            yield return new WaitForSeconds(0.75f);
+
+            _fightMusic.Play();
         }
 
         private IEnumerator SpawnWaves()
@@ -239,6 +251,7 @@ namespace Enemy
 
             if (_currentEnemies <= 0)
             {
+                _fightMusic.Stop();
                 AllEnemiesDestored?.Invoke();
             }
         }

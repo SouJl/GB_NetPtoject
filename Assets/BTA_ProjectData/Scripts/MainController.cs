@@ -35,7 +35,9 @@ public class MainController : IDisposable
         GameConfig gameConfig,
         LifeCycleController lifeCycle,
         GameNetManager netManager,
-        StateTransition stateTransition)
+        StateTransition stateTransition,
+        AudioSource backgroundMusic,
+        AudioSource clickSound)
     {
         _placeForUi = placeForUi;
         _gameConfig = gameConfig;
@@ -55,6 +57,9 @@ public class MainController : IDisposable
 #else
         _gamePrefs = new GamePrefs();
 #endif
+        _gamePrefs.BacgroundMusic = backgroundMusic;
+        _gamePrefs.ClickSound = clickSound;
+
         _dataServerService = new DataServerService(_gameConfig);
 
         _netManager.Init(gameConfig);
@@ -111,6 +116,11 @@ public class MainController : IDisposable
                 }
             case GameState.MainMenu:
                 {
+                    if(!_gamePrefs.BacgroundMusic.isPlaying)
+                    {
+                        _gamePrefs.BacgroundMusic.Play();
+                    }
+
                     _mainMenuController
                         = new MainMenuController(_placeForUi, _gamePrefs, _netManager, _stateTransition);
 

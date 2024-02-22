@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using Enumerators;
 using System;
+using UnityEngine;
 
 namespace Prefs
 {
@@ -12,6 +13,8 @@ namespace Prefs
         public IGameUser UserData { get; private set; }
 
         public IGamePlayer PlayerData { get; private set; }
+        
+        public AudioSource ClickSound { get; set; }
 
         public AuthenticationPrefs()
         {

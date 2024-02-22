@@ -30,6 +30,8 @@ namespace Authentication
 
             _prefs = new AuthenticationPrefs();
 
+            _prefs.ClickSound = _gamePrefs.ClickSound;
+            
             _prefs.OnStateChange += StateChanged;
 
             if (_gamePrefs.IsUserDataExist)
@@ -44,6 +46,8 @@ namespace Authentication
             {
                 _prefs.ChangeState(AuthenticationState.DataNotFound);
             }
+
+            _gamePrefs.BacgroundMusic.Stop();
         }
 
         private void StateChanged(AuthenticationState state)

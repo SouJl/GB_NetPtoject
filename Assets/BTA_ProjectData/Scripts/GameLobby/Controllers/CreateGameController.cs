@@ -61,12 +61,16 @@ namespace GameLobby
 
         private void CreateRoom(CreationRoomData creationData)
         {
+            _lobbyPrefs.ClickSound.Play();
+
             _lobbyPrefs.SetRoomData(creationData, true);
             _stateTransition.Invoke(() => _lobbyPrefs.ChangeState(GameLobbyState.InRoom));
         }
 
         private void BackToLobbyBrowse()
         {
+            _lobbyPrefs.ClickSound.Play();
+
             _lobbyPrefs.ChangeState(GameLobbyState.Browse);
         }
 

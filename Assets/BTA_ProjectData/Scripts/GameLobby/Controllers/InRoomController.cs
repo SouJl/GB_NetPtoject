@@ -97,6 +97,8 @@ namespace GameLobby
 
         private void StartGame()
         {
+            _lobbyPrefs.ClickSound.Play();
+
             var player = _playersInRoom.Find(p => p.PlayerData.NickName == _lobbyPrefs.NickName);
 
             if (!player.PlayerData.IsMasterClient)
@@ -136,6 +138,8 @@ namespace GameLobby
 
         private void ExitFromRoom()
         {
+            _lobbyPrefs.ClickSound.Play();
+
             if (_netManager.CurrentPlayer.IsMasterClient)
             {
                 for (int i = 0; i < _playersInRoom.Count; i++)

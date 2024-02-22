@@ -46,6 +46,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     [SerializeField]
     private CollisionDetector _storageRoomCollision;
 
+
     private Camera _mainCamera;
     private List<IPlayerController> _playerControllers = new List<IPlayerController>();
 
@@ -131,6 +132,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void JoinedInRoom(Room room)
     {
+
         var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
 
         Vector3 spawnPosition = _spawnPoints[0].position;

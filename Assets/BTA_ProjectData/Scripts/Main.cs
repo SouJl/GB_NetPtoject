@@ -13,6 +13,10 @@ public class Main : MonoBehaviour
     private GameNetManager _netManager;
     [SerializeField]
     private StateTransition _stateTransition;
+    [SerializeField]
+    private AudioSource _backgroundMusic;
+    [SerializeField]
+    private AudioSource _clickSound;
 
     private float _deltaTime;
 
@@ -30,7 +34,9 @@ public class Main : MonoBehaviour
                  _gameConfig,
                  _gameLifecycle,
                  _netManager,
-                 _stateTransition);
+                 _stateTransition,
+                 _backgroundMusic,
+                 _clickSound);
     }
 
     private void Start()

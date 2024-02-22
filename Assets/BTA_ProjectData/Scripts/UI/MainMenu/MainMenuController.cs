@@ -63,6 +63,8 @@ namespace UI
 
         private void SwitchUser()
         {
+            _gamePrefs.ClickSound.Play();
+
             _gamePrefs.DeleteData();
 
             _netManager.Disconnect();
@@ -73,11 +75,15 @@ namespace UI
 
         private void JoinGame()
         {
+            _gamePrefs.ClickSound.Play();
+
             _gamePrefs.ChangeGameState(Enumerators.GameState.Lobby);
         }
 
         private void ConnectToGame(string name)
         {
+            _gamePrefs.ClickSound.Play();
+
             _gamePrefs.SetGame(name);
 
             _gamePrefs.ChangeGameState(Enumerators.GameState.Lobby);
@@ -85,6 +91,8 @@ namespace UI
 
         private void ExitGame()
         {
+            _gamePrefs.ClickSound.Play();
+
             _gamePrefs.ChangeGameState(Enumerators.GameState.Exit);
         }
 

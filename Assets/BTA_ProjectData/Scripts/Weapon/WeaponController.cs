@@ -17,6 +17,8 @@ namespace Weapon
         private Transform _muzzle;
         [SerializeField]
         private ParticleSystem _muzzleEffect;
+        [SerializeField]
+        private AudioSource _fireSource;
 
         private bool _isInitialize = false;
 
@@ -115,6 +117,7 @@ namespace Weapon
 
         private void OnGunShoot()
         {
+            _fireSource.Play();
             _muzzleEffect.Play();
         }
 

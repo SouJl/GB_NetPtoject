@@ -22,6 +22,10 @@ namespace Tools
         private Animator _rightDoorAnimator;
         [SerializeField]
         private CollisionDetector _collisionDetector;
+        [SerializeField]
+        private AudioSource _gateOpenSound;
+        [SerializeField]
+        private AudioSource _gateCloseSound;
 
         private GateState _state;
         private bool _isOppenerExist;
@@ -83,6 +87,9 @@ namespace Tools
             _rightDoorAnimator.SetBool(StateTrigger, true);
 
             _state = GateState.Open;
+
+            _gateCloseSound.Stop();
+            _gateOpenSound.Play();
         }
 
         [PunRPC]
@@ -95,6 +102,9 @@ namespace Tools
             _rightDoorAnimator.SetBool(StateTrigger, false);
 
             _state = GateState.Close;
+
+            _gateOpenSound.Stop();
+            _gateCloseSound.Play();
         }
 
 

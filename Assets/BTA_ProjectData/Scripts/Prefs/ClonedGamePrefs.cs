@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using Enumerators;
 using System;
+using UnityEngine;
 
 namespace Prefs
 {
@@ -20,7 +21,10 @@ namespace Prefs
         public bool IsPlayerDataExist => true;
         public bool IsSettedGameName => _isSettedGameName;
         
-        public string SettedGamName => _settedGamName; 
+        public string SettedGamName => _settedGamName;
+
+        public AudioSource BacgroundMusic { get; set; }
+        public AudioSource ClickSound { get; set; }
 
         public event Action<GameState> OnGameStateChange;
 

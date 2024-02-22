@@ -1,6 +1,7 @@
 ﻿using Abstraction;
 using Enumerators;
 using System;
+using UnityEngine;
 
 namespace Prefs
 {
@@ -8,6 +9,8 @@ namespace Prefs
     {
         public string PlayFabId { get; set; }
 
+        public AudioSource BacgroundMusic { get; set; }
+        public AudioSource ClickSound { get; set; }
         public bool IsUserDataExist { get; }
         public bool IsPlayerDataExist { get; }
 

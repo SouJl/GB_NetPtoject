@@ -23,6 +23,8 @@ namespace UI
 
         [Header("Info UI Seconds")]
         [SerializeField]
+        private TMP_Text _killedEnemies;
+        [SerializeField]
         private TMP_Text _whaitText;
         [SerializeField]
         private CountDownTimer _timer;
@@ -36,6 +38,8 @@ namespace UI
             _playerLevel.text = "";
 
             _weaponMagSize.text = weaponMagSize.ToString();
+            
+            ChangeKilledEnemies(0);
 
             ChangeCurrentAmmo(weaponMagSize);
 
@@ -84,5 +88,10 @@ namespace UI
 
         public void StopExitCountDown() 
             => _timer.StopTimer();
+
+        public void ChangeKilledEnemies(int value)
+        {
+            _killedEnemies.text = value.ToString();
+        }
     }
 }

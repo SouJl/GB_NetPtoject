@@ -27,6 +27,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     [SerializeField]
     private float _extractionTime = 5f;
     [SerializeField]
+    private int _perEnemyPoints = 10;
+    [SerializeField]
     private int _randomSeed = 1111;
     [SerializeField]
     private GameObject _playerMasterPrefab;
@@ -145,7 +147,15 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void JoinedInRoom(Room room)
     {
+
         TestGameStart();
+
+        _gameUI.InitUI();
+
+        _gameUI.PlayerViewUI.ChangePlayerLevel(0);
+
+        _gameUI.GameWonScreen.InitUI(0, 0);
+        _playerControllers[0].PlayerLevel = 0;
 
         _isReady = true;
     }
@@ -195,7 +205,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     #endregion
 
     private void Subscribe()
-    { 
+    {
         _netManager.OnPlayerLeftFromRoom += PlayerLeftedGame;
         _dataServerService.OnGetUserData += UserDataLoaded;
         _netManager.OnDisconnectedFromServer += Disconnected;
@@ -208,6 +218,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _storageRoomCollision.OnEnter += SomoneEnterStorageRoom;
 
         _enemySpawner.AllEnemiesDestored += AllEnemyDead;
+        _enemySpawner.OnDestroyedByPlayer += EnemyKilledByPlayer;
     }
 
     private void Unsubscribe()
@@ -215,7 +226,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _netManager.OnPlayerLeftFromRoom -= PlayerLeftedGame;
         _dataServerService.OnGetUserData -= UserDataLoaded;
         _netManager.OnDisconnectedFromServer -= Disconnected;
-        
+
         _gameUI.OnRestartGame -= RestartGame;
         _gameUI.OnReturnMainMenu -= ReturnToMainMenu;
         _gameUI.OnExitGame -= ExitFromGame;
@@ -224,10 +235,18 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _storageRoomCollision.OnEnter -= SomoneEnterStorageRoom;
 
         _enemySpawner.AllEnemiesDestored -= AllEnemyDead;
+        _enemySpawner.OnDestroyedByPlayer -= EnemyKilledByPlayer;
     }
+
+    private bool _isWaiting;
 
     private void SomoneEnterCentralRoom(Collider coollider)
     {
+        if (!_isReady)
+            return;
+        if (_isWaiting)
+            return;
+
         if (coollider.gameObject.tag == "Player")
         {
             TaskManager.TaskCompeleted(_mainTaskId);
@@ -238,13 +257,55 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private IEnumerator WaitForExtraction()
     {
+        _isWaiting = true;
+
         _gameUI.PlayerViewUI.StartExitCountDown(_extractionTime);
 
         yield return new WaitForSeconds(_extractionTime);
 
         _gameUI.PlayerViewUI.StopExitCountDown();
 
+        PlayerMasterController masterPlayer = null;
+
+        for (int i = 0; i < _playerControllers.Count; i++)
+        {
+            if(_playerControllers[i] is PlayerMasterController)
+            {
+                masterPlayer = _playerControllers[i] as PlayerMasterController;
+                break;
+            }
+        }
+
+        if(masterPlayer != null)
+        {
+            masterPlayer.PlayerProgress += masterPlayer.KilledEnemies * _perEnemyPoints;
+
+            _gameUI.GameWonScreen.UpdateProgression(masterPlayer.PlayerProgress);
+
+            UpdateDataOnServer(masterPlayer.PlayerLevel, masterPlayer.PlayerProgress);
+        }
+        
         photonView.RPC(nameof(ExtractionPlayers), RpcTarget.All);
+    }
+
+    private void UpdateDataOnServer(int currentLevel, float progress)
+    {
+        var currentProgression = progress;
+
+        while (currentProgression / 100 >= 1)
+        {
+            currentProgression -= 100;
+
+            currentLevel++;
+        }
+
+        var playerData = new Dictionary<string, string>()
+        { 
+            {BTAConst.USER_GAME_LVL, $"{currentLevel}"},
+            {BTAConst.USER_LVL_PROGRESS, $"{currentProgression}"},
+        };
+
+        _dataServerService.SetPlayerData(playerData);
     }
 
     [PunRPC]
@@ -259,7 +320,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     {
         if (coollider.gameObject.tag == "Player")
         {
-            _killEnemyTaskId =  TaskManager.AddNewTask("KILL ALL ENEMIES!");
+            _killEnemyTaskId = TaskManager.AddNewTask("KILL ALL ENEMIES!");
             SpawnEmemy();
 
             _storageRoomCollision.gameObject.SetActive(false);
@@ -269,6 +330,20 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     private void AllEnemyDead()
     {
         TaskManager.TaskCompeleted(_killEnemyTaskId);
+    }
+
+    private void EnemyKilledByPlayer(string playerId)
+    {
+        Debug.Log(playerId);
+     
+        for (int i = 0; i < _playerControllers.Count; i++)
+        {
+            if (_playerControllers[i].PlayerId == playerId)
+            {
+                _playerControllers[i].KilledEnemy();
+            }
+        }
+
     }
 
     private void PlayerLeftedGame(Player player)
@@ -287,9 +362,14 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         SpawnPlayer();
 
+        _gameUI.InitUI();
+
         _gameUI.PlayerViewUI.ChangePlayerLevel(userData.CurrentLevel);
 
+        _gameUI.GameWonScreen.InitUI(userData.CurrentLevel, userData.CurrentLevelProgress);
+        
         _playerControllers[0].PlayerLevel = userData.CurrentLevel;
+        _playerControllers[0].PlayerProgress = userData.CurrentLevelProgress;
 
         _mainTaskId = TaskManager.AddNewTask("REACH CENTRAL ROOM");
 
@@ -388,7 +468,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     private void PlayerDead()
     {
         GameStateManager.PlayersCount--;
-        
+
         Debug.Log($"PlayersCount = {GameStateManager.PlayersCount}");
 
         photonView.RPC(nameof(UpdatePlayersCount), RpcTarget.Others, new object[] { GameStateManager.PlayersCount });
@@ -407,7 +487,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     private void UpdatePlayersCount(int value)
     {
         GameStateManager.PlayersCount = value;
-        
+
         Debug.Log($"PlayersCount = {GameStateManager.PlayersCount}");
     }
 
@@ -501,7 +581,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         if (_isPaused)
             return;
-        
+
         if (!_isReady)
             return;
 
@@ -532,7 +612,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         for (int i = 0; i < _playerControllers.Count; i++)
         {
             var player = _playerControllers[i];
-            
+
             player.OnDead -= PlayerDead;
             player.OnDead -= PlayerRevive;
         }

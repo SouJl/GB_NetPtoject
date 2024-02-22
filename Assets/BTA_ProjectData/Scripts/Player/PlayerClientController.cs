@@ -57,6 +57,8 @@ namespace BTAPlayer
             }
         }
 
+        public float PlayerProgress { get; set; }
+
         public float DamageDistance => _data.DamageDistance;
         public float MaxHealth => _data.MaxHealth;
 
@@ -101,6 +103,10 @@ namespace BTAPlayer
             { 
                 OnRevive?.Invoke();
             }
+        }
+        public void KilledEnemy()
+        {
+
         }
 
         public void ExecuteUpdate(float deltaTime)

@@ -58,6 +58,8 @@ namespace Enemy
 
         public event Action AllEnemiesDestored;
 
+        public event Action<string> OnDestroyedByPlayer;
+
         private void Awake()
         {
             _maxEnemies = GetMaxSpawnedEnemies();
@@ -212,7 +214,7 @@ namespace Enemy
             _enemyCollection.Add(enemy);
         }
 
-        private void EnemyDestroed(EnemyBaseController enemy)
+        private void EnemyDestroed(EnemyBaseController enemy, string destroyerId)
         {
             var currentEnemies = _currentEnemies;
 
@@ -221,10 +223,17 @@ namespace Enemy
             _enemyCollection.Remove(enemy);
 
             currentEnemies--;
-            
+
             photonView.RPC(nameof(UpdateEnemiesCount), RpcTarget.AllViaServer, new object[] { currentEnemies });
+
+            photonView.RPC(nameof(OnAllSyncDestroyedByPlayer), RpcTarget.AllViaServer, new object[] { destroyerId });
         }
 
+        [PunRPC]
+        private void OnAllSyncDestroyedByPlayer(string id)
+        {
+            OnDestroyedByPlayer?.Invoke(id);
+        }
 
         [PunRPC]
         public void UpdateEnemiesCount(int count)

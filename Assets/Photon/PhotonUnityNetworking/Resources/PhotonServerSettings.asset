@@ -65,6 +65,8 @@ MonoBehaviour:
   - RestartScene
   - UpdatePlayersCount
   - ExtractionPlayers
+  - UpdateEnemyKilledByPlayer
+  - OnAllSyncDestroyedByPlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -24,7 +24,7 @@ namespace UI
         private bool _isOnPause;
         private bool _isGameOver;
         public PlayerViewUI PlayerViewUI => _playerView;
-
+        public GameWonScreenUI GameWonScreen => _gameWonScreen;
         public bool IsOnPause 
         { 
             get => _isOnPause;
@@ -45,7 +45,7 @@ namespace UI
             Subscribe();
         }
         
-        private void Start()
+        public void InitUI()
         {
             ShowPlayerUI();
 

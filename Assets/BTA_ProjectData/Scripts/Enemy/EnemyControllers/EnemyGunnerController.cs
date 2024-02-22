@@ -29,7 +29,7 @@ namespace Enemy
 
         public override EnemyType Type => EnemyType.Gunner;
 
-        public override event Action<EnemyBaseController> OnDestroy;
+        public override event Action<EnemyBaseController, string> OnDestroy;
 
         public float CurrentHealth
         {
@@ -182,12 +182,11 @@ namespace Enemy
             {
                 _deadDelayProgress = 0;
 
-                OnDestroy?.Invoke(this);
+                OnDestroy?.Invoke(this, string.Empty);
 
                 PhotonNetwork.InstantiateRoomObject($"Effects/{_deathEffecet.name}", transform.position, transform.rotation);
 
                 PhotonNetwork.Destroy(gameObject);
-
             }
         }
 

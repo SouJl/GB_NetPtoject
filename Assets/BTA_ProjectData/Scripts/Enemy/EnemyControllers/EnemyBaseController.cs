@@ -27,7 +27,7 @@ namespace Enemy
 
         public abstract EnemyType Type { get; }
 
-        public abstract event Action<EnemyBaseController> OnDestroy; 
+        public abstract event Action<EnemyBaseController, string> OnDestroy; 
 
         private void Awake()
         {

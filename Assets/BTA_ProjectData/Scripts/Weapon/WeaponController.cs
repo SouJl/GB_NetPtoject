@@ -20,6 +20,8 @@ namespace Weapon
         [SerializeField]
         private AudioSource _fireSource;
 
+        private string _holderId;
+
         private bool _isInitialize = false;
 
         private WeaponConfig _data;
@@ -40,9 +42,11 @@ namespace Weapon
 
         public event Action<int> OnAmmoChanged;
 
-        public void Init(WeaponConfig data)
+        public void Init(WeaponConfig data, string holderId)
         {
             _data = data;
+            
+            _holderId = holderId;
 
             CurrentAmmo = _data.MagSize;
             Subscribe();
@@ -97,6 +101,7 @@ namespace Weapon
                         var damageable = hitInfo.transform.GetComponent<IDamageable>();
                         damageable?.TakeDamage(new DamageData 
                         {
+                            HolderId = _holderId,
                             Value = _data.Damage,
                             Force = -hitInfo.normal * _data.DamageForce
                         });

@@ -61,6 +61,19 @@ namespace BTAPlayer
             }
         }
 
+        public float PlayerProgress { get; set; }
+
+        private int _killedEnemies;
+        public int KilledEnemies
+        {
+            get => _killedEnemies;
+            private set
+            {
+                _killedEnemies = value;
+                _gameSceneUI.PlayerViewUI.ChangeKilledEnemies(value);
+            }
+        } 
+
         public float DamageDistance => _data.DamageDistance;
 
         public float MaxHealth => _data.MaxHealth;
@@ -84,7 +97,9 @@ namespace BTAPlayer
             _view.Init(this, camera);
 
             var weaponData = data.WeaponData;
-            _view.Weapon.Init(weaponData);
+            
+            _view.Weapon.Init(weaponData, playerId);
+            
             _view.Weapon.OnAmmoChanged += WeponAmmoChanged;
 
             _gameSceneUI.PlayerViewUI.InitUI(_view.photonView.Owner.NickName, data.MaxHealth, weaponData.MagSize);
@@ -133,6 +148,12 @@ namespace BTAPlayer
 
             _state = state;
         }
+
+        public void KilledEnemy()
+        {
+            KilledEnemies++;
+        }
+
 
         #region In Update Behaviour
 

@@ -27,7 +27,7 @@ namespace Enemy
 
         public override EnemyType Type => EnemyType.Swarm;
         
-        public override event Action<EnemyBaseController> OnDestroy;
+        public override event Action<EnemyBaseController, string> OnDestroy;
 
         public float CurrentHealth
         {
@@ -131,8 +131,6 @@ namespace Enemy
                     }
                 case EnemyState.Dead:
                     {
-                        OnDestroy?.Invoke(this);
-
                         PhotonNetwork.InstantiateRoomObject($"Effects/{_deathEffecet.name}", transform.position, transform.rotation);
 
                         PhotonNetwork.Destroy(gameObject);
@@ -249,23 +247,26 @@ namespace Enemy
 
             CurrentHealth -= damage.Value;
 
-            if (CurrentHealth <= 0)
-            {
-                ChangeState(EnemyState.Dead);
-            }
-
-            photonView.RPC(nameof(UpdateHealthOnClient), RpcTarget.Others, new object[] { photonView.ViewID, CurrentHealth });
+            photonView.RPC(nameof(UpdateHealthOnClient), RpcTarget.AllViaServer, new object[] { photonView.ViewID, CurrentHealth, damage.HolderId });
         }
 
         #region PUNRPC_METHODS
 
         [PunRPC]
-        private void UpdateHealthOnClient(int id, float value)
+        private void UpdateHealthOnClient(int id, float value, string dealerId)
         {
             if (photonView.ViewID != id)
                 return;
 
             CurrentHealth = value;
+
+            if (CurrentHealth <= 0)
+            {
+
+                OnDestroy?.Invoke(this, dealerId);
+
+                ChangeState(EnemyState.Dead);
+            }
         }
 
         [PunRPC]

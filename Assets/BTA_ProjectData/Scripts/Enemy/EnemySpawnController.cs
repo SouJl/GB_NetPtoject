@@ -221,7 +221,7 @@ namespace Enemy
             _enemyCollection.Remove(enemy);
 
             currentEnemies--;
-
+            
             photonView.RPC(nameof(UpdateEnemiesCount), RpcTarget.AllViaServer, new object[] { currentEnemies });
         }
 

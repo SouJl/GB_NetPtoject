@@ -56,8 +56,10 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     private int _mainTaskId;
     private int _killEnemyTaskId;
 
+    private bool _isReady;
     private bool _isGameOver;
 
+    private int _alivePlayersCount;
 
     private void Awake()
     {
@@ -112,10 +114,18 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _gamePrefs = new GamePrefs();
 
         _gamePrefs.LoadUser();
-        _netManager.OnConnectedToServer += ConnectedToServer;
-        _netManager.OnJoinInLobby += JoindedInLobby;
-        _netManager.OnJoinInRoom += JoinedInRoom;
-        _netManager.Connect(_gamePrefs.GetUser().Name);
+
+        if (!_netManager.IsConnected)
+        {
+            _netManager.OnConnectedToServer += ConnectedToServer;
+            _netManager.OnJoinInLobby += JoindedInLobby;
+            _netManager.OnJoinInRoom += JoinedInRoom;
+            _netManager.Connect(_gamePrefs.GetUser().Name);
+        }
+        else
+        {
+            TestGameStart();
+        }
     }
 
     private void ConnectedToServer()
@@ -125,7 +135,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void JoindedInLobby()
     {
-        _netManager.CreateRoom(new Abstraction.CreationRoomData
+        _netManager.CreateRoom(new CreationRoomData
         {
             RoomName = "TestRoom",
             MaxPlayers = 5
@@ -134,6 +144,14 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void JoinedInRoom(Room room)
     {
+        TestGameStart();
+
+        _isReady = true;
+    }
+
+    private void TestGameStart()
+    {
+        _alivePlayersCount = _netManager.CurrentRoom.PlayerCount;
 
         var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
 
@@ -155,11 +173,14 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         var playerController
                  = new PlayerMasterController(
-                     _netManager.CurrentPlayer.UserId, 
-                     _playerConfig, 
-                     playerView, 
-                     _gameUI, 
+                     _netManager.CurrentPlayer.UserId,
+                     _playerConfig,
+                     playerView,
+                     _gameUI,
                      _mainCamera);
+
+        playerController.OnDead += PlayerDead;
+        playerController.OnDead += PlayerRevive;
 
         _enemySpawner.AddPlayer(playerController);
 
@@ -178,6 +199,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _dataServerService.OnGetUserData += UserDataLoaded;
         _netManager.OnDisconnectedFromServer += Disconnected;
 
+        _gameUI.OnRestartGame += RestartGame;
         _gameUI.OnReturnMainMenu += ReturnToMainMenu;
         _gameUI.OnExitGame += ExitFromGame;
 
@@ -187,14 +209,13 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _enemySpawner.AllEnemiesDestored += AllEnemyDead;
     }
 
-
-
     private void Unsubscribe()
     {
         _netManager.OnPlayerLeftFromRoom -= PlayerLeftedGame;
         _dataServerService.OnGetUserData -= UserDataLoaded;
         _netManager.OnDisconnectedFromServer -= Disconnected;
-
+        
+        _gameUI.OnRestartGame -= RestartGame;
         _gameUI.OnReturnMainMenu -= ReturnToMainMenu;
         _gameUI.OnExitGame -= ExitFromGame;
 
@@ -249,6 +270,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         _playerControllers[0].PlayerLevel = userData.CurrentLevel;
 
         _mainTaskId = TaskManager.AddNewTask("REACH CENTRAL ROOM");
+
+        _isReady = true;
     }
 
     private void Disconnected()
@@ -256,6 +279,14 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         Dispose();
 
         SceneManager.LoadScene(0);
+    }
+
+    private void RestartGame()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC(nameof(RestartScene), RpcTarget.AllViaServer);
+        }
     }
 
     private void ReturnToMainMenu()
@@ -285,6 +316,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void SpawnPlayer()
     {
+        GameStateManager.PlayersCount = _netManager.CurrentRoom.PlayerCount;
+
         var playerNum = _netManager.CurrentPlayer.ActorNumber - 1;
 
         Vector3 spawnPosition = _spawnPoints[0].position;
@@ -312,6 +345,9 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
                 _gameUI,
                 _mainCamera);
 
+        playerController.OnDead += PlayerDead;
+        playerController.OnDead += PlayerRevive;
+
         _enemySpawner.AddPlayer(playerController);
 
         _playerControllers.Add(playerController);
@@ -326,7 +362,39 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
            spawnPosition,
            rotation);
     }
-    
+
+    private void PlayerDead()
+    {
+        GameStateManager.PlayersCount--;
+        
+        Debug.Log($"PlayersCount = {GameStateManager.PlayersCount}");
+
+        photonView.RPC(nameof(UpdatePlayersCount), RpcTarget.Others, new object[] { GameStateManager.PlayersCount });
+    }
+
+    private void PlayerRevive()
+    {
+        _alivePlayersCount++;
+
+       // photonView.RPC(nameof(UppdatePlayersCount), RpcTarget.Others, new object[] { _alivePlayersCount });
+    }
+
+    [PunRPC]
+    private void UpdatePlayersCount(int value)
+    {
+        GameStateManager.PlayersCount = value;
+        
+        Debug.Log($"PlayersCount = {GameStateManager.PlayersCount}");
+    }
+
+    [PunRPC]
+    private void RestartScene()
+    {
+        Dispose();
+
+        SceneManager.LoadScene(1);
+    }
+
     [PunRPC]
     private void DisconnectFromGame()
     {
@@ -350,6 +418,9 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         {
             var playerController
                 = new PlayerClientController(player.UserId, _playerConfig, playerView, _mainCamera);
+
+            playerController.OnDead += PlayerDead;
+            playerController.OnDead += PlayerRevive;
 
             _playerControllers.Add(playerController);
 
@@ -379,18 +450,18 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         if (_isPaused)
             return;
 
-        if (_playerControllers == null || _playerControllers.Count == 0)
+        if (!_isReady)
             return;
 
-        _isGameOver = false;
-
-        for(int i = 0; i < GameStateManager.Players.Count; i++)
+        if (GameStateManager.PlayersCount == 0)
         {
-            _isGameOver = !GameStateManager.Players[i].IsAvailable;
+            _isGameOver = true;
+            GameStateManager.GameOver();
+            return;
         }
 
-        if (_isGameOver) 
-            GameStateManager.GameOver();
+        if (_playerControllers == null || _playerControllers.Count == 0)
+            return;
 
         for (int i = 0; i < _playerControllers.Count; i++)
         {
@@ -405,6 +476,9 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
             return;
 
         if (_isPaused)
+            return;
+        
+        if (!_isReady)
             return;
 
         if (_playerControllers == null || _playerControllers.Count == 0)
@@ -430,6 +504,20 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         if (_isDisposed)
             return;
         _isDisposed = true;
+
+        for (int i = 0; i < _playerControllers.Count; i++)
+        {
+            var player = _playerControllers[i];
+            
+            player.OnDead -= PlayerDead;
+            player.OnDead -= PlayerRevive;
+        }
+
+        _playerControllers.Clear();
+
+        TaskManager.Release();
+
+        GameStateManager.Release();
 
         Unsubscribe();
     }

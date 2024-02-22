@@ -2,7 +2,7 @@
 
 namespace GameTask
 {
-    public class TaskManager : MonoBehaviour
+    public  class TaskManager : MonoBehaviour
     {
         [SerializeField]
         private TaskManagerView _view;
@@ -11,7 +11,7 @@ namespace GameTask
 
         private static TaskManagerView _staticView;
 
-        private void Start()
+        private void Awake()
         {
             _taskId = 0;
             _staticView = _view;
@@ -30,6 +30,12 @@ namespace GameTask
         public static void TaskCompeleted(int id)
         {
             _staticView.CompeleteTask(id);
+        }
+
+        public static void Release()
+        {
+            _staticView.Clear();
+            _taskId = 0;
         }
     }
 }

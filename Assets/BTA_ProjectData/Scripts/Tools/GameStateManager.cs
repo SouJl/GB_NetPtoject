@@ -13,6 +13,8 @@ namespace Tools
 
         public static List<IFindable> Players = new List<IFindable>(5);
 
+        public static int PlayersCount { get; set; }
+
         public static void ChangePauseGameState(bool state)
         {
             OnGamePaused?.Invoke(state);
@@ -26,6 +28,11 @@ namespace Tools
         public static void GameOver()
         {
             OnGameOver?.Invoke();
+        }
+
+        public static void Release()
+        {
+            Players.Clear();
         }
     }
 }

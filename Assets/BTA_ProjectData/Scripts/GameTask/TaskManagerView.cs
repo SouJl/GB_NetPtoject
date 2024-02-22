@@ -34,5 +34,15 @@ namespace GameTask
             var task = _taskCollection[id];
             task.SetCompele();
         }
+
+        public void Clear()
+        {
+            foreach(var task in _taskCollection)
+            {
+                Destroy(task.Value);
+            }
+
+            _taskCollection.Clear();
+        }
     }
 }

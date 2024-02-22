@@ -6,6 +6,9 @@ namespace BTAPlayer
 {
     public interface IPlayerController : IOnUpdate, IDisposable
     {
+        public event Action OnDead;
+        public event Action OnRevive;
+
         public PlayerView View { get; }
         public string PlayerId { get; }
 

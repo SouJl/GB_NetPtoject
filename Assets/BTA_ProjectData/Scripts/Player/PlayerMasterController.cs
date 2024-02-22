@@ -1,8 +1,10 @@
 ﻿using Configs;
 using Enumerators;
 using Photon.Pun;
+using System;
 using UI;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BTAPlayer
 {
@@ -25,6 +27,8 @@ namespace BTAPlayer
 
         private PlayerState _state;
 
+        public event Action OnDead;
+        public event Action OnRevive;
         public PlayerView View => _view;
         public string PlayerId { get; private set; }
 
@@ -98,6 +102,9 @@ namespace BTAPlayer
 
         public void ChangeHealthValue(float value)
         {
+            if (_state == PlayerState.Dead)
+                return;
+
             _gameSceneUI.PlayerViewUI.ChangeHealth(value);
 
             CurrentHealth = value;
@@ -109,6 +116,8 @@ namespace BTAPlayer
                 _view.Death();
 
                 _state = PlayerState.Dead;
+
+                OnDead?.Invoke();
             }
         }
 
@@ -118,6 +127,8 @@ namespace BTAPlayer
             if(_state == PlayerState.Dead && state == PlayerState.Alive)
             {
                 _gameSceneUI.ShowPlayerUI();
+
+                OnRevive?.Invoke();
             }
 
             _state = state;

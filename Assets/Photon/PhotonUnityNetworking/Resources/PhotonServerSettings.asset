@@ -59,6 +59,11 @@ MonoBehaviour:
   - UpdateSelfSatate
   - UpdateEnemiesCount
   - SetAgentDistanation
+  - DecreasePlayersCount
+  - IncreasePlayersCount
+  - UppdatePlayersCount
+  - RestartScene
+  - UpdatePlayersCount
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

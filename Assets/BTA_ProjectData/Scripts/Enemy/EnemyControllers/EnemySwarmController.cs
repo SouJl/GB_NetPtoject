@@ -47,9 +47,6 @@ namespace Enemy
             }
         }
 
-        public event Action<Transform> OnSetNewTarget;
-        public event Action<EnemySwarmController> OnRemoved;
-
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -70,6 +67,9 @@ namespace Enemy
             base.OnUpdate(deltaTime);
 
             if (!photonView.IsMine)
+                return;
+            
+            if (GameStateManager.Players.Count == 0)
                 return;
 
             UpdateTartgetState();
@@ -131,7 +131,7 @@ namespace Enemy
                     }
                 case EnemyState.Dead:
                     {
-                        OnRemoved?.Invoke(this);
+                        OnDestroy?.Invoke(this);
 
                         PhotonNetwork.InstantiateRoomObject($"Effects/{_deathEffecet.name}", transform.position, transform.rotation);
 
@@ -145,9 +145,6 @@ namespace Enemy
         private void UpdateTartgetState()
         {
             var players = GameStateManager.Players;
-
-            if (players.Count == 0)
-                return;
 
             if(players[_targerIndex].IsAvailable == false)
             {

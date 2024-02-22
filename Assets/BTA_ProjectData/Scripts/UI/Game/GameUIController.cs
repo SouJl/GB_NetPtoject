@@ -1,4 +1,5 @@
 ﻿using BTAPlayer;
+using Photon.Pun;
 using System;
 using Tools;
 using UnityEngine;
@@ -14,7 +15,9 @@ namespace UI
         [SerializeField]
         private PauseMenuUI _pauseMenu;
         [SerializeField]
-        private GameOverScreenUI _gameOverScreen;
+        private GameOverScreenUI _gameOverMasterScreen;
+        [SerializeField]
+        private GameOverScreenUI _gameOverClientScreen;
         [SerializeField]
         private GameWonScreenUI _gameWonScreen;
 
@@ -33,6 +36,7 @@ namespace UI
             }
         }
 
+        public event Action OnRestartGame;
         public event Action OnReturnMainMenu;
         public event Action OnExitGame;
 
@@ -56,8 +60,9 @@ namespace UI
             _pauseMenu.MainMenuButton.onClick.AddListener(ToMainMenu);
             _pauseMenu.ExitGameButton.onClick.AddListener(ExitFromGame);
 
-            _gameOverScreen.MainMenuButton.onClick.AddListener(ToMainMenu);
-            _gameOverScreen.ExitGameButton.onClick.AddListener(ExitFromGame);
+            _gameOverMasterScreen.RestartButton.onClick.AddListener(RestartGame);
+            _gameOverMasterScreen.MainMenuButton.onClick.AddListener(ToMainMenu);
+            _gameOverMasterScreen.ExitGameButton.onClick.AddListener(ExitFromGame);
 
             _gameWonScreen.MainMenuButton.onClick.AddListener(ToMainMenu);
             _gameWonScreen.ExitGameButton.onClick.AddListener(ExitFromGame);
@@ -73,8 +78,9 @@ namespace UI
             _pauseMenu.MainMenuButton.onClick.RemoveListener(ToMainMenu);
             _pauseMenu.ExitGameButton.onClick.RemoveListener(ExitFromGame);
 
-            _gameOverScreen.MainMenuButton.onClick.RemoveListener(ToMainMenu);
-            _gameOverScreen.ExitGameButton.onClick.RemoveListener(ExitFromGame);
+            _gameOverMasterScreen.RestartButton.onClick.RemoveListener(RestartGame);
+            _gameOverMasterScreen.MainMenuButton.onClick.RemoveListener(ToMainMenu);
+            _gameOverMasterScreen.ExitGameButton.onClick.RemoveListener(ExitFromGame);
 
             _gameWonScreen.MainMenuButton.onClick.RemoveListener(ToMainMenu);
             _gameWonScreen.ExitGameButton.onClick.RemoveListener(ExitFromGame);
@@ -109,7 +115,7 @@ namespace UI
 
             _pauseMenu.Hide();
             _playerView.Hide();
-            _gameOverScreen.Hide();
+            GameOverScreenHide();
             _gameWonScreen.Hide();
 
             LockCursor(true);
@@ -131,6 +137,11 @@ namespace UI
         {
             OnExitGame?.Invoke();
         }
+        
+        private void RestartGame()
+        {
+            OnRestartGame?.Invoke();
+        }
 
         public void ShowPlayerUI()
         {
@@ -141,7 +152,7 @@ namespace UI
 
             _playerDeadView.Hide();
             _pauseMenu.Hide();
-            _gameOverScreen.Hide();
+            GameOverScreenHide();
             _gameWonScreen.Hide();
 
             LockCursor(true);
@@ -156,7 +167,7 @@ namespace UI
 
             _playerView.Hide();
             _playerDeadView.Hide();
-            _gameOverScreen.Hide();
+            GameOverScreenHide();
             _gameWonScreen.Hide();
 
             LockCursor(false);
@@ -166,7 +177,7 @@ namespace UI
         {
             _isGameOver = true;
 
-            _gameOverScreen.Show();
+            GameOverScreenShow();
 
             _pauseMenu.Hide();
             _playerView.Hide();
@@ -174,6 +185,30 @@ namespace UI
             _gameWonScreen.Hide();
 
             LockCursor(false);
+        }
+
+        private void GameOverScreenShow()
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                _gameOverMasterScreen.Show();
+            }
+            else
+            {
+                _gameOverClientScreen.Show();
+            }
+
+        }
+        private void GameOverScreenHide()
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                _gameOverMasterScreen.Hide();
+            }
+            else
+            {
+                _gameOverClientScreen.Hide();
+            }
         }
         private void LockCursor(bool state)
         {

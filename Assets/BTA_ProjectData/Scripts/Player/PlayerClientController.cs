@@ -1,6 +1,8 @@
 ﻿using Configs;
 using Enumerators;
+using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BTAPlayer
 {
@@ -58,6 +60,9 @@ namespace BTAPlayer
         public float DamageDistance => _data.DamageDistance;
         public float MaxHealth => _data.MaxHealth;
 
+        public event Action OnDead;
+        public event Action OnRevive;
+
         public PlayerClientController(
             string playerId,
             PlayerConfig data,
@@ -82,11 +87,22 @@ namespace BTAPlayer
         public void ChangeHealthValue(float value)
         {
             CurrentHealth = value;
+
+            if (CurrentHealth <= 0)
+            {
+                OnDead?.Invoke();
+            }
         }
         public void ChangeState(PlayerState state)
         {
             _state = state;
+
+            if (_state == PlayerState.Dead && state == PlayerState.Alive)
+            { 
+                OnRevive?.Invoke();
+            }
         }
+
         public void ExecuteUpdate(float deltaTime)
         {
             if (_view.photonView.IsMine == false)

@@ -226,6 +226,17 @@ namespace Enemy
         }
 
 
+        [PunRPC]
+        public void UpdateEnemiesCount(int count)
+        {
+            _currentEnemies = count;
+
+            if (_currentEnemies <= 0)
+            {
+                _fightMusic.Stop();
+                AllEnemiesDestored?.Invoke();
+            }
+        }
 
 #if UNITY_EDITOR
 
@@ -255,19 +266,6 @@ namespace Enemy
 
 
         }
-
-        [PunRPC]
-        public void UpdateEnemiesCount(int count)
-        {
-            _currentEnemies = count;
-
-            if (_currentEnemies <= 0)
-            {
-                _fightMusic.Stop();
-                AllEnemiesDestored?.Invoke();
-            }
-        }
-
 #endif
     }
 }

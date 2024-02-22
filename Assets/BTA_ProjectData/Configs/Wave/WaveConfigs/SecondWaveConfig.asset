@@ -13,18 +13,9 @@ MonoBehaviour:
   m_Name: SecondWaveConfig
   m_EditorClassIdentifier: 
   _name: wave_1
-  _wavetime: 0
-  _startDelayTime: 5
+  _wavetime: 10
+  _startDelayTime: 0
   _enemies:
-  - Type: 0
-    Count: 2
-    SpawnTime: 3
-  - Type: 0
-    Count: 20
-    SpawnTime: 5
-  - Type: 0
-    Count: 10
-    SpawnTime: 3
-  - Type: 0
-    Count: 5
+  - Type: 1
+    Count: 1
     SpawnTime: 3

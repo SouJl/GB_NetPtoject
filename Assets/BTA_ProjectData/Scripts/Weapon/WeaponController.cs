@@ -82,6 +82,9 @@ namespace Weapon
 
         private void Shoot()
         {
+            if (GameStateManager.IsGameWon)
+                return;
+
             if (_isPaused)
                 return;
 

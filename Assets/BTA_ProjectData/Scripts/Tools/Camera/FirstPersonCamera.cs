@@ -53,6 +53,9 @@ namespace Tools
 
         private void Update()
         {
+            if (GameStateManager.IsGameWon)
+                return;
+
             if (_isPaused)
                 return;
 

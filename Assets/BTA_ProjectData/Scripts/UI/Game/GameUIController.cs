@@ -68,6 +68,7 @@ namespace UI
             _gameWonScreen.ExitGameButton.onClick.AddListener(ExitFromGame);
 
             GameStateManager.OnGameOver += ShowGameOver;
+            GameStateManager.OnGameWon += ShowGameWon;
         }
 
         private void Unsubscribe()
@@ -86,6 +87,7 @@ namespace UI
             _gameWonScreen.ExitGameButton.onClick.RemoveListener(ExitFromGame);
 
             GameStateManager.OnGameOver -= ShowGameOver;
+            GameStateManager.OnGameWon -= ShowGameWon;
         }
 
  
@@ -210,6 +212,22 @@ namespace UI
                 _gameOverClientScreen.Hide();
             }
         }
+
+        private void ShowGameWon()
+        {
+            _isGameOver = true;
+
+            _gameWonScreen.Show();
+
+            _pauseMenu.Hide();
+            _playerView.Hide();
+            _playerDeadView.Hide();
+            GameOverScreenHide();
+
+            LockCursor(false);
+        }
+
+
         private void LockCursor(bool state)
         {
             Cursor.lockState = state ? CursorLockMode.Locked : CursorLockMode.None;

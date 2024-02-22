@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
+using Tools;
+using GameTask;
 
 namespace UI
 {
@@ -19,6 +21,14 @@ namespace UI
         [SerializeField]
         private TMP_Text _weapomCurrentAmmo;
 
+        [Header("Info UI Seconds")]
+        [SerializeField]
+        private TMP_Text _whaitText;
+        [SerializeField]
+        private CountDownTimer _timer;
+        [SerializeField]
+        private TaskManagerView _taskView;
+
         public void InitUI(string name, float maxHealth, int weaponMagSize)
         {
             _playerName.text = name;
@@ -32,6 +42,10 @@ namespace UI
             _healthBar.InitUI(maxHealth);
 
             gameObject.SetActive(true);
+
+            _whaitText.gameObject.SetActive(false);
+
+            _timer.gameObject.SetActive(false);
         }
 
         public void ChangeHealth(float value)
@@ -58,5 +72,17 @@ namespace UI
         {
             gameObject.SetActive(false);
         }
+
+        public void StartExitCountDown(float time)
+        {
+            _taskView.gameObject.SetActive(false);
+
+            _whaitText.gameObject.SetActive(true);
+            _timer.StartTimer(time);
+            
+        }
+
+        public void StopExitCountDown() 
+            => _timer.StopTimer();
     }
 }

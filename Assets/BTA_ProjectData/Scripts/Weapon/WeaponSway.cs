@@ -1,4 +1,5 @@
 ﻿using Abstraction;
+using Tools;
 using UnityEngine;
 
 namespace Weapon
@@ -13,6 +14,9 @@ namespace Weapon
 
         private void Update()
         {
+            if (GameStateManager.IsGameWon)
+                return;
+
             if (_isPaused)
                 return;
 

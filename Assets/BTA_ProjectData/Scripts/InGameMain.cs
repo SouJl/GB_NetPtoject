@@ -24,7 +24,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 {
     [SerializeField]
     private bool _isTesting = false;
-
+    [SerializeField]
+    private float _extractionTime = 5f;
     [SerializeField]
     private int _randomSeed = 1111;
     [SerializeField]
@@ -230,7 +231,28 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
         if (coollider.gameObject.tag == "Player")
         {
             TaskManager.TaskCompeleted(_mainTaskId);
+
+            StartCoroutine(WaitForExtraction());
         }
+    }
+
+    private IEnumerator WaitForExtraction()
+    {
+        _gameUI.PlayerViewUI.StartExitCountDown(_extractionTime);
+
+        yield return new WaitForSeconds(_extractionTime);
+
+        _gameUI.PlayerViewUI.StopExitCountDown();
+
+        photonView.RPC(nameof(ExtractionPlayers), RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void ExtractionPlayers()
+    {
+        GameStateManager.GameWon();
+
+        _isReady = false;
     }
 
     private void SomoneEnterStorageRoom(Collider coollider)

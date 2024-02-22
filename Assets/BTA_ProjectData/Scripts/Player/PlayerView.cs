@@ -109,7 +109,7 @@ namespace BTAPlayer
 
             if (photonView.IsMine)
             {
-                grave.Init(this, _mainCamera);
+                grave.Init(this);
             }
 
             photonView.RPC(nameof(OnDeathExecute), RpcTarget.AllViaServer, new object[] { photonView.ViewID, transform.position });
@@ -117,6 +117,7 @@ namespace BTAPlayer
 
         public void Revive()
         {
+
             photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.AllViaServer, new object[] { photonView.ViewID, _player.MaxHealth });
 
             photonView.RPC(nameof(OnReviveExecute), RpcTarget.AllViaServer, new object[] { photonView.ViewID});
@@ -149,11 +150,6 @@ namespace BTAPlayer
                 return;
 
             gameObject.SetActive(true);
-
-            if (photonView.IsMine)
-            {
-                _fpsCameraHolder.SetCamera(_mainCamera);
-            }
 
             _player.ChangeState(PlayerState.Alive);
         }

@@ -19,7 +19,7 @@ namespace UI
         private GameWonScreenUI _gameWonScreen;
 
         private bool _isOnPause;
-
+        private bool _isGameOver;
         public PlayerViewUI PlayerViewUI => _playerView;
 
         public bool IsOnPause 
@@ -61,6 +61,8 @@ namespace UI
 
             _gameWonScreen.MainMenuButton.onClick.AddListener(ToMainMenu);
             _gameWonScreen.ExitGameButton.onClick.AddListener(ExitFromGame);
+
+            GameStateManager.OnGameOver += ShowGameOver;
         }
 
         private void Unsubscribe()
@@ -76,10 +78,16 @@ namespace UI
 
             _gameWonScreen.MainMenuButton.onClick.RemoveListener(ToMainMenu);
             _gameWonScreen.ExitGameButton.onClick.RemoveListener(ExitFromGame);
+
+            GameStateManager.OnGameOver -= ShowGameOver;
         }
 
+ 
         private void Pause()
         {
+            if (_isGameOver)
+                return;
+
             if (!IsOnPause)
             {
                 ShowPauseMenuUI();
@@ -94,6 +102,9 @@ namespace UI
 
         public void ShowDeadScreen()
         {
+            if (_isGameOver)
+                return;
+
             _playerDeadView.Show();
 
             _pauseMenu.Hide();
@@ -123,6 +134,9 @@ namespace UI
 
         public void ShowPlayerUI()
         {
+            if (_isGameOver)
+                return;
+
             _playerView.Show();
 
             _playerDeadView.Hide();
@@ -135,6 +149,9 @@ namespace UI
 
         public void ShowPauseMenuUI()
         {
+            if (_isGameOver)
+                return;
+
             _pauseMenu.Show();
 
             _playerView.Hide();
@@ -145,6 +162,19 @@ namespace UI
             LockCursor(false);
         }
 
+        private void ShowGameOver()
+        {
+            _isGameOver = true;
+
+            _gameOverScreen.Show();
+
+            _pauseMenu.Hide();
+            _playerView.Hide();
+            _playerDeadView.Hide();
+            _gameWonScreen.Hide();
+
+            LockCursor(false);
+        }
         private void LockCursor(bool state)
         {
             Cursor.lockState = state ? CursorLockMode.Locked : CursorLockMode.None;

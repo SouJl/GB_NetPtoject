@@ -46,7 +46,6 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
     [SerializeField]
     private CollisionDetector _storageRoomCollision;
 
-
     private Camera _mainCamera;
     private List<IPlayerController> _playerControllers = new List<IPlayerController>();
 
@@ -56,6 +55,9 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private int _mainTaskId;
     private int _killEnemyTaskId;
+
+    private bool _isGameOver;
+
 
     private void Awake()
     {
@@ -371,11 +373,24 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void Update()
     {
+        if (_isGameOver)
+            return;
+
         if (_isPaused)
             return;
 
-        if (_playerControllers == null && _playerControllers.Count == 0)
+        if (_playerControllers == null || _playerControllers.Count == 0)
             return;
+
+        _isGameOver = false;
+
+        for(int i = 0; i < GameStateManager.Players.Count; i++)
+        {
+            _isGameOver = !GameStateManager.Players[i].IsAvailable;
+        }
+
+        if (_isGameOver) 
+            GameStateManager.GameOver();
 
         for (int i = 0; i < _playerControllers.Count; i++)
         {
@@ -385,10 +400,14 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private void FixedUpdate()
     {
+
+        if (_isGameOver)
+            return;
+
         if (_isPaused)
             return;
 
-        if (_playerControllers == null && _playerControllers.Count == 0)
+        if (_playerControllers == null || _playerControllers.Count == 0)
             return;
 
         for (int i = 0; i < _playerControllers.Count; i++)

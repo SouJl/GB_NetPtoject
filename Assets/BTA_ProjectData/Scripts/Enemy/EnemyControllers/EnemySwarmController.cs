@@ -206,6 +206,8 @@ namespace Enemy
                         _agent.isStopped = true;
 
                         _agent.ResetPath();
+
+                        _rigidBody.velocity = Vector3.zero;
                         break;
                     }
                 case EnemyState.Idle:

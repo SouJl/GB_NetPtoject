@@ -173,7 +173,7 @@ namespace BTAPlayer
 
         Vector3 IFindable.GetPosition()
         {
-            return transform.position;
+            return SelfTransform.position;
         }
 
         #endregion

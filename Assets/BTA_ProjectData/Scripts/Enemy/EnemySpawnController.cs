@@ -1,10 +1,12 @@
-﻿using BTAPlayer;
+﻿using Abstraction;
+using BTAPlayer;
 using Configs;
 using Enumerators;
 using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -49,7 +51,7 @@ namespace Enemy
 
         private List<EnemyBaseController> _enemyCollection = new();
 
-        private List<IPlayerController> _availablePlayers = new();
+        private List<IFindable> _availablePlayers = new();
 
         private int _maxEnemies;
         private int _currentEnemies;
@@ -84,7 +86,7 @@ namespace Enemy
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
-            _availablePlayers.Add(player);
+            _availablePlayers.Add(player.View);
         }
 
         public void StartEnemySpawn()
@@ -153,9 +155,19 @@ namespace Enemy
                             break;
                         }
                     case EnemyType.Swarm:
-                        {
+                        {                     
                             var index = Random.Range(0, _swarmSpawnPoints.Count);
-                            spawnPoint = _gunnerSpawnPoints[index];
+                            
+                            spawnPoint = _swarmSpawnPoints[index];
+
+                            InstantiateSpawnEffect(spawnPoint);
+
+                            yield return new WaitForSeconds(_spawnTime);
+
+                            for (int j = 0; j < enemyWave.Count; j++)
+                            {
+                                SpawnSwarm(spawnPoint);
+                            }
                             break;
                         }
                     case EnemyType.Sniper:

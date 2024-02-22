@@ -16,6 +16,12 @@ MonoBehaviour:
   _wavetime: 30
   _startDelayTime: 0
   _enemies:
-  - Type: 0
+  - Type: 1
     Count: 5
+    SpawnTime: 3
+  - Type: 1
+    Count: 3
+    SpawnTime: 2
+  - Type: 1
+    Count: 6
     SpawnTime: 3

@@ -6,6 +6,7 @@ namespace BTAPlayer
 {
     public interface IPlayerController : IOnUpdate, IDisposable
     {
+        public PlayerView View { get; }
         public string PlayerId { get; }
 
         public PlayerState State { get; }

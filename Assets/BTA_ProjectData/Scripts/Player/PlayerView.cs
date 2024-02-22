@@ -94,6 +94,9 @@ namespace BTAPlayer
 
         public void TakeDamage(DamageData damage)
         {
+            if (_player.State == PlayerState.Dead)
+                return;
+
             if (_player.CurrentHealth > 0)
             {
                 var resultHealth = _player.CurrentHealth - damage.Value;
@@ -104,6 +107,9 @@ namespace BTAPlayer
 
         public void Death()
         {
+            if (_player.State == PlayerState.Dead)
+                return;
+
             var grave
                 = PhotonNetwork.Instantiate(_playerGrave.name, transform.position, _orientation.rotation).GetComponent<PlayerGrave>();
 
@@ -160,11 +166,15 @@ namespace BTAPlayer
         [SerializeField]
         private List<Transform> _visiblePoints;
 
-        Transform IFindable.Transform => transform;
-
+        bool IFindable.IsAvailable => _player.State == PlayerState.Alive;
         GameObject IFindable.GameObject => gameObject;
 
         List<Transform> IFindable.VisiblePoints => _visiblePoints;
+
+        Vector3 IFindable.GetPosition()
+        {
+            return transform.position;
+        }
 
         #endregion
     }

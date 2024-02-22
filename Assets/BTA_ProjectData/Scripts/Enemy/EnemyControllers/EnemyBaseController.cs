@@ -4,6 +4,7 @@ using UnityEngine.AI;
 using UnityEngine;
 using Enumerators;
 using System;
+using System.Collections.Generic;
 
 namespace Enemy
 {
@@ -62,7 +63,5 @@ namespace Enemy
         }
 
         public abstract void TakeDamage(DamageData damage);
-
-
     }
 }

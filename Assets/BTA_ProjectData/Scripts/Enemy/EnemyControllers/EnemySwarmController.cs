@@ -3,6 +3,8 @@ using Configs;
 using Enumerators;
 using Photon.Pun;
 using System;
+using System.Collections.Generic;
+using Tools;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -17,16 +19,11 @@ namespace Enemy
         private EnemyConfig _config;
 
         private float _currentHealth;
+        [SerializeField]
         private EnemyState _currentState;
 
         private bool _isPlayerFound;
         private bool _isPatroling;
-
-        private Vector3 _spawnCenter;
-        private float _patrolRadius;
-
-        private Transform _currentTarget;
-        private Vector3 _currentTargetPos;
 
         public override EnemyType Type => EnemyType.Swarm;
         
@@ -56,27 +53,16 @@ namespace Enemy
         protected override void OnAwake()
         {
             base.OnAwake();
+
+            _agent.speed = _config.MoveSpeed;
+            _currentHealth = _config.MaxHealth;
+
+            ChangeState(EnemyState.Idle);
         }
 
         protected override void OnStart()
         {
             base.OnStart();
-
-            _agent.speed = _config.MoveSpeed;
-            _currentHealth = _config.MaxHealth;
-
-            _isPlayerFound = false;
-
-            var photonView = GetComponent<PhotonView>();
-
-            var instData = photonView.InstantiationData;
-
-            _spawnCenter = (Vector3)instData[0];
-            _patrolRadius = (float)instData[1];
-
-            _currentTargetPos = transform.position;
-
-            ChangeState(EnemyState.Idle);
         }
 
         protected override void OnUpdate(float deltaTime)
@@ -86,40 +72,30 @@ namespace Enemy
             if (!photonView.IsMine)
                 return;
 
-            UpdateTargetPos();
+            UpdateTartgetState();
 
-            CheckForTarget();
-
-            switch (_currentState)
+            switch (CurrentState)
             {
                 case EnemyState.Idle:
                     {
-                        var newPatrolPos = SelectNewPatrolPos();
-
-                        photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.AllViaServer, new object[] { photonView.ViewID, newPatrolPos });
-
-                        ChangeState(EnemyState.Patrol);
-
-                        break;
-                    }
-                case EnemyState.Patrol:
-                    {
-                        if (_agent.isActiveAndEnabled && _agent.remainingDistance < 0.1f)
-                        {
-                            _currentTargetPos = SelectNewPatrolPos();
-
-                            photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.Others, new object[] { photonView.ViewID, _currentTargetPos });
-
-                            _agent.SetDestination(_currentTargetPos);
-                        }
-
+                        SetTarget();
                         break;
                     }
                 case EnemyState.MoveToTarget:
                     {
-                        if (_agent.isActiveAndEnabled && _agent.remainingDistance < _config.DamageDistance / 2f)
+                        var players = GameStateManager.Players;
+
+                        var targetPos = players[_targerIndex].GetPosition();
+
+                        var dist = Vector3.Distance(transform.position, targetPos);
+
+                        if ( dist < _config.DamageDistance * 0.8f)
                         {
                             ChangeState(EnemyState.Attack);
+                        }
+                        else
+                        {
+                            _agent.SetDestination(targetPos);
                         }
                         break;
                     }
@@ -139,14 +115,16 @@ namespace Enemy
                                     {
                                         Value = _config.DamageValue,
                                     });
+
+                                    ChangeState(EnemyState.Dead);
+
+                                    return;
                                 }
                             }
-
-                            ChangeState(EnemyState.Dead);
                         }
                         else
                         {
-                            ChangeState(EnemyState.Idle);
+                            ChangeState(EnemyState.MoveToTarget);
                         }
 
                         break;
@@ -164,70 +142,77 @@ namespace Enemy
             }
         }
 
-        private void UpdateTargetPos()
+        private void UpdateTartgetState()
         {
-            if (CurrentState != EnemyState.MoveToTarget)
+            var players = GameStateManager.Players;
+
+            if (players.Count == 0)
                 return;
-            if (_currentTarget == null)
-                return;
 
-            _currentTargetPos = _currentTarget.position;
-
-            photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.Others, new object[] { photonView.ViewID, _currentTargetPos });
-        }
-
-
-        private void CheckForTarget()
-        {
-            switch (CurrentState)
+            if(players[_targerIndex].IsAvailable == false)
             {
-                case EnemyState.Dead:
-                case EnemyState.MoveToTarget:
-                case EnemyState.Attack:
-                    {
-                        return;
-                    }
-            }
+                var resultIndex = -1;
 
-            var findResults = Physics.OverlapSphere(_pointOfView.position, _config.SearchDistance, _config.SearchMask);
+                var availableTargetsId = new List<int>();
 
-            if (findResults.Length != 0)
-            {
-                for (int i = 0; i < findResults.Length; i++)
+                for (int i = 0; i < players.Count; i++)
                 {
-                    var target = findResults[i].gameObject.GetComponentInParent<IFindable>();
-                    if (target != null)
+                    if (players[i].IsAvailable)
                     {
-                        OnSetNewTarget?.Invoke(target.Transform);
+                        availableTargetsId.Add(i);
                     }
+                }
+
+                if (availableTargetsId.Count != 0)
+                    resultIndex = availableTargetsId[Random.Range(0, availableTargetsId.Count)];
+
+                if (resultIndex < 0)
+                {
+                    ChangeState(EnemyState.None);
+                }
+                else
+                {
+                    _targerIndex = resultIndex;
                 }
             }
         }
 
-        private Vector3 SelectNewPatrolPos()
+        private int _targerIndex;
+        private List<IFindable> _targets;
+
+        public void SetTarget()
         {
-            return _spawnCenter + Random.insideUnitSphere * _patrolRadius;
+            if (!photonView.IsMine)
+                return;
+
+            _targerIndex = Random.Range(0, GameStateManager.Players.Count);
+
+            var currentPos = GameStateManager.Players[_targerIndex].GetPosition();
+
+            _agent.SetDestination(currentPos);
+
+
+            ChangeState(EnemyState.MoveToTarget);
         }
 
         private void ChangeState(EnemyState newState)
         {
             Debug.Log(newState);
+
             switch (newState)
             {
-                case EnemyState.Idle:
+                default:
                     {
-                        _currentTarget = null;
-                        break;
-                    }
-                case EnemyState.Patrol:
-                    {
-                        _currentTarget = null;
-
-                        _agent.isStopped = false;
+                        _agent.isStopped = true;
 
                         _agent.ResetPath();
+                        break;
+                    }
+                case EnemyState.Idle:
+                    {
+                        _agent.isStopped = true;
 
-                        _agent.SetDestination(_currentTargetPos);
+                        _agent.ResetPath();
                         break;
                     }
                 case EnemyState.MoveToTarget:
@@ -236,7 +221,6 @@ namespace Enemy
 
                         _agent.ResetPath();
 
-                        _agent.SetDestination(_currentTargetPos);
                         break;
                     }
                 case EnemyState.Attack:
@@ -244,13 +228,10 @@ namespace Enemy
                         _agent.isStopped = true;
 
                         _agent.ResetPath();
-
                         break;
                     }
                 case EnemyState.Dead:
                     {
-                        _currentTarget = null;
-
                         _agent.isStopped = true;
 
                         _agent.ResetPath();
@@ -259,26 +240,7 @@ namespace Enemy
                     }
             }
 
-            CurrentState = newState;
-
-            photonView.RPC(nameof(UpdateStateOnClient), RpcTarget.Others, new object[] { photonView.ViewID, CurrentState });
-        }
-
-        public void SetTarget(Transform target)
-        {
-            if (!photonView.IsMine)
-                return;
-
-            _currentTarget = target;
-
-            if (_currentTarget != null)
-            {
-                _currentTargetPos = _currentTarget.position;
-
-                photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.Others, new object[] { photonView.ViewID, _currentTargetPos });
-
-                ChangeState(EnemyState.MoveToTarget);
-            }
+            photonView.RPC(nameof(UpdateStateOnClient), RpcTarget.AllViaServer, new object[] { photonView.ViewID, newState });
         }
 
         public override void TakeDamage(DamageData damage)
@@ -317,21 +279,21 @@ namespace Enemy
         }
 
         [PunRPC]
-        private void UpdateTargetOnClient(int id, Vector3 position)
-        {
-            if (photonView.ViewID != id)
-                return;
-
-            _currentTargetPos = position;
-        }
-
-        [PunRPC]
         private void DestroyOnClient(int id)
         {
             if (photonView.ViewID != id)
                 return;
 
             Destroy(gameObject);
+        }
+
+        [PunRPC]
+        private void SetAgentDistanation(int id, Vector3 value)
+        {
+            if (photonView.ViewID != id)
+                return;
+
+            _agent.SetDestination(value);
         }
 
         #endregion

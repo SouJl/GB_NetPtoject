@@ -75,6 +75,7 @@ MonoBehaviour:
   _agent: {fileID: 9054447736073866589}
   _deathEffecet: {fileID: 3300812241387194373, guid: d896ce2e500b6b34ea825d19a2587bde, type: 3}
   _config: {fileID: 11400000, guid: cd5ea646bd7ecff4dbb4e68105c22e7c, type: 2}
+  _currentState: 0
 --- !u!114 &9054447736073866588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -899,14 +900,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8158191853182720371}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4533081479470307629}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!108 &7617798724961434960
 Light:
   m_ObjectHideFlags: 0
@@ -916,11 +917,11 @@ Light:
   m_GameObject: {fileID: 8158191853182720371}
   m_Enabled: 1
   serializedVersion: 10
-  m_Type: 0
+  m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Intensity: 10
-  m_Range: 3
+  m_Range: 1.5
   m_SpotAngle: 60
   m_InnerSpotAngle: 6
   m_CookieSize: 10

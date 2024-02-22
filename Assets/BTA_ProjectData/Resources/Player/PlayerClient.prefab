@@ -637,7 +637,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 2
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
@@ -654,7 +654,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 994477885274814958}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98dec5eb9e63dd54b804956eea8fa539, type: 3}
   m_Name: 
@@ -1092,6 +1092,7 @@ MonoBehaviour:
   _cameraPos: {fileID: 7323183423907583974}
   _muzzle: {fileID: 8901179819908691443}
   _muzzleEffect: {fileID: 5231587377620607558}
+  _fireSource: {fileID: 0}
 --- !u!1 &5374730974390658687
 GameObject:
   m_ObjectHideFlags: 0

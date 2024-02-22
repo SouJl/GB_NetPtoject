@@ -163,6 +163,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         _playerControllers.Add(playerController);
 
+        GameStateManager.AddPlayer(playerController.View);
+
         _mainTaskId = TaskManager.AddNewTask("REACH CENTRAL ROOM");
     }
 
@@ -312,6 +314,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
         _playerControllers.Add(playerController);
 
+        GameStateManager.AddPlayer(playerController.View);
+
         photonView.RPC(
            nameof(InstantiatePlayer),
            RpcTarget.Others,
@@ -348,6 +352,8 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
             _playerControllers.Add(playerController);
 
             _enemySpawner.AddPlayer(playerController);
+
+            GameStateManager.AddPlayer(playerController.View);
         }
     }
 
@@ -358,7 +364,7 @@ public class InGameMain : MonoBehaviourPun, IPaused, IDisposable
 
     private IEnumerator StartSpawnEnemies()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
 
         _enemySpawner.StartEnemySpawn();
     }

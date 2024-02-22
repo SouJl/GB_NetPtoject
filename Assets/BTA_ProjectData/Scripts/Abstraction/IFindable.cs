@@ -5,8 +5,9 @@ namespace Abstraction
 {
     public interface IFindable
     {
-        public Transform Transform { get; }
+        public bool IsAvailable { get; }
         public GameObject GameObject { get; }
         public List<Transform> VisiblePoints { get; }
+        public Vector3 GetPosition();
     }
 }

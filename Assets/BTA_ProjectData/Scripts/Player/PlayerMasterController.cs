@@ -25,6 +25,7 @@ namespace BTAPlayer
 
         private PlayerState _state;
 
+        public PlayerView View => _view;
         public string PlayerId { get; private set; }
 
         public PlayerState State => _state;
@@ -103,11 +104,11 @@ namespace BTAPlayer
 
             if(CurrentHealth <= 0)
             {
-                _state = PlayerState.Dead;
-
                 _gameSceneUI.ShowDeadScreen();
                 
                 _view.Death();
+
+                _state = PlayerState.Dead;
             }
         }
 

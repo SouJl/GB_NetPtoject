@@ -21,6 +21,8 @@ namespace BTAPlayer
         private float _resetJumpCount;
 
         private PlayerState _state;
+        
+        public PlayerView View => _view;
 
         public string PlayerId { get; private set; }
 

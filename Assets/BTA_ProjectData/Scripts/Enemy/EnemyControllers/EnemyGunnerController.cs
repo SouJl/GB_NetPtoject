@@ -3,6 +3,7 @@ using Configs;
 using Enumerators;
 using Photon.Pun;
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -134,7 +135,7 @@ namespace Enemy
                     {
                         if (_targetSearch.IsVisible(target, _pointOfView, _config.SearchAngle, _config.SearchDistance, _config.SearchMask) == true)
                         {
-                            photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.AllViaServer, new object[] { photonView.ViewID, target.Transform.position });
+                            photonView.RPC(nameof(UpdateTargetOnClient), RpcTarget.AllViaServer, new object[] { photonView.ViewID, target.GetPosition() });
 
                             ChangeState(EnemyState.MoveToTarget);
                         }
@@ -189,6 +190,7 @@ namespace Enemy
 
             }
         }
+
 
         private void ChangeState(EnemyState newState)
         {

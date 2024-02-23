@@ -67,6 +67,8 @@ MonoBehaviour:
   - ExtractionPlayers
   - UpdateEnemyKilledByPlayer
   - OnAllSyncDestroyedByPlayer
+  - DestroySelf
+  - AllEnemyDead
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

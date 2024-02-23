@@ -216,17 +216,27 @@ namespace Enemy
 
         private void EnemyDestroed(EnemyBaseController enemy, string destroyerId)
         {
+            Debug.Log($"Destroed {enemy.name}");
+
             var currentEnemies = _currentEnemies;
 
             enemy.OnDestroy -= EnemyDestroed;
 
             _enemyCollection.Remove(enemy);
 
-            currentEnemies--;
+            _currentEnemies = _enemyCollection.Count;
 
-            photonView.RPC(nameof(UpdateEnemiesCount), RpcTarget.AllViaServer, new object[] { currentEnemies });
+            if (_enemyCollection.Count == 0)
+            {
+                _fightMusic.Stop();
+                AllEnemiesDestored?.Invoke();
 
-            photonView.RPC(nameof(OnAllSyncDestroyedByPlayer), RpcTarget.AllViaServer, new object[] { destroyerId });
+                photonView.RPC(nameof(AllEnemyDead), RpcTarget.Others, new object[] { });
+            }
+
+            photonView.RPC(nameof(UpdateEnemiesCount), RpcTarget.All, new object[] { currentEnemies });
+
+            photonView.RPC(nameof(OnAllSyncDestroyedByPlayer), RpcTarget.All, new object[] { destroyerId });
         }
 
         [PunRPC]
@@ -236,15 +246,16 @@ namespace Enemy
         }
 
         [PunRPC]
+        private void AllEnemyDead()
+        {
+            _fightMusic.Stop();
+            AllEnemiesDestored?.Invoke();
+        }
+
+        [PunRPC]
         public void UpdateEnemiesCount(int count)
         {
             _currentEnemies = count;
-
-            if (_currentEnemies <= 0)
-            {
-                _fightMusic.Stop();
-                AllEnemiesDestored?.Invoke();
-            }
         }
 
 #if UNITY_EDITOR

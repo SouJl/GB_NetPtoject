@@ -19,6 +19,8 @@ namespace Weapon
         private ParticleSystem _muzzleEffect;
         [SerializeField]
         private AudioSource _fireSource;
+        [SerializeField]
+        private AudioSource _reloadSource;
 
         private string _holderId;
 
@@ -135,7 +137,10 @@ namespace Weapon
                 return;
 
             if (!_reloading && gameObject.activeSelf)
+            {
+                _reloadSource.Play();
                 StartCoroutine(Reload());
+            }
         }
 
         private IEnumerator Reload()
@@ -150,7 +155,24 @@ namespace Weapon
 
             _reloading = false;
 
+            _reloadSource.Stop();
+
             Debug.Log("Reload!");
+        }
+
+        private void OnDisable()
+        {
+            if(!_isInitialize)
+                return;
+
+            _fireSource.Stop();
+            _reloadSource.Stop();
+
+            CurrentAmmo = _data.MagSize;
+
+            _reloading = false;
+
+            StopAllCoroutines();
         }
 
         private void OnDestroy()

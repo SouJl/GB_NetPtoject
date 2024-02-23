@@ -14,6 +14,8 @@ namespace BTAPlayer
         private Transform _camerEndPoint;
         [SerializeField]
         private float _smooth = 0.5f;
+        [SerializeField]
+        private float _deadTime = 3f;
 
         private bool _isInitialized = false;
 
@@ -60,14 +62,12 @@ namespace BTAPlayer
 
         private IEnumerator WhaitToRevive()
         {
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(_deadTime);
 
             _isInitialized = false;
 
             _view.Revive();
-
-            yield return new WaitForSeconds(0.2f);
-            
+                     
             PhotonNetwork.Destroy(gameObject);
         }
     }

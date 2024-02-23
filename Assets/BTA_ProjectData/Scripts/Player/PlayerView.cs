@@ -123,10 +123,13 @@ namespace BTAPlayer
 
         public void Revive()
         {
+            gameObject.SetActive(true);
 
-            photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.AllViaServer, new object[] { photonView.ViewID, _player.MaxHealth });
+            _player.ChangeState(PlayerState.Alive);
 
-            photonView.RPC(nameof(OnReviveExecute), RpcTarget.AllViaServer, new object[] { photonView.ViewID});
+            photonView.RPC(nameof(OnReviveExecute), RpcTarget.Others, new object[] { photonView.ViewID });
+
+            photonView.RPC(nameof(UpdateSelfHealth), RpcTarget.AllViaServer, new object[] { photonView.ViewID, _player.MaxHealth });           
         }
 
         [PunRPC]
@@ -154,7 +157,6 @@ namespace BTAPlayer
         {
             if (photonView.ViewID != id)
                 return;
-
             gameObject.SetActive(true);
 
             _player.ChangeState(PlayerState.Alive);

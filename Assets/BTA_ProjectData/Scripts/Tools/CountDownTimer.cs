@@ -46,6 +46,8 @@ namespace Tools
             }
             else
             {
+                currentTime = 0;
+                UpdateTimerUI();
                 StopTimer();
             }
         }

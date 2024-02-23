@@ -26,7 +26,7 @@ namespace Enemy
         private bool _isPatroling;
 
         public override EnemyType Type => EnemyType.Swarm;
-        
+
         public override event Action<EnemyBaseController, string> OnDestroy;
 
         public float CurrentHealth
@@ -68,7 +68,7 @@ namespace Enemy
 
             if (!photonView.IsMine)
                 return;
-            
+
             if (GameStateManager.Players.Count == 0)
                 return;
 
@@ -89,7 +89,7 @@ namespace Enemy
 
                         var dist = Vector3.Distance(transform.position, targetPos);
 
-                        if ( dist < _config.DamageDistance * 0.8f)
+                        if (dist < _config.DamageDistance * 0.8f)
                         {
                             ChangeState(EnemyState.Attack);
                         }
@@ -116,8 +116,7 @@ namespace Enemy
                                         Value = _config.DamageValue,
                                     });
 
-                                    OnDestroy?.Invoke(this, string.Empty);
-
+                                    _whoKillId = string.Empty;
                                     ChangeState(EnemyState.Dead);
 
                                     return;
@@ -133,6 +132,9 @@ namespace Enemy
                     }
                 case EnemyState.Dead:
                     {
+
+                        OnDestroy?.Invoke(this, _whoKillId);
+
                         PhotonNetwork.InstantiateRoomObject($"Effects/{_deathEffecet.name}", transform.position, transform.rotation);
 
                         PhotonNetwork.Destroy(gameObject);
@@ -146,31 +148,31 @@ namespace Enemy
         {
             var players = GameStateManager.Players;
 
-            if(players[_targerIndex].IsAvailable == false)
+            var availableTargetsId = new List<int>();
+
+            if (players[_targerIndex].IsAvailable)
+                return;
+
+            for (int i = 0; i < players.Count; i++)
             {
-                var resultIndex = -1;
+                var player = players[i];
 
-                var availableTargetsId = new List<int>();
+                if (player.IsAvailable == false)
+                    continue;
 
-                for (int i = 0; i < players.Count; i++)
-                {
-                    if (players[i].IsAvailable)
-                    {
-                        availableTargetsId.Add(i);
-                    }
-                }
+                availableTargetsId.Add(i);
+            }
 
-                if (availableTargetsId.Count != 0)
-                    resultIndex = availableTargetsId[Random.Range(0, availableTargetsId.Count)];
+            if (availableTargetsId.Count > 0)
+            {
+                _targerIndex = availableTargetsId[Random.Range(0, availableTargetsId.Count)];
 
-                if (resultIndex < 0)
-                {
-                    ChangeState(EnemyState.None);
-                }
-                else
-                {
-                    _targerIndex = resultIndex;
-                }
+                if (_currentState != EnemyState.MoveToTarget)
+                    ChangeState(EnemyState.MoveToTarget);
+            }
+            else
+            {
+                ChangeState(EnemyState.None);
             }
         }
 
@@ -239,6 +241,7 @@ namespace Enemy
                     }
             }
 
+
             photonView.RPC(nameof(UpdateStateOnClient), RpcTarget.AllViaServer, new object[] { photonView.ViewID, newState });
         }
 
@@ -264,12 +267,12 @@ namespace Enemy
 
             if (CurrentHealth <= 0)
             {
-
-                OnDestroy?.Invoke(this, dealerId);
-
+                _whoKillId = dealerId;
                 ChangeState(EnemyState.Dead);
             }
         }
+
+        private string _whoKillId;
 
         [PunRPC]
         public void UpdateStateOnClient(int id, EnemyState value)
@@ -278,15 +281,6 @@ namespace Enemy
                 return;
 
             CurrentState = value;
-        }
-
-        [PunRPC]
-        private void DestroyOnClient(int id)
-        {
-            if (photonView.ViewID != id)
-                return;
-
-            Destroy(gameObject);
         }
 
         [PunRPC]

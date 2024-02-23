@@ -307,6 +307,7 @@ MonoBehaviour:
   _camerStartPoint: {fileID: 1437263048424072100}
   _camerEndPoint: {fileID: 4936922255517643231}
   _smooth: 1.2
+  _deadTime: 3
 --- !u!65 &5884109413140257583
 BoxCollider:
   m_ObjectHideFlags: 0
